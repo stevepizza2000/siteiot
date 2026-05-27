@@ -42,14 +42,15 @@ nav a:hover{
 
 #botao-login {
     background-color: var(--cor-destaque);
-    border: 1rem;
+    border:  1px solid var(--cor-destaque);
     padding: 1rem;
     border-radius: 0.5rem;
+    color: var(--cor-fundo);
 }
 
 #botao-cadastro {
-    background-color:;
-    border: 1rem;
+    background-color:transparent;
+    border:  1px solid var(--cor-destaque);
     padding: 1rem;
     border-radius: 0.5rem;
 }
