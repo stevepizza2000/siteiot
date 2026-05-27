@@ -82,46 +82,50 @@ function validarLogin (emailLogin, senhaLogin, spanEmailLogin, spanSenhaLogin, m
         console.log("Login aceito")    ;
         modalLogin      .hidden = true ;
         secoesProtegidas.hidden = false;
-        acoesLogado     .hidden = true ;
-        acoesdeslogado  .hidden = false;  
+        acoesLogado     .hidden = false;
+        acoesdeslogado  .hidden = true ;  
     }
 }
 
 window.onload = function() {
     // modais
-    let modalLogin           = document.getElementById("modal-login"        );
-    let modalCadastro        = document.getElementById("modal-cadastro"     );
+    let modalLogin            = document.getElementById("modal-login"        );
+    let modalCadastro         = document.getElementById("modal-cadastro"     );
     // acoes do usuario
-    let acoesLogado          = document.getElementById("acoes-logado"       );
-    let acoesdeslogado       = document.getElementById("acoes-login"        );
+    let acoesLogado           = document.getElementById("acoes-logado"       );
+    let acoesdeslogado        = document.getElementById("acoes-login"        );
     // conteúdo da pagina que ficara bloqueado até alguem ter feito login
-    let secoesProtegidas     = document.getElementById("secoes-protegidas"  );
+    let secoesProtegidas      = document.getElementById("secoes-protegidas"  );
     // botões para ir de um modal a outro
-    let botaoIrParaCadastro  = document.getElementById("ir-para-cadastro"   );
-    let botaoIrParaLogin     = document.getElementById("ir-para-login"      );
+    let botaoIrParaCadastro   = document.getElementById("ir-para-cadastro"   );
+    let botaoIrParaLogin      = document.getElementById("ir-para-login"      );
     // inputs para fazer o cadastro
-    let nomeCadastro         = document.getElementById("cadastro-nome"      );
-    let emailCadastro        = document.getElementById("cadastro-email"     );
-    let dataCadastro         = document.getElementById("cadastro-data"      );
-    let passwordCadastro     = document.getElementById("cadastro-senha"     );
+    let nomeCadastro          = document.getElementById("cadastro-nome"      );
+    let emailCadastro         = document.getElementById("cadastro-email"     );
+    let dataCadastro          = document.getElementById("cadastro-data"      );
+    let passwordCadastro      = document.getElementById("cadastro-senha"     );
     // inputs para fazer o login
-    let emailLogin           = document.getElementById("login-email"        );
-    let senhaLogin           = document.getElementById("login-senha"        );
+    let emailLogin            = document.getElementById("login-email"        );
+    let senhaLogin            = document.getElementById("login-senha"        );
     // form do cadastro para enviar as informacoes
-    let enviarCadastro       = document.getElementById("form-cadastro"      );
+    let enviarCadastro        = document.getElementById("form-cadastro"      );
     // form do login para enviar as informacoes
-    let enviarLogin          = document.getElementById("form-login"         );
+    let enviarLogin           = document.getElementById("form-login"         );
     //mensagens de alerta com span do cadastro
-    let spanNomeCadastro     = document.getElementById("erro-cadastro-nome" );
-    let spanEmailCadastro    = document.getElementById("erro-cadastro-email");
-    let spanDataCadastro     = document.getElementById("erro-cadastro-data" );
-    let spanPasswordCadastro = document.getElementById("erro-cadastro-senha");
+    let spanNomeCadastro      = document.getElementById("erro-cadastro-nome" );
+    let spanEmailCadastro     = document.getElementById("erro-cadastro-email");
+    let spanDataCadastro      = document.getElementById("erro-cadastro-data" );
+    let spanPasswordCadastro  = document.getElementById("erro-cadastro-senha");
     //mensagens de alerta com span do login
-    let spanEmailLogin       = document.getElementById("erro-login-email"   );
-    let spanSenhaLogin       = document.getElementById("erro-login-senha"   );
+    let spanEmailLogin        = document.getElementById("erro-login-email"   );
+    let spanSenhaLogin        = document.getElementById("erro-login-senha"   );
     // mensagem de aviso caso o usuario burle o modal
-    let avisoAuth            = document.getElementById("aviso-auth"         );
-    
+    let avisoAuth             = document.getElementById("aviso-auth"         );
+    // sair da conta
+    let sairConta             = document.getElementById("botao-sair"         );
+    // botoes do acoes login
+    let botaoLoginSemModal    = document.getElementById("botao-login"        );
+    let botaoCadastroSemModal = document.getElementById("botao-cadastro"     );
 
     // faz o modal-login ser visivel inicialmente e o modal-cadastro não
     secoesProtegidas.hidden = true ;
@@ -131,26 +135,41 @@ window.onload = function() {
     acoesdeslogado  .hidden = false;
 
     // checa caso o botão seja clicado e faz o modal-cadastro ser aberto
-    botaoIrParaCadastro.addEventListener("click", function()      {
+    botaoIrParaCadastro  .addEventListener("click", function()      {
     modalLogin      .hidden = true ;
     modalCadastro   .hidden = false;
     });
 
     // checa caso o botão seja clicado e faz o modal-login ser aberto
-    botaoIrParaLogin  .addEventListener ("click",  function()     {
-    modalCadastro   .hidden = true ;
-    modalLogin      .hidden = false;
+    botaoIrParaLogin     .addEventListener ("click",  function()     {
+    modalCadastro    .hidden = true ;
+    modalLogin       .hidden = false;
     });
 
     // checa se o botão for clicado e faz entrar na funcao validarCadastro
-    enviarCadastro    .addEventListener ("submit", function(event){
+    enviarCadastro       .addEventListener ("submit", function(event){
     event.preventDefault();
     validarCadastro(nomeCadastro, emailCadastro, dataCadastro, passwordCadastro, spanNomeCadastro, spanEmailCadastro, spanDataCadastro, spanPasswordCadastro);
     });
 
-    enviarLogin       .addEventListener ("submit", function(event){
+    enviarLogin          .addEventListener ("submit", function(event){
     event.preventDefault();
     validarLogin(emailLogin, senhaLogin, spanEmailLogin, spanSenhaLogin, modalLogin, secoesProtegidas, acoesLogado, acoesdeslogado);
+    });
+
+    sairConta            .addEventListener ("click",  function()      {
+    modalLogin      .hidden = false;
+    secoesProtegidas.hidden = true ;
+    acoesLogado     .hidden = true ;
+    acoesdeslogado  .hidden = false;
+    });
+
+    botaoLoginSemModal   .addEventListener ("click",  function(){
+    modalLogin      .hidden = false;
+    });
+
+    botaoCadastroSemModal.addEventListener ("click",  function(){
+    modalCadastro   .hidden = false;
     });
 }
 
