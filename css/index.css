@@ -1,56 +1,57 @@
 :root {
-    --cor-fundo: #0a0a0a;
-    --cor-texto: #ffffff;
-    --cor-destaque: #39ff14;
+    --cor-fundo: #0f1115;
+    --cor-secao: #1a1d24;
+    --cor-destaque: #53dd3b;
+    --cor-botao: #3da93d;
+    --cor-texto: #f8fafc;
+    --cor-erro: #ef4444;
 }
 
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-}
-
-body {
-    background-color: var(--cor-fundo);
-    color: var(--cor-texto);
-}
-
-header {
-    background-color: var(--cor-fundo);
-    padding: 1rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid var(--cor-destaque);
-}
-
-a {
-    color: var(--cor-texto);
     text-decoration: none;
 }
 
-nav ul {
-    list-style: none;
-    display: flex;
-    gap: 1rem;
+html{
+    scroll-behavior: smooth;
 }
 
-nav a:hover{
-    color: var(--cor-destaque);
-    transition: color 0.3s ease;
-}
 
 #botao-login {
     background-color: var(--cor-destaque);
-    border:  1px solid var(--cor-destaque);
-    padding: 1rem;
-    border-radius: 0.5rem;
-    color: var(--cor-fundo);
+    color: var(--cor-texto);
+    font-weight: bold;
+    padding: 0.5rem 1.5rem;
+    border-radius: 2rem;
+    border: 0.125rem solid var(--cor-texto);
+    cursor: pointer;
+    font-size: 20px;
+    transition: 0.3s;
+} 
+
+#botao-login:hover {
+    background-color: var(--cor-botao);
 }
 
 #botao-cadastro {
-    background-color:transparent;
-    border:  1px solid var(--cor-destaque);
-    padding: 1rem;
-    border-radius: 0.5rem;
+    background-color: var(--cor-texto);
+    color: var(--cor-destaque);
+    font-weight: bold;
+    padding: 0.5rem 1.5rem;
+    border-radius: 1rem;
+    border: 0.125rem solid var(--cor-destaque);
+    font-size: 20px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+#botao-cadastro:hover {
+    color:var(--cor-botao);
+    border: 0.125rem solid var(--cor-botao);
+}
+
+nav {
+    display:flex;
 }
