@@ -1,4 +1,4 @@
-function validarCadastro(nomeCadastro, emailCadastro, dataCadastro, passwordCadastro, spanNomeCadastro, spanEmailCadastro, spanDataCadastro, spanPasswordCadastro){
+function validarCadastro(nomeCadastro, emailCadastro, dataCadastro, passwordCadastro, spanNomeCadastro, spanEmailCadastro, spanDataCadastro, spanPasswordCadastro, modalLogin, modalCadastro){
     // variavel para checar se o form passa nas verificações basicas, como todos os campos estarem preenchidos
     let formularioValido          = true;
     // mascara para o email e senha com regex 
@@ -53,7 +53,11 @@ function validarCadastro(nomeCadastro, emailCadastro, dataCadastro, passwordCada
     }
 
     // se estiver tudo certo a requisicao passa
-    if (formularioValido === true) {console.log("cadastro aceito");}
+    if (formularioValido === true) {
+        console.log("cadastro aceito");
+        modalLogin      .hidden = false;
+        modalCadastro   .hidden = true;
+    }
 
 }
 
@@ -149,7 +153,7 @@ window.onload = function() {
     // checa se o botão for clicado e faz entrar na funcao validarCadastro
     enviarCadastro       .addEventListener ("submit", function(event){
     event.preventDefault();
-    validarCadastro(nomeCadastro, emailCadastro, dataCadastro, passwordCadastro, spanNomeCadastro, spanEmailCadastro, spanDataCadastro, spanPasswordCadastro);
+    validarCadastro(nomeCadastro, emailCadastro, dataCadastro, passwordCadastro, spanNomeCadastro, spanEmailCadastro, spanDataCadastro, spanPasswordCadastro, modalLogin, modalCadastro);
     });
 
     enviarLogin          .addEventListener ("submit", function(event){
@@ -166,10 +170,12 @@ window.onload = function() {
 
     botaoLoginSemModal   .addEventListener ("click",  function(){
     modalLogin      .hidden = false;
+    modalCadastro   .hidden = true;
     });
 
     botaoCadastroSemModal.addEventListener ("click",  function(){
     modalCadastro   .hidden = false;
+    modalLogin      .hidden = true;
     });
 }
 

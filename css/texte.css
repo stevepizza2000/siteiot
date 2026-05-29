@@ -1,0 +1,365 @@
+:root {
+    --cor-fundo: #0f1115;
+    --cor-secao: #1a1d24;
+    --cor-destaque: #53dd3b;
+    --cor-botao: #3da93d;
+    --cor-texto: #f8fafc;
+    --cor-erro: #ef4444;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    text-decoration: none;
+}
+
+html{
+    scroll-behavior: smooth;
+}
+
+
+#botao-login {
+    background-color: var(--cor-destaque);
+    color: var(--cor-texto);
+    font-weight: bold;
+    padding: 0.5rem 1.5rem;
+    border-radius: 2rem;
+    border: 0.125rem solid var(--cor-texto);
+    cursor: pointer;
+    font-size: 20px;
+    transition: 0.3s;
+} 
+
+#botao-login:hover {
+    background-color: var(--cor-botao);
+}
+
+#botao-cadastro {
+    background-color: var(--cor-texto);
+    color: var(--cor-destaque);
+    font-weight: bold;
+    padding: 0.5rem 1.5rem;
+    border-radius: 1rem;
+    border: 0.125rem solid var(--cor-destaque);
+    font-size: 20px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+#botao-cadastro:hover {
+    color:var(--cor-botao);
+    border: 0.125rem solid var(--cor-botao);
+}
+
+nav {
+    display:flex;
+}/* Importando uma fonte moderna e limpa do Google Fonts */@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');:root {
+
+--cor-fundo: #0f1115; /* Fundo um pouco mais suave que o preto puro */
+
+--cor-cartao: #1a1d24; /* Cor de fundo das seções/cards */
+
+--cor-texto: #e2e8f0; /* Branco levemente acinzentado para não cansar a vista */
+
+--cor-texto-mutado: #94a3b8; /* Cinza para textos secundários */
+
+--cor-destaque: #39ff14; /* Seu verde neon mantido */
+
+--cor-destaque-hover: #2ee60b;
+
+--cor-erro: #ef4444; /* Vermelho para os spans de validação */
+
+--borda-raio: 8px;
+
+--transicao: 0.3s ease;
+
+}/* Reset Básico */
+
+* {
+
+margin: 0;
+
+padding: 0;
+
+box-sizing: border-box;
+
+font-family: 'Inter', sans-serif;
+
+}body {
+
+background-color: var(--cor-fundo);
+
+color: var(--cor-texto);
+
+line-height: 1.6;
+
+}/* --- UTILITÁRIOS --- *//* Garante que o JS consiga esconder os elementos corretamente */[hidden] {
+
+display: none !important;
+
+}/* --- CABEÇALHO (HEADER) --- */header {
+
+background-color: var(--cor-cartao);
+
+padding: 1rem 2rem;
+
+display: flex;
+
+justify-content: space-between;
+
+align-items: center;
+
+border-bottom: 1px solid rgba(57, 255, 20, 0.2); /* Borda sutil */
+
+box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+
+}nav ul {
+
+display: flex;
+
+list-style: none;
+
+gap: 1.5rem;
+
+}nav a {
+
+color: var(--cor-texto);
+
+text-decoration: none;
+
+font-weight: 500;
+
+transition: color var(--transicao);
+
+}nav a:hover {
+
+color: var(--cor-destaque);
+
+}#logo {
+
+font-weight: 700;
+
+font-size: 1.2rem;
+
+color: var(--cor-destaque);
+
+}/* --- BOTÕES --- */button {
+
+background-color: var(--cor-destaque);
+
+color: #000;
+
+border: none;
+
+padding: 0.6rem 1.2rem;
+
+border-radius: var(--borda-raio);
+
+font-weight: 700;
+
+cursor: pointer;
+
+transition: background-color var(--transicao), transform 0.1s;
+
+}button:hover {
+
+background-color: var(--cor-destaque-hover);
+
+}button:active {
+
+transform: scale(0.98);
+
+}/* Botões secundários (ex: 'Criar conta' no menu) */header button:last-child, form p button {
+
+background-color: transparent;
+
+color: var(--cor-destaque);
+
+border: 1px solid var(--cor-destaque);
+
+}header button:last-child:hover,form p button:hover {
+
+background-color: rgba(57, 255, 20, 0.1);
+
+}/* --- DASHBOARD E SEÇÕES --- */main {
+
+padding: 2rem;
+
+max-width: 1200px;
+
+margin: 0 auto;
+
+}#secoes-protegidas {
+
+display: grid;
+
+/* Cria um grid responsivo que adapta os cards automaticamente */
+
+grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+
+gap: 1.5rem;
+
+}section {
+
+background-color: var(--cor-cartao);
+
+padding: 1.5rem;
+
+border-radius: var(--borda-raio);
+
+border: 1px solid rgba(255, 255, 255, 0.05);
+
+box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+
+transition: transform var(--transicao);
+
+}section:hover {
+
+transform: translateY(-5px); /* Efeito de flutuar ao passar o mouse */
+
+border-color: rgba(57, 255, 20, 0.3);
+
+}section h2 {
+
+font-size: 1.1rem;
+
+color: var(--cor-texto-mutado);
+
+margin-bottom: 1rem;
+
+text-transform: uppercase;
+
+letter-spacing: 1px;
+
+}section p {
+
+font-size: 2rem;
+
+font-weight: 700;
+
+color: var(--cor-destaque);
+
+}/* --- MODAIS (LOGIN E CADASTRO) --- */#modal-login, #modal-cadastro {
+
+position: fixed;
+
+top: 0;
+
+left: 0;
+
+width: 100%;
+
+height: 100%;
+
+background-color: rgba(0, 0, 0, 0.8); /* Fundo escuro semi-transparente */
+
+backdrop-filter: blur(5px); /* Efeito de desfoque no fundo */
+
+display: flex; /* Usado para centralizar o card no meio da tela */
+
+justify-content: center;
+
+align-items: center;
+
+z-index: 1000;
+
+}/* A caixa de conteúdo do modal */#modal-login > div, #modal-cadastro > div {
+
+background-color: var(--cor-cartao);
+
+padding: 2.5rem;
+
+border-radius: var(--borda-raio);
+
+width: 100%;
+
+max-width: 400px;
+
+box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+
+border: 1px solid rgba(57, 255, 20, 0.2);
+
+}#modal-login h2, #modal-cadastro h2 {
+
+margin-bottom: 1.5rem;
+
+text-align: center;
+
+}/* --- FORMULÁRIOS --- */form > div {
+
+margin-bottom: 1.2rem;
+
+display: flex;
+
+flex-direction: column;
+
+}label {
+
+margin-bottom: 0.5rem;
+
+font-size: 0.9rem;
+
+color: var(--cor-texto-mutado);
+
+}input {
+
+background-color: var(--cor-fundo);
+
+border: 1px solid #333;
+
+color: var(--cor-texto);
+
+padding: 0.8rem;
+
+border-radius: var(--borda-raio);
+
+outline: none;
+
+transition: border-color var(--transicao);
+
+}input:focus {
+
+border-color: var(--cor-destaque);
+
+}/* Mensagens de erro */span[role="alert"] {
+
+color: var(--cor-erro);
+
+font-size: 0.8rem;
+
+margin-top: 0.4rem;
+
+height: 1rem; /* Mantém o espaço mesmo vazio para evitar pulos no layout */
+
+}form button[type="submit"] {
+
+width: 100%;
+
+margin-top: 1rem;
+
+padding: 1rem;
+
+font-size: 1rem;
+
+}form p {
+
+text-align: center;
+
+margin-top: 1.5rem;
+
+font-size: 0.9rem;
+
+}form p button {
+
+border: none;
+
+background: none;
+
+padding: 0;
+
+margin-left: 0.5rem;
+
+text-decoration: underline;
+
+}
