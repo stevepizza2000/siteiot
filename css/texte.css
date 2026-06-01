@@ -14,7 +14,7 @@
     text-decoration: none;
 }
 
-html{
+html {
     scroll-behavior: smooth;
 }
 
@@ -23,13 +23,13 @@ html{
     background-color: var(--cor-destaque);
     color: var(--cor-texto);
     font-weight: bold;
-    padding: 0.5rem 1.5rem;
+    padding: 0.5v 1.5rem;
     border-radius: 2rem;
     border: 0.125rem solid var(--cor-texto);
     cursor: pointer;
     font-size: 20px;
     transition: 0.3s;
-} 
+}
 
 #botao-login:hover {
     background-color: var(--cor-botao);
@@ -48,318 +48,407 @@ html{
 }
 
 #botao-cadastro:hover {
-    color:var(--cor-botao);
+    color: var(--cor-botao);
     border: 0.125rem solid var(--cor-botao);
 }
 
 nav {
-    display:flex;
-}/* Importando uma fonte moderna e limpa do Google Fonts */@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');:root {
+    display: flex;
+}
 
---cor-fundo: #0f1115; /* Fundo um pouco mais suave que o preto puro */
+/* Importando uma fonte moderna e limpa do Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
 
---cor-cartao: #1a1d24; /* Cor de fundo das seções/cards */
+:root {
 
---cor-texto: #e2e8f0; /* Branco levemente acinzentado para não cansar a vista */
+    --cor-fundo: #101010;
+    /* Fundo um pouco mais suave que o preto puro */
 
---cor-texto-mutado: #94a3b8; /* Cinza para textos secundários */
+    --cor-cartao: #1a1d24;
+    /* Cor de fundo das seções/cards */
 
---cor-destaque: #39ff14; /* Seu verde neon mantido */
+    --cor-texto: #e2e8f0;
+    /* Branco levemente acinzentado para não cansar a vista */
 
---cor-destaque-hover: #2ee60b;
+    --cor-texto-mutado: #94a3b8;
+    /* Cinza para textos secundários */
 
---cor-erro: #ef4444; /* Vermelho para os spans de validação */
+    --cor-destaque: #39ff14;
+    /* Seu verde neon mantido */
 
---borda-raio: 8px;
+    --cor-destaque-hover: #2ee60b;
 
---transicao: 0.3s ease;
+    --cor-erro: #ef4444;
+    /* Vermelho para os spans de validação */
 
-}/* Reset Básico */
+    --borda-raio: 8px;
+
+    --transicao: 0.3s ease;
+
+}
+
+/* Reset Básico */
 
 * {
 
-margin: 0;
+    margin: 0;
 
-padding: 0;
+    padding: 0;
 
-box-sizing: border-box;
+    box-sizing: border-box;
 
-font-family: 'Inter', sans-serif;
+    font-family: 'Inter', sans-serif;
 
-}body {
+}
 
-background-color: var(--cor-fundo);
+body {
 
-color: var(--cor-texto);
+    background-color: var(--cor-fundo);
 
-line-height: 1.6;
+    color: var(--cor-texto);
 
-}/* --- UTILITÁRIOS --- *//* Garante que o JS consiga esconder os elementos corretamente */[hidden] {
+    line-height: 1.6;
 
-display: none !important;
+}
 
-}/* --- CABEÇALHO (HEADER) --- */header {
+/* --- UTILITÁRIOS --- */
+/* Garante que o JS consiga esconder os elementos corretamente */
+[hidden] {
 
-background-color: var(--cor-cartao);
+    display: none !important;
 
-padding: 1rem 2rem;
+}
 
-display: flex;
+/* --- CABEÇALHO (HEADER) --- */
+header {
 
-justify-content: space-between;
+    background-color: var(--cor-cartao);
 
-align-items: center;
+    padding: 1rem 2rem;
 
-border-bottom: 1px solid rgba(57, 255, 20, 0.2); /* Borda sutil */
+    display: flex;
 
-box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    justify-content: space-between;
 
-}nav ul {
+    align-items: center;
 
-display: flex;
+    border-bottom: 1px solid rgba(57, 255, 20, 0.2);
+    /* Borda sutil */
 
-list-style: none;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 
-gap: 1.5rem;
+}
 
-}nav a {
+nav ul {
 
-color: var(--cor-texto);
+    display: flex;
 
-text-decoration: none;
+    list-style: none;
 
-font-weight: 500;
+    gap: 1.5rem;
 
-transition: color var(--transicao);
+}
 
-}nav a:hover {
+nav a {
 
-color: var(--cor-destaque);
+    color: var(--cor-texto);
 
-}#logo {
+    text-decoration: none;
 
-font-weight: 700;
+    font-weight: 500;
 
-font-size: 1.2rem;
+    transition: color var(--transicao);
 
-color: var(--cor-destaque);
+}
 
-}/* --- BOTÕES --- */button {
+nav a:hover {
 
-background-color: var(--cor-destaque);
+    color: var(--cor-destaque);
 
-color: #000;
+}
 
-border: none;
+#logo {
 
-padding: 0.6rem 1.2rem;
+    font-weight: 700;
 
-border-radius: var(--borda-raio);
+    font-size: 1.2rem;
 
-font-weight: 700;
+    color: var(--cor-destaque);
 
-cursor: pointer;
+}
 
-transition: background-color var(--transicao), transform 0.1s;
+/* --- BOTÕES --- */
+button {
 
-}button:hover {
+    background-color: var(--cor-destaque);
 
-background-color: var(--cor-destaque-hover);
+    color: #000;
 
-}button:active {
+    border: none;
 
-transform: scale(0.98);
+    padding: 0.6rem 1.2rem;
 
-}/* Botões secundários (ex: 'Criar conta' no menu) */header button:last-child, form p button {
+    border-radius: var(--borda-raio);
 
-background-color: transparent;
+    font-weight: 700;
 
-color: var(--cor-destaque);
+    cursor: pointer;
 
-border: 1px solid var(--cor-destaque);
+    transition: background-color var(--transicao), transform 0.1s;
 
-}header button:last-child:hover,form p button:hover {
+}
 
-background-color: rgba(57, 255, 20, 0.1);
+button:hover {
 
-}/* --- DASHBOARD E SEÇÕES --- */main {
+    background-color: var(--cor-destaque-hover);
 
-padding: 2rem;
+}
 
-max-width: 1200px;
+button:active {
 
-margin: 0 auto;
+    transform: scale(0.98);
 
-}#secoes-protegidas {
+}
 
-display: grid;
+/* Botões secundários (ex: 'Criar conta' no menu) */
+header button:last-child,
+form p button {
 
-/* Cria um grid responsivo que adapta os cards automaticamente */
+    background-color: transparent;
 
-grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    color: var(--cor-destaque);
 
-gap: 1.5rem;
+    border: 1px solid var(--cor-destaque);
 
-}section {
+}
 
-background-color: var(--cor-cartao);
+header button:last-child:hover,
+form p button:hover {
 
-padding: 1.5rem;
+    background-color: rgba(57, 255, 20, 0.1);
 
-border-radius: var(--borda-raio);
+}
 
-border: 1px solid rgba(255, 255, 255, 0.05);
+/* --- DASHBOARD E SEÇÕES --- */
+main {
 
-box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    padding: 2rem;
 
-transition: transform var(--transicao);
+    max-width: 1200px;
 
-}section:hover {
+    margin: 0 auto;
 
-transform: translateY(-5px); /* Efeito de flutuar ao passar o mouse */
+}
 
-border-color: rgba(57, 255, 20, 0.3);
+#secoes-protegidas {
 
-}section h2 {
+    display: grid;
 
-font-size: 1.1rem;
+    /* Cria um grid responsivo que adapta os cards automaticamente */
 
-color: var(--cor-texto-mutado);
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
 
-margin-bottom: 1rem;
+    gap: 1.5rem;
 
-text-transform: uppercase;
+}
 
-letter-spacing: 1px;
+section {
 
-}section p {
+    background-color: var(--cor-cartao);
 
-font-size: 2rem;
+    padding: 1.5rem;
 
-font-weight: 700;
+    border-radius: var(--borda-raio);
 
-color: var(--cor-destaque);
+    border: 1px solid rgba(255, 255, 255, 0.05);
 
-}/* --- MODAIS (LOGIN E CADASTRO) --- */#modal-login, #modal-cadastro {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
 
-position: fixed;
+    transition: transform var(--transicao);
 
-top: 0;
+}
 
-left: 0;
+section:hover {
 
-width: 100%;
+    transform: translateY(-5px);
+    /* Efeito de flutuar ao passar o mouse */
 
-height: 100%;
+    border-color: rgba(57, 255, 20, 0.3);
 
-background-color: rgba(0, 0, 0, 0.8); /* Fundo escuro semi-transparente */
+}
 
-backdrop-filter: blur(5px); /* Efeito de desfoque no fundo */
+section h2 {
 
-display: flex; /* Usado para centralizar o card no meio da tela */
+    font-size: 1.1rem;
 
-justify-content: center;
+    color: var(--cor-texto-mutado);
 
-align-items: center;
+    margin-bottom: 1rem;
 
-z-index: 1000;
+    text-transform: uppercase;
 
-}/* A caixa de conteúdo do modal */#modal-login > div, #modal-cadastro > div {
+    letter-spacing: 1px;
 
-background-color: var(--cor-cartao);
+}
 
-padding: 2.5rem;
+section p {
 
-border-radius: var(--borda-raio);
+    font-size: 2rem;
 
-width: 100%;
+    font-weight: 700;
 
-max-width: 400px;
+    color: var(--cor-destaque);
 
-box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+}
 
-border: 1px solid rgba(57, 255, 20, 0.2);
+/* --- MODAIS (LOGIN E CADASTRO) --- */
+#modal-login,
+#modal-cadastro {
 
-}#modal-login h2, #modal-cadastro h2 {
+    position: fixed;
 
-margin-bottom: 1.5rem;
+    top: 0;
 
-text-align: center;
+    left: 0;
 
-}/* --- FORMULÁRIOS --- */form > div {
+    width: 100%;
 
-margin-bottom: 1.2rem;
+    height: 100%;
 
-display: flex;
+    background-color: hsl(0, 0%, 5%, 0.94);
+    /* Fundo escuro m  transparente */
 
-flex-direction: column;
+    display: flex;
+    /* Usado para centralizar o card no meio da tela */
 
-}label {
+    justify-content: center;
 
-margin-bottom: 0.5rem;
+    align-items: center;
 
-font-size: 0.9rem;
+    z-index: 1000;
 
-color: var(--cor-texto-mutado);
+}
 
-}input {
+/* A caixa de conteúdo do modal */
+#modal-login>div,
+#modal-cadastro>div {
 
-background-color: var(--cor-fundo);
+    background-color: var(--cor-cartao);
 
-border: 1px solid #333;
+    padding: 2.5rem;
 
-color: var(--cor-texto);
+    border-radius: var(--borda-raio);
 
-padding: 0.8rem;
+    width: 100%;
 
-border-radius: var(--borda-raio);
+    max-width: 400px;
 
-outline: none;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
 
-transition: border-color var(--transicao);
+    border: 1px solid rgba(57, 255, 20, 0.2);
 
-}input:focus {
+}
 
-border-color: var(--cor-destaque);
+#modal-login h2,
+#modal-cadastro h2 {
 
-}/* Mensagens de erro */span[role="alert"] {
+    margin-bottom: 1.5rem;
 
-color: var(--cor-erro);
+    text-align: center;
 
-font-size: 0.8rem;
+}
 
-margin-top: 0.4rem;
+/* --- FORMULÁRIOS --- */
+form>div {
 
-height: 1rem; /* Mantém o espaço mesmo vazio para evitar pulos no layout */
+    margin-bottom: 1.2rem;
 
-}form button[type="submit"] {
+    display: flex;
 
-width: 100%;
+    flex-direction: column;
 
-margin-top: 1rem;
+}
 
-padding: 1rem;
+label {
 
-font-size: 1rem;
+    margin-bottom: 0.5rem;
 
-}form p {
+    font-size: 0.9rem;
 
-text-align: center;
+    color: var(--cor-texto-mutado);
 
-margin-top: 1.5rem;
+}
 
-font-size: 0.9rem;
+input {
 
-}form p button {
+    background-color: var(--cor-fundo);
 
-border: none;
+    border: 1px solid #333;
 
-background: none;
+    color: var(--cor-texto);
 
-padding: 0;
+    padding: 0.8rem;
 
-margin-left: 0.5rem;
+    border-radius: var(--borda-raio);
 
-text-decoration: underline;
+    outline: none;
+
+    transition: border-color var(--transicao);
+
+}
+
+input:focus {
+
+    border-color: var(--cor-destaque);
+
+}
+
+/* Mensagens de erro */
+span[role="alert"] {
+
+    color: var(--cor-erro);
+
+    font-size: 0.8rem;
+
+    margin-top: 0.4rem;
+
+    height: 1rem;
+    /* Mantém o espaço mesmo vazio para evitar pulos no layout */
+
+}
+
+form button[type="submit"] {
+
+    width: 100%;
+
+    margin-top: 1rem;
+
+    padding: 1rem;
+
+    font-size: 1rem;
+
+}
+
+form p {
+
+    text-align: center;
+
+    margin-top: 1.5rem;
+
+    font-size: 0.9rem;
+
+}
+
+form p button {
+
+    border: none;
+
+    background: none;
+
+    padding: 0;
+
+    margin-left: 0.5rem;
+
+    text-decoration: underline;
 
 }
