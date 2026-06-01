@@ -42,4 +42,4 @@ function ModalCadastro() {
     )
 }
 
-export dafault ModalCadastro
+export default ModalCadastro
