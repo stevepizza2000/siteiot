@@ -1,13 +1,26 @@
-function mostrarSenha() {
-    let inputPass = document.getElementById('login-senha')
-    let olhoMostrar = document.getElementById('olho')
+function mostrarSenhaLogin() {
+    let inputPass = document.getElementById('login-senha');
+    let olhoMostrar = document.getElementById('olho');
 
     if (inputPass.type === 'password') {
-        inputPass.setAttribute('type', 'text')
-        olhoMostrar.classList.replace('bi-eye', 'bi-eye-slash')
+        inputPass.setAttribute('type', 'text');
+        olhoMostrar.classList.replace('bi-eye', 'bi-eye-slash');
     } else {
-        inputPass.setAttribute('type', 'password')
-        olhoMostrar.classList.replace('bi-eye-slash', 'bi-eye')
+        inputPass.setAttribute('type', 'password');
+        olhoMostrar.classList.replace('bi-eye-slash', 'bi-eye');
+    }
+}
+
+function mostrarSenhaCadastro() {
+    let inputPass = document.getElementById('cadastro-senha');
+    let olhoMostrar = document.getElementById('olhoCadastro');
+
+    if (inputPass.type === 'password') {
+        inputPass.setAttribute('type', 'text');
+        olhoMostrar.classList.replace('bi-eye', 'bi-eye-slash');
+    } else {
+        inputPass.setAttribute('type', 'password');
+        olhoMostrar.classList.replace('bi-eye-slash', 'bi-eye');
     }
 }
 
