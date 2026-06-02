@@ -1,7 +1,11 @@
-function ModalLogin () {
+function ModalLogin ({aberto, ModalLogin, ModalCadastro}) {
+
+
+    if (!aberto) return null; 
+
 
     return (
-        <div id="modal-login" role="dialog" aria-modal="true" aria-labelledby="titulo-login" hidden>
+        <div id="modal-login" role="dialog" aria-modal="true" aria-labelledby="titulo-login">
         <div>
 
             <h2 id="titulo-login">Entrar</h2>
@@ -22,7 +26,9 @@ function ModalLogin () {
 
                 <button type="submit">Entrar</button>
 
-                <p>Não tem uma conta?<button type="button" id="ir-para-cadastro">Criar Conta</button></p>
+                <p>Não tem uma conta?<button type="button" id="ir-para-cadastro"
+                onClick={() => {ModalLogin(false); ModalCadastro(true);}}
+                >Criar Conta</button></p>
 
             </form>
         </div>
