@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Informações</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="css/texte.css">
 </head>
 
@@ -23,11 +23,6 @@
                 <li><a href="#configuracoes">Configurações</a></li>
             </ul>
         </nav>
-
-        <div id="acoes-login" hidden>
-            <button id="botao-login">Entrar</button>
-            <button id="botao-cadastro">Criar Conta</button>
-        </div>
 
         <div id="acoes-logado" hidden>
             <span id="nome-usuario"></span>
@@ -99,6 +94,7 @@
                     <label for="login-senha">Senha</label>
                     <input type="password" id="login-senha" name="senha" placeholder="Digite sua senha"
                         autocomplete="current-password" required>
+                    <i class="bi bi-eye" id="olho" onclick="mostrarSenha()"></i>
                     <span id="erro-login-senha" role="alert"></span>
                 </div>
 

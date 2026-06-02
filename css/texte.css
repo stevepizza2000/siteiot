@@ -315,7 +315,7 @@ section p {
 
     height: 100%;
 
-    background-color: hsl(0, 0%, 5%, 0.94);
+    background-color: hsl(0, 0%, 5%, 0.9);
     /* Fundo escuro m  transparente */
 
     display: flex;
@@ -363,10 +363,20 @@ form>div {
 
     margin-bottom: 1.2rem;
 
-    display: flex;
+    position: relative;
 
-    flex-direction: column;
+}
 
+form>div input{
+    width: 320px;
+}
+
+div i {
+    position: absolute;
+    right: 2%;
+    bottom: 12%;
+    cursor: pointer;
+    color: #cccc;
 }
 
 label {
