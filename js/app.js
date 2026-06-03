@@ -116,7 +116,7 @@ function validarLogin(emailLogin, senhaLogin, spanEmailLogin, spanSenhaLogin, mo
     }
 }
 
-function barraData (dataCadastro) {
+function barraData (data) {
     let valor = dataCadastro.value.replace(/\D/g, "");
 
         if (valor.length > 8) {
@@ -210,3 +210,4 @@ window.onload = function () {
     });
 
 }
+
