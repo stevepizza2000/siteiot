@@ -1,4 +1,10 @@
-function MainContent() {
+import { useState } from "react"
+
+function MainContent({Logado}) {
+
+
+    if (!Logado) return null;
+    
 
     return(
         <main>

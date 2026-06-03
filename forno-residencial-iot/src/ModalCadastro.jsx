@@ -6,7 +6,68 @@ function ModalCadastro({aberto, ModalLogin, ModalCadastro}) {
     const [Email, setEmail] = useState("");
     const [Date, setDate] = useState("");
     const [Password, setPassword] = useState("");
+    const [erroNome, setErroNome] = useState("");
+    const [erroEmail, setErroEmail] = useState("");
+    const [erroData, setErroData] = useState("");
+    const [erroPassword, setErroPassword] = useState("");
 
+
+function handleSubmitRegister(e){
+    e.preventDefault();
+    let valido = true;
+    let padraoEmail               = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    let padraoSenhaCaracteres     = /.{8,}/;
+    let padraoSenhaLetraMaiuscula = /[A-Z]/;
+    let padraoSenhaNumeros        = /\d/;
+
+    if (Nome === "") {
+        setErroNome("Digite algo no campo");
+        valido = false;
+    } else {
+        setErroNome("");
+    }
+
+    if (Email === "") {
+        setErroEmail("Digite algo no campo");
+        valido = false;
+    } else if (!padraoEmail.test(Email)){
+        setErroEmail("Digite um E-mail verdadeiro");
+        valido = false;
+    } else {
+        setErroEmail("");
+    }
+
+    if (Date === "") {
+        setErroData("Digite algo no campo");
+        valido = false;
+    } else {
+        setErroData("");
+    }
+
+    if (Password === "") {
+        setErroPassword("Digite algo no campo");
+        valido = false;
+    } else if (!padraoSenhaCaracteres.test(Password)){
+        setErroPassword("A senha deve conter ao menos 8 caracteres");
+        valido = false;
+    } else if (!padraoSenhaLetraMaiuscula.test(Password)){
+        setErroPassword("A senha deve conter ao menos 1 letra maiuscula");
+        valido = false;
+    } else if (!padraoSenhaNumeros.test(Password)){
+        setErroPassword("A sennha deve conter ao menos 1 numero");
+        valido = false;
+    } else {
+        setErroPassword("");
+    }
+
+    if (valido === true) {
+        console.log("formulário está valido");
+        ModalCadastro(false);
+        ModalLogin(true);
+    } else {
+        console.log("formulário não está valido");
+    }
+}   
 
     if (!aberto) return null;
 
@@ -16,7 +77,7 @@ function ModalCadastro({aberto, ModalLogin, ModalCadastro}) {
 
             <div id="titulo-cadastro"><h2>Criar conta</h2></div>
 
-            <form id="form-cadastro" noValidate>
+            <form id="form-cadastro" onSubmit={handleSubmitRegister} noValidate>
 
                 <div>
                     <label htmlFor="nome">Nome Completo</label>
@@ -27,7 +88,7 @@ function ModalCadastro({aberto, ModalLogin, ModalCadastro}) {
                     placeholder="Digite Seu Nome Completo"
                     autoComplete="name" 
                     required/>
-                    <span id="erro-cadastro-nome" role="alert"></span>
+                    <span id="erro-cadastro-nome" role="alert">{erroNome}</span>
                 </div>
 
                 <div>
@@ -40,7 +101,7 @@ function ModalCadastro({aberto, ModalLogin, ModalCadastro}) {
                     name="email" autoComplete="email" 
                     placeholder="Digite Seu E-mail" 
                     required/>
-                    <span id="erro-cadastro-email" role="alert"></span>
+                    <span id="erro-cadastro-email" role="alert">{erroEmail}</span>
                 </div>
 
                 <div>
@@ -54,7 +115,7 @@ function ModalCadastro({aberto, ModalLogin, ModalCadastro}) {
                     autoComplete="data" 
                     placeholder="Digite Sua Data De Nascimento" 
                     required/>
-                    <span id="erro-cadastro-data" role="alert"></span>
+                    <span id="erro-cadastro-data" role="alert">{erroData}</span>
                 </div>
 
                 <div>
@@ -68,7 +129,7 @@ function ModalCadastro({aberto, ModalLogin, ModalCadastro}) {
                     autoComplete="new-password" 
                     placeholder="Digite Sua Senha" 
                     required/>
-                    <span id="erro-cadastro-senha" role="alert"></span>
+                    <span id="erro-cadastro-senha" role="alert">{erroPassword}</span>
                 </div>
 
                 <button type="submit">Criar Conta</button>

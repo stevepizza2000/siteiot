@@ -10,28 +10,32 @@ function App() {
 
   const [ModalLoginAberto, setModalLoginAberto] = useState(true);
   const [ModalCadastroAberto, setModalCadastroAberto] = useState(false);
- 
+  const [Logado, setLogado] = useState(false);
 
   return (
-   <>
+  <>
 
-  <Header/>
+    <Header/>
 
-  <ModalLogin 
-  aberto={ModalLoginAberto} 
-  ModalLogin={setModalLoginAberto}
-  ModalCadastro={setModalCadastroAberto}
-  />
+    <ModalLogin 
+    aberto={ModalLoginAberto} 
+    ModalLogin={setModalLoginAberto}
+    ModalCadastro={setModalCadastroAberto}
+    setLogado={setLogado}
+    />
 
-  <ModalCadastro 
-  aberto={ModalCadastroAberto}
-  ModalLogin= {setModalLoginAberto}
-  ModalCadastro={setModalCadastroAberto}
-  />
-  <MainContent/>
+    <ModalCadastro 
+    aberto={ModalCadastroAberto}
+    ModalLogin= {setModalLoginAberto}
+    ModalCadastro={setModalCadastroAberto}
+    />
+    <MainContent
+    ModalLogin= {setModalLoginAberto}
+    Logado={Logado}
+    />
 
-   </>
-  )
+  </>
+)
 
 }
 
