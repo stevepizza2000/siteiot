@@ -8,13 +8,16 @@
     <link rel="stylesheet" href="css/texte.css">
 </head>
 
-<body>
+<body id="body">
 
     <header>
 
+        <button id="menu-hamburguer" hidden>
+            <i class="bi bi-list"></i>
+        </button>
 
 
-        <nav>
+        <nav id="menu">
             <ul>
                 <li><a href="#" id="logo">Monitor</a></li>
                 <li><a href="#dashboard">Dashboard</a></li>
@@ -32,6 +35,8 @@
         </div>
 
     </header>
+
+    <div id="overlay"></div>
 
     <div id="modal-cadastro" role="dialog" aria-modal="true" aria-labelledby="titulo-cadastro" hidden>
         <div>

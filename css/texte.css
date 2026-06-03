@@ -492,13 +492,40 @@ form p button {
     text-decoration: underline;
 }
 
+#menu-hamburger {
+    display: none;
+}
+
 @media screen and (max-width: 968px) {
+
+    #overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+
+        width: 100%;
+        height: 100vh;
+
+        background-color: rgba(0, 0, 0, 0.8);
+
+        opacity: 0;
+        visibility: hidden;
+
+        transition: 0.3s;
+
+        z-index: 1500;
+    }
+
+    #overlay.ativo {
+        opacity: 1;
+        visibility: visible;
+    }
 
     header {
 
-        flex-direction: column;
+        flex-direction: row;
 
-        gap: 1rem;
+        justify-content: space-between;
 
         padding: 1rem;
     }
@@ -514,7 +541,7 @@ form p button {
         font-size: 1rem;
     }
 
-    #logo{
+    #logo {
         font-size: 1rem;
     }
 
@@ -544,5 +571,40 @@ form p button {
     #botao-cadastro {
         width: 100%;
         font-size: 1rem;
+    }
+
+    #menu-hamburguer {
+        display: block;
+        background: none;
+        border: none;
+        color: var(--cor-texto);
+        font-size: 2rem;
+        cursor: pointer;
+    }
+
+    #menu {
+        position: fixed;
+
+        top: 0;
+        left: -300px;
+
+        width: 300px;
+        height: 100vh;
+
+        background-color: var(--cor-cartao);
+
+        transition: 0.3s;
+
+        z-index: 2000;
+    }
+
+    #menu.ativo {
+        left: 0;
+    }
+
+    #menu ul {
+        flex-direction: column;
+        gap: 2rem;
+        padding-left: 2rem;
     }
 }

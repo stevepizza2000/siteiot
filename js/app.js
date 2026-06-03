@@ -116,22 +116,22 @@ function validarLogin(emailLogin, senhaLogin, spanEmailLogin, spanSenhaLogin, mo
     }
 }
 
-function barraData (data) {
+function barraData(dataCadastro) {
     let valor = dataCadastro.value.replace(/\D/g, "");
 
-        if (valor.length > 8) {
-            valor = valor.substring(0, 8);
-        }
+    if (valor.length > 8) {
+        valor = valor.substring(0, 8);
+    }
 
-        if (valor.length > 2) {
-            valor = valor.substring(0, 2) + "/" + valor.substring(2);
-        }
+    if (valor.length > 2) {
+        valor = valor.substring(0, 2) + "/" + valor.substring(2);
+    }
 
-        if (valor.length > 5) {
-            valor = valor.substring(0, 5) + "/" + valor.substring(5);
-        }
+    if (valor.length > 5) {
+        valor = valor.substring(0, 5) + "/" + valor.substring(5);
+    }
 
-        dataCadastro.value = valor;
+    dataCadastro.value = valor;
 }
 
 window.onload = function () {
@@ -150,6 +150,11 @@ window.onload = function () {
     let emailCadastro = document.getElementById("cadastro-email");
     let dataCadastro = document.getElementById("cadastro-data");
     let passwordCadastro = document.getElementById("cadastro-senha");
+    //menu hamburger
+    let menu = document.getElementById("menu");
+    let menuHamburguer = document.getElementById("menu-hamburguer");
+    let linksMenu = document.querySelectorAll("#menu a");
+    let overlay = document.getElementById("overlay");
     // inputs para fazer o login
     let emailLogin = document.getElementById("login-email");
     let senhaLogin = document.getElementById("login-senha");
@@ -169,12 +174,20 @@ window.onload = function () {
     let avisoAuth = document.getElementById("aviso-auth");
     // sair da conta
     let sairConta = document.getElementById("botao-sair");
+    //let tela = document.getElementById("body");
+    let width = document.documentElement.clientWidth;
 
     // faz o modal-login ser visivel inicialmente e o modal-cadastro não
     secoesProtegidas.hidden = true;
     modalLogin.hidden = false;
     avisoAuth.hidden = true;
     acoesLogado.hidden = true;
+
+    if (width > 968) {
+        menuHamburguer.hidden = true;
+    } else {
+        menuHamburguer.hidden = false;
+    }
 
     // checa caso o botão seja clicado e faz o modal-cadastro ser aberto
     botaoIrParaCadastro.addEventListener("click", function () {
@@ -207,6 +220,23 @@ window.onload = function () {
 
     dataCadastro.addEventListener("input", function () {
         barraData(dataCadastro);
+    });
+
+    menuHamburguer.addEventListener("click", function () {
+        menu.classList.toggle("ativo");
+        overlay.classList.toggle("ativo");
+    });
+
+    linksMenu.forEach(function (link) {
+        link.addEventListener("click", function () {
+            menu.classList.remove("ativo");
+            overlay.classList.remove("ativo");
+        });
+    });
+
+    overlay.addEventListener("click", function () {
+        menu.classList.remove("ativo");
+        overlay.classList.remove("ativo");
     });
 
 }
