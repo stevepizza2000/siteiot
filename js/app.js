@@ -116,6 +116,24 @@ function validarLogin(emailLogin, senhaLogin, spanEmailLogin, spanSenhaLogin, mo
     }
 }
 
+function barraData (dataCadastro) {
+    let valor = dataCadastro.value.replace(/\D/g, "");
+
+        if (valor.length > 8) {
+            valor = valor.substring(0, 8);
+        }
+
+        if (valor.length > 2) {
+            valor = valor.substring(0, 2) + "/" + valor.substring(2);
+        }
+
+        if (valor.length > 5) {
+            valor = valor.substring(0, 5) + "/" + valor.substring(5);
+        }
+
+        dataCadastro.value = valor;
+}
+
 window.onload = function () {
     // modais
     let modalLogin = document.getElementById("modal-login");
@@ -188,22 +206,7 @@ window.onload = function () {
     });
 
     dataCadastro.addEventListener("input", function () {
-        let valor = dataCadastro.value.replace(/\D/g, "");
-
-        if (valor.length > 8) {
-            valor = valor.substring(0, 8);
-        }
-
-        if (valor.length > 2) {
-            valor = valor.substring(0, 2) + "/" + valor.substring(2);
-        }
-
-        if (valor.length > 5) {
-            valor = valor.substring(0, 5) + "/" + valor.substring(5);
-        }
-
-        dataCadastro.value = valor;
+        barraData(dataCadastro);
     });
 
 }
-

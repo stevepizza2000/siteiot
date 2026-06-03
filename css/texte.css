@@ -147,6 +147,8 @@ nav ul {
 
     gap: 1.5rem;
 
+    font-size: 1.2rem;
+
 }
 
 nav a {
@@ -159,12 +161,40 @@ nav a {
 
     transition: color var(--transicao);
 
+    position: relative;
+
+    display: inline-block;
+
+}
+
+nav a::after {
+    content: "";
+
+    background-color: var(--cor-destaque);
+
+    position: absolute;
+
+    bottom: 3px;
+
+    left: 0;
+
+    height: 2px;
+
+    width: 0;
+
+    transition: 0.2s;
 }
 
 nav a:hover {
-
     color: var(--cor-destaque);
 
+}
+
+nav a:hover::after {
+
+    background-color: var(--cor-destaque);
+
+    width: 100%;
 }
 
 #logo {
