@@ -15,13 +15,8 @@ function Header(){
                 </ul>
             </nav>
             
-            <div id="acoes-login" hidden>
-                <button id="botao-login">Entrar</button>
-                <button id="botao-cadastro">Criar Conta</button>
-            </div>
-            
             <div id="acoes-logado" hidden>
-                <span id="nome-usuario"></span>
+                <span   id="nome-usuario"></span>
                 <button id="botao-sair">Sair</button>
             </div>
 

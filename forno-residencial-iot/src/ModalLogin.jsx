@@ -6,6 +6,9 @@ function ModalLogin ({aberto, ModalLogin, ModalCadastro, setLogado}) {
     let [Password, setPassword] = useState("");
     let [erroEmail, setErroEmail] = useState("");
     let [erroPassword, setErroPassword] = useState("");
+    let [mostrarPassword, setMostrarPassword] = useState(false);
+
+
 
     function handleSubmitLogin (e){
         e.preventDefault();
@@ -68,12 +71,16 @@ function ModalLogin ({aberto, ModalLogin, ModalCadastro, setLogado}) {
                     <input 
                     value={Password}
                     onChange={(e) => setPassword(e.target.value)}
-                    type="password" 
+                    type={mostrarPassword ? "text" : "password"} 
                     id="login-senha" 
                     name="senha" 
                     placeholder="Digite sua senha" 
                     autoComplete="current-password" 
                     required/>
+                    <i 
+                    className={mostrarPassword ? "bi bi-eye-slash" : "bi bi-eye"}
+                    id="olho"
+                    onClick={() => setMostrarPassword(!mostrarPassword)}></i>
                     <span id="erro-login-senha" role="alert">{erroPassword}</span>
                 </div>
 

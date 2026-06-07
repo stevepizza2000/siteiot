@@ -10,6 +10,7 @@ function ModalCadastro({aberto, ModalLogin, ModalCadastro}) {
     const [erroEmail, setErroEmail] = useState("");
     const [erroData, setErroData] = useState("");
     const [erroPassword, setErroPassword] = useState("");
+    const [mostrarPassword, setMostrarPassword] = useState(false); 
 
 
 function handleSubmitRegister(e){
@@ -123,12 +124,17 @@ function handleSubmitRegister(e){
                     <input 
                     value={Password}
                     onChange={(e) => setPassword(e.target.value)}
-                    type="password" 
+                    type={mostrarPassword ? "text" : "password"} 
                     id="cadastro-senha" 
                     name="senha" 
                     autoComplete="new-password" 
                     placeholder="Digite Sua Senha" 
                     required/>
+                    <i
+                    className={mostrarPassword ? "bi bi-eye-slash" : "bi bi-eye"}
+                    id="olhoCadastro"
+                    onClick={() => setMostrarPassword(!mostrarPassword)}
+                    ></i>
                     <span id="erro-cadastro-senha" role="alert">{erroPassword}</span>
                 </div>
 
