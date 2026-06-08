@@ -8,15 +8,11 @@ function Header({Logado, setLogado, setModalLoginAberto}){
         <>
         <header>
 
-        <button 
-        id="menu-hamburguer"
-        className="menu-hamburguer" 
-        onClick={() => setMenuAberto(!menuAberto)}
-        >
-            <i className="bi bi-list"></i>
+        <button id="menu-hamburguer" onClick={() => setMenuAberto(!menuAberto)}>
+        <i className="bi bi-list"></i>
         </button>
 
-            <nav className={menuAberto ? "ativo" : ""}>
+            <nav id="menu" className={menuAberto ? "ativo" : ""}>
                 <ul>
                     <li><a onClick={() => setMenuAberto(false)} href="#" id="logo">Monitor</a></li>
                     <li><a onClick={() => setMenuAberto(false)} href="#dashboard">Dashboard</a></li>
