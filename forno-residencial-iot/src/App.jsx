@@ -15,7 +15,11 @@ function App() {
   return (
   <>
 
-    <Header/>
+    <Header
+    Logado={Logado}
+    setLogado={setLogado}
+    setModalLoginAberto= {setModalLoginAberto}
+    />
 
     <ModalLogin 
     aberto={ModalLoginAberto} 

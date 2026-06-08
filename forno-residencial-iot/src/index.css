@@ -122,19 +122,13 @@ body {
 header {
 
     background-color: var(--cor-cartao);
-
     padding: 1rem 2rem;
-
     display: flex;
-
     justify-content: space-between;
-
     align-items: center;
-
     border-bottom: 1px solid rgba(57, 255, 20, 0.2);
-    /* Borda sutil */
-
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    position: relative;
 
 }
 
@@ -237,6 +231,24 @@ button:active {
 
     transform: scale(0.98);
 
+}
+
+.menu-hamburguer {
+    background: transparent !important;
+    border: none !important;
+    color: var(--cor-texto) !important;
+    font-size: 1.5rem;
+    cursor: pointer;
+    display: none;
+}
+
+.menu-hamburguer:hover {
+    background: transparent !important;
+}
+
+.menu-hamburguer:active {
+    background: transparent !important;
+    transform: none;
 }
 
 /* Botões secundários (ex: 'Criar conta' no menu) */
@@ -489,4 +501,34 @@ form p button {
     margin-left: 0.5rem;
 
     text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+    header {
+        /* Mantém o botão Sair alinhado à direita */
+        justify-content: flex-end; 
+    }
+
+    .menu-hamburguer {
+        display: block;
+        /* Arranca o botão do fluxo normal e fixa na direita */
+        position: absolute;
+        right: 2rem; /* Mesma distância do padding do header */
+        top: 50%;
+        transform: translateY(-50%); /* Centraliza verticalmente */
+    }
+
+    #acoes-logado {
+        /* Empurra o botão Sair um pouco para a esquerda para não encavalar no menu */
+        margin-right: 3rem; 
+    }
+
+    nav ul {
+        display: none;
+    }
+
+    nav.ativo ul {
+        display: flex;
+        flex-direction: column;
+    }
 }
