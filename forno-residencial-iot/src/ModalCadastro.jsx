@@ -13,7 +13,7 @@ function ModalCadastro({aberto, ModalLogin, ModalCadastro}) {
     const [mostrarPassword, setMostrarPassword] = useState(false); 
 
 
-function handleSubmitRegister(e){
+async function handleSubmitRegister(e){
     e.preventDefault();
     let valido = true;
     let padraoEmail               = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -62,6 +62,8 @@ function handleSubmitRegister(e){
     }
 
     if (valido === true) {
+        const resposta = await fetch("http://localhost:8080/v1/usuario", {method:"POST", headers:{"content-Type": "application/JSON"}, body: JSON.stringify({nome: Nome, email: Email, nascimento: Date, senha: Password})});
+
         console.log("formulário está valido");
         ModalCadastro(false);
         ModalLogin(true);
