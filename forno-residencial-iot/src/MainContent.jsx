@@ -1,8 +1,19 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 
-function MainContent({Logado}) {
+function MainaContent({Logado}) {
 
+async function(){
+    useEffect(() => {
+        const intervalo = setInterval(() => {
+            const token = localStorage.getItem("token");
+            const dadoTemperatura = await fetch("http://localhost:8080/v1/temperaturas", {method:"GET", headers:{"Content-Type": "application/json", "Authorization": "bearer " + token} });
+        }, 1000);
 
+    return () => clearInterval(intervalo);
+
+    }, []);
+
+}
     if (!Logado) return null;
     
 

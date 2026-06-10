@@ -61,15 +61,25 @@ async function handleSubmitRegister(e){
         setErroPassword("");
     }
 
-    if (valido === true) {
-        const resposta = await fetch("http://localhost:8080/v1/usuario", {method:"POST", headers:{"content-Type": "application/JSON"}, body: JSON.stringify({nome: Nome, email: Email, nascimento: Date, senha: Password})});
+    if (valido === true){
 
-        console.log("formulário está valido");
-        ModalCadastro(false);
-        ModalLogin(true);
-    } else {
-        console.log("formulário não está valido");
+        try{
+        const resposta = await fetch("http://localhost:8080/v1/usuario", {method:"POST", headers:{"Content-Type": "application/json"}, body: JSON.stringify({nome: Nome, email: Email, nascimento: Date, senha: Password})});
+    
+        if (resposta.ok){
+            console.log("formulário está valido");
+            ModalCadastro(false);
+            ModalLogin(true);
+        } else {
+            setErroEmail("o email já foi cadastrado");
+        }
+    
+        } catch (erro){
+            console.log("o sistema está fora aguarde");
+
+        }
     }
+
 }   
 
     if (!aberto) return null;

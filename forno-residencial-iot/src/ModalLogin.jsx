@@ -10,7 +10,7 @@ function ModalLogin ({aberto, ModalLogin, ModalCadastro, setLogado}) {
 
 
 
-    function handleSubmitLogin (e){
+    async function handleSubmitLogin (e){
         e.preventDefault();
         let valido = true;
 
@@ -28,16 +28,27 @@ function ModalLogin ({aberto, ModalLogin, ModalCadastro, setLogado}) {
             setErroPassword("");
         }
 
-        if (valido === true) {
-            console.log("formualario valido");
-            setLogado(true);
-            ModalCadastro(false);
-            ModalLogin(false)
-        } else {
-            console.log("formulario invalido")
-            setLogado(false);
-        }
 
+        if(valido === true){
+            
+            try{
+            const resposta = await fetch("http://localhost:8080/v1/auth/login", {method:"POST", headers:{"Content-Type": "application/json"}, body: JSON.stringify({email: Email, senha: Password})});
+
+                if (resposta.ok) {
+                const dados = await resposta.json();
+                localStorage.setItem("token", dados.token);
+
+                setLogado(true);
+                ModalCadastro(false);
+                ModalLogin(false);
+                } else {
+                    setErroEmail("O login não é válido");
+                }
+            } catch (erro) {
+                console.log("o sistema está fora aguarde");
+            }
+
+        }
     }
 
 
