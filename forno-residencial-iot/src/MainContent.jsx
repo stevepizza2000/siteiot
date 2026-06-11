@@ -1,19 +1,42 @@
 import { useState, useEffect } from "react"
 
-function MainaContent({Logado}) {
+function MainContent({Logado}) {
 
-async function(){
+
+    const [quentura, setQuentura] = useState([]);
+    const [tempo, setTempo] = useState([]);
+    const [sessoes, setSessoes] = useState([]);
+    const [eventos, setEventos] = useState([]);
+
     useEffect(() => {
-        const intervalo = setInterval(() => {
+
+        const intervalo = setInterval(async () => {
             const token = localStorage.getItem("token");
-            const dadoTemperatura = await fetch("http://localhost:8080/v1/temperaturas", {method:"GET", headers:{"Content-Type": "application/json", "Authorization": "bearer " + token} });
+            const dadoTemperatura = await fetch("http://localhost:8080/v1/temperaturas", {method:"GET", headers:{"Content-Type": "application/json", "Authorization": "Bearer " + token} });
+            const dadoTemporizador = await fetch("http://localhost:8080/v1/temporizadores/meus", {method:"GET", headers:{"Content-Type": "application/json", "Authorization": "Bearer " + token} });
+            const dadoSessoes = await fetch("http://localhost:8080/v1/sessoes", {method:"GET", headers:{"Content-Type": "application/json", "Authorization": "Bearer " + token} });
+            const dadoEventos = await fetch("http://localhost:8080/v1/eventos", {method:"GET", headers:{"Content-Type": "application/json", "Authorization": "Bearer " + token} });
+
+            if (dadoTemperatura.ok){
+                 setQuentura(await dadoTemperatura.json());
+            }
+            if (dadoTemporizador.ok){
+                setTempo(await dadoTemporizador.json());
+            }
+            if (dadoSessoes.ok){
+                setSessoes(await dadoSessoes.json());
+            } 
+            if (dadoEventos.ok){
+                setEventos(await dadoEventos.json());
+            }
+
         }, 1000);
 
-    return () => clearInterval(intervalo);
+         return () => clearInterval(intervalo);
 
-    }, []);
+        }, []);
 
-}
+
     if (!Logado) return null;
     
 
@@ -35,17 +58,17 @@ async function(){
 
             <section id="temperatura" aria-labelledby="titulo-temperatura">
                 <h2 id="titulo-temperatura">Temperatura</h2>
-                <p>72C°</p>
+                <p>{quentura.length > 0 && quentura[quentura.length - 1].temperaturaAtual}</p>
             </section>
 
             <section id="temporizador" aria-labelledby="titulo-temporizador">
                 <h2 id="titulo-temporizador">Temporizador</h2>
-                <p>minutos</p>
+                <p>{tempo.length > 0 && tempo[tempo.length - 1].horarioFim}</p>
             </section>
 
             <section id="alertas" aria-labelledby="titulo-alertas">
                 <h2 id="titulo-alertas">Alertas</h2>
-                <p>Nenhum Alerta No Momento</p>
+                <p>{eventos.length > 0 && eventos[eventos.length - 1].tipo}</p>
             </section>
 
             <section id="graficos" aria-labelledby="titulo-graficos">
@@ -55,7 +78,7 @@ async function(){
 
             <section id="Registros" aria-labelledby="titulo-registros">
                 <h2 id="titulo-registros">Registros</h2>
-                <p>Registros do de tudo</p>
+                <p>{sessoes.length > 0 && sessoes[sessoes.length - 1].estadoSistema}</p>
             </section>
         </div>
 

@@ -1,8 +1,25 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 function Header({Logado, setLogado, setModalLoginAberto}){
 
     let[menuAberto, setMenuAberto] = useState(false);
+    const [nome, setNome] =  useState(null);
+
+    useEffect(() => { 
+    async function fetchData() {
+        const token = localStorage.getItem("token");
+        const id = localStorage.getItem("id");
+        const dadoNome = await fetch(`http://localhost:8080/v1/usuario?id=${id}`, {method:"GET", headers:{"Content-Type": "application/json", "Authorization": "Bearer " + token} });
+        
+
+        if(dadoNome.ok){
+            setNome(await dadoNome.json());
+        }
+    }
+  fetchData();
+
+
+    }, [Logado]);
 
     return (
         <>
@@ -27,7 +44,7 @@ function Header({Logado, setLogado, setModalLoginAberto}){
 
             {Logado && (
             <div id="acoes-logado">
-                <span   id="nome-usuario"></span>
+                <span   id="nome-usuario">{nome && nome.nome}</span>
                 <button id="botao-sair" onClick={() => {setLogado(false); setModalLoginAberto(true);}}>Sair</button>
             </div>
             )}
