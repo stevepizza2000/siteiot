@@ -36,6 +36,7 @@ function App() {
     <MainContent
     ModalLogin= {setModalLoginAberto}
     Logado={Logado}
+    setLogado={setLogado}
     />
 
   </>

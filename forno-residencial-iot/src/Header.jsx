@@ -45,7 +45,7 @@ function Header({Logado, setLogado, setModalLoginAberto}){
             {Logado && (
             <div id="acoes-logado">
                 <span   id="nome-usuario">{nome && nome.nome}</span>
-                <button id="botao-sair" onClick={() => {setLogado(false); setModalLoginAberto(true);}}>Sair</button>
+                <button id="botao-sair" onClick={() => {setLogado(false); setModalLoginAberto(true); localStorage.removeItem("id"); localStorage.removeItem("token")}}>Sair</button>
             </div>
             )}
 

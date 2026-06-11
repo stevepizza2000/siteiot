@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 
-function MainContent({Logado}) {
+function MainContent({Logado, setLogado, ModalLogin}) {
 
 
     const [quentura, setQuentura] = useState([]);
@@ -11,6 +11,7 @@ function MainContent({Logado}) {
     useEffect(() => {
 
         const intervalo = setInterval(async () => {
+            try {
             const token = localStorage.getItem("token");
             const dadoTemperatura = await fetch("http://localhost:8080/v1/temperaturas", {method:"GET", headers:{"Content-Type": "application/json", "Authorization": "Bearer " + token} });
             const dadoTemporizador = await fetch("http://localhost:8080/v1/temporizadores/meus", {method:"GET", headers:{"Content-Type": "application/json", "Authorization": "Bearer " + token} });
@@ -29,6 +30,17 @@ function MainContent({Logado}) {
             if (dadoEventos.ok){
                 setEventos(await dadoEventos.json());
             }
+
+            if (dadoTemperatura.status === 401) {
+                localStorage.removeItem("id");
+                localStorage.removeItem("token");
+                setLogado(false);
+                ModalLogin(true);
+            }
+
+        } catch(erro){
+            console.log("algum erro deu aí, não pergunta para mim");
+        }
 
         }, 1000);
 
