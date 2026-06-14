@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react"
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 
 function MainContent({Logado, setLogado, ModalLogin}) {
 
@@ -86,6 +87,16 @@ function MainContent({Logado, setLogado, ModalLogin}) {
             <section id="graficos" aria-labelledby="titulo-graficos">
                 <h2 id="titulo-graficos">Gráficos</h2>
                 <p>Gráficos</p>
+
+            <ResponsiveContainer width="100%" height={300}>
+                <LineChart width={500} height={300} data={quentura}>
+                <XAxis dataKey="registradoEm" />
+                <YAxis />
+                <Tooltip />
+                <Line dataKey="temperaturaAtual" stroke="var(--cor-destaque)"/>
+                </LineChart>
+            </ResponsiveContainer>
+
             </section>
 
             <section id="Registros" aria-labelledby="titulo-registros">
