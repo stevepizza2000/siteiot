@@ -11,7 +11,7 @@ function App() {
 
   const [ModalLoginAberto, setModalLoginAberto] = useState(true);
   const [ModalCadastroAberto, setModalCadastroAberto] = useState(false);
-  const [ModalEsqueciSenha, setModalEsqueciSenha] = useState(false);
+  const [ModalEsqueciSenhaAberto, setModalEsqueciSenha] = useState(false);
   const [Logado, setLogado] = useState(false);
 
   return (
@@ -27,12 +27,12 @@ function App() {
     aberto={ModalLoginAberto} 
     ModalLogin={setModalLoginAberto}
     ModalCadastro={setModalCadastroAberto}
-    ModalEsqueciSenha={ModalEsqueciSenha}
+    ModalEsqueciSenha={ModalEsqueciSenhaAberto}
     setLogado={setLogado}
     />
 
     <ModalEsqueciSenha
-    ModalEsqueciSenha={ModalEsqueciSenha}
+    ModalEsqueciSenhaAberto={ModalEsqueciSenhaAberto}
     />
 
     <ModalCadastro 
