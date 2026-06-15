@@ -2,6 +2,7 @@ import Header from "./Header"
 import ModalCadastro from "./ModalCadastro"
 import ModalLogin from "./ModalLogin"
 import MainContent from "./MainContent"
+import ModalEsqueciSenha from "./ModalEsqueciSenha"
 
 import { useState } from "react"
 
@@ -10,6 +11,7 @@ function App() {
 
   const [ModalLoginAberto, setModalLoginAberto] = useState(true);
   const [ModalCadastroAberto, setModalCadastroAberto] = useState(false);
+  const [ModalEsqueciSenha, setModalEsqueciSenha] = useState(false);
   const [Logado, setLogado] = useState(false);
 
   return (
@@ -25,7 +27,12 @@ function App() {
     aberto={ModalLoginAberto} 
     ModalLogin={setModalLoginAberto}
     ModalCadastro={setModalCadastroAberto}
+    ModalEsqueciSenha={ModalEsqueciSenha}
     setLogado={setLogado}
+    />
+
+    <ModalEsqueciSenha
+    ModalEsqueciSenha={ModalEsqueciSenha}
     />
 
     <ModalCadastro 
@@ -33,6 +40,7 @@ function App() {
     ModalLogin= {setModalLoginAberto}
     ModalCadastro={setModalCadastroAberto}
     />
+
     <MainContent
     ModalLogin= {setModalLoginAberto}
     Logado={Logado}
