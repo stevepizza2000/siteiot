@@ -1,6 +1,10 @@
 import { useState } from "react";
 
-function ModalEsqueciSenha() {
+function ModalEsqueciSenha({setModalLoginAberto, ModalEsqueciSenhaAberto, ModalEsqueciSenhaSet}) {
+
+
+
+    if (!ModalEsqueciSenhaAberto) return null;
 
     return(
 
@@ -19,13 +23,13 @@ function ModalEsqueciSenha() {
 
                     <button type="submit">Mandar</button>
 
-                    <p>Lembrou sua senha?<button type="button" id="ir-para-login">Login</button></p>
+                    <p>Lembrou sua senha?<button type="button" id="ir-para-login" onClick={() => {setModalLoginAberto(true); ModalEsqueciSenhaSet(false)}}>Login</button></p>
 
                 </form>
 
             </div>    
 
-            <div/>
+            </div>
 
     )
 

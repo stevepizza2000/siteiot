@@ -27,12 +27,14 @@ function App() {
     aberto={ModalLoginAberto} 
     ModalLogin={setModalLoginAberto}
     ModalCadastro={setModalCadastroAberto}
-    ModalEsqueciSenha={ModalEsqueciSenhaAberto}
+    ModalEsqueciSenha={setModalEsqueciSenha}
     setLogado={setLogado}
     />
 
     <ModalEsqueciSenha
+    setModalLoginAberto={setModalLoginAberto}
     ModalEsqueciSenhaAberto={ModalEsqueciSenhaAberto}
+    ModalEsqueciSenhaSet={setModalEsqueciSenha}
     />
 
     <ModalCadastro 
