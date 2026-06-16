@@ -4,7 +4,13 @@ import ModalLogin from "./ModalLogin"
 import MainContent from "./MainContent"
 import ModalEsqueciSenha from "./ModalEsqueciSenha"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+
+
+
+useEffect(() =>{
+
+}, []);
 
 
 function App() {

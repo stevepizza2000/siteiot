@@ -2,7 +2,41 @@ import { useState } from "react";
 
 function ModalEsqueciSenha({setModalLoginAberto, ModalEsqueciSenhaAberto, ModalEsqueciSenhaSet}) {
 
+    const [Email, setEmail] = useState("");
+    const [erroEmail, setErroEmail] = useState("");
 
+    async function handleSubmitPassword(e) {
+        e.preventDefault();
+        let valido = true;
+        let padraoEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (Email === ""){
+            setErroEmail("Digite algo no campo");
+            valido = false;
+        } else if (!padraoEmail.test(Email)){
+            setErroEmail("Digite um E-mail verdadeiro");
+            valido = false;
+        } else {
+            setErroEmail("");
+        }
+
+        if (valido === true) {
+            try{
+                const resposta = await fetch("http://localhost:8080/v1/auth/esqueci-minha-senha", {method:"POST", headers:{"Content-Type": "application/json"}, body: JSON.stringify({nome: Nome, email: Email, nascimento: Date, senha: Password})});
+                
+                if (resposta.ok){
+                    console.log("Formulário está valido");
+                    ModalEsqueciSenhaSet(false);
+                    //abrir o link que o rafao te mandou pq sim(outro modal);
+                } else {
+                    setErroEmail("O E-mail não é válido")
+                }
+            
+            } catch (erro) {
+                console.log("isso aí é um erro");
+            }
+        }
+    }
 
     if (!ModalEsqueciSenhaAberto) return null;
 
@@ -13,12 +47,12 @@ function ModalEsqueciSenha({setModalLoginAberto, ModalEsqueciSenhaAberto, ModalE
 
                 <h2 id="titulo-esqueci-senha">Esqueci a Senha</h2>
 
-                <form id="form-esqueci-senha" noValidate>
+                <form id="form-esqueci-senha" onSubmit={handleSubmitPassword} noValidate>
 
                     <div>
                         <label htmlFor="esqueci-senha-email">E-mail</label>
-                        <input type="email" id="esqueci-senha-email" name="email" placeholder="Digite seu E-mail" autoComplete="email" required/>
-                        <span id="erro-esqueci-senha-email" role="alert"></span>
+                        <input onChange={(e) => setEmail(e.target.value)} type="email" id="esqueci-senha-email" name="email" placeholder="Digite seu E-mail" autoComplete="email" required/>
+                        <span id="erro-esqueci-senha-email" role="alert">{erroEmail}</span>
                     </div>
 
                     <button type="submit">Mandar</button>

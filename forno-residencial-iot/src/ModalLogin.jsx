@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-function ModalLogin ({aberto, ModalLogin, ModalCadastro, setLogado}) {
+function ModalLogin ({aberto, ModalLogin, ModalCadastro, setLogado, ModalEsqueciSenha}) {
 
     let [Email, setEmail] = useState("");
     let [Password, setPassword] = useState("");
@@ -101,6 +101,7 @@ function ModalLogin ({aberto, ModalLogin, ModalCadastro, setLogado}) {
                 <p>Não tem uma conta?<button type="button" id="ir-para-cadastro"
                 onClick={() => {ModalLogin(false); ModalCadastro(true);}}
                 >Criar Conta</button></p>
+                <p>Esqueceu sua senha?<button type="button" id="ir-para-esqueci-senha" onClick={() => {ModalLogin(false); ModalEsqueciSenha(true)}}>Esqueci Minha Senha</button></p>
 
             </form>
         </div>
