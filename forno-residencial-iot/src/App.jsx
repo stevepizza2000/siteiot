@@ -6,19 +6,23 @@ import ModalEsqueciSenha from "./ModalEsqueciSenha"
 
 import { useState, useEffect } from "react"
 
-
-
-useEffect(() =>{
-
-}, []);
-
-
 function App() {
 
   const [ModalLoginAberto, setModalLoginAberto] = useState(true);
   const [ModalCadastroAberto, setModalCadastroAberto] = useState(false);
   const [ModalEsqueciSenhaAberto, setModalEsqueciSenha] = useState(false);
   const [Logado, setLogado] = useState(false);
+
+  useEffect(() =>{
+
+    const token = localStorage.getItem("token");
+
+    if (token){
+      setModalLoginAberto(false);
+      setLogado(true);
+    }
+  
+    }, []);
 
   return (
   <>
@@ -50,7 +54,7 @@ function App() {
     />
 
     <MainContent
-    ModalLogin= {setModalLoginAberto}
+    setModalLoginAberto= {setModalLoginAberto}
     Logado={Logado}
     setLogado={setLogado}
     />

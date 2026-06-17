@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 
-function MainContent({Logado, setLogado, ModalLogin}) {
+function MainContent({Logado, setLogado, setModalLoginAberto}) {
 
 
     const [quentura, setQuentura] = useState([]);
@@ -11,43 +11,67 @@ function MainContent({Logado, setLogado, ModalLogin}) {
 
     useEffect(() => {
 
-        const intervalo = setInterval(async () => {
-            try {
-            const token = localStorage.getItem("token");
-            const dadoTemperatura = await fetch("http://localhost:8080/v1/temperaturas", {method:"GET", headers:{"Content-Type": "application/json", "Authorization": "Bearer " + token} });
-            const dadoTemporizador = await fetch("http://localhost:8080/v1/temporizadores/meus", {method:"GET", headers:{"Content-Type": "application/json", "Authorization": "Bearer " + token} });
-            const dadoSessoes = await fetch("http://localhost:8080/v1/sessoes", {method:"GET", headers:{"Content-Type": "application/json", "Authorization": "Bearer " + token} });
-            const dadoEventos = await fetch("http://localhost:8080/v1/eventos", {method:"GET", headers:{"Content-Type": "application/json", "Authorization": "Bearer " + token} });
+        let estaAtivo = true;
+        let timerId;
 
-            if (dadoTemperatura.ok){
-                 setQuentura(await dadoTemperatura.json());
-            }
-            if (dadoTemporizador.ok){
-                setTempo(await dadoTemporizador.json());
-            }
-            if (dadoSessoes.ok){
-                setSessoes(await dadoSessoes.json());
-            } 
-            if (dadoEventos.ok){
-                setEventos(await dadoEventos.json());
-            }
+        const buscarDados = async () => {
+            
+            if(!estaAtivo) return;
+
+            try {
+                const token = localStorage.getItem("token");
+            const [dadoTemperatura, dadoTemporizador, dadoSessoes, dadoEventos] = await Promise.all([
+                fetch("http://localhost:8080/v1/temperaturas", {method:"GET", headers:{"Content-Type": "application/json", "Authorization": "Bearer " + token} }),
+                fetch("http://localhost:8080/v1/temporizadores/meus", {method:"GET", headers:{"Content-Type": "application/json", "Authorization": "Bearer " + token} }),
+                fetch("http://localhost:8080/v1/sessoes", {method:"GET", headers:{"Content-Type": "application/json", "Authorization": "Bearer " + token} }),
+                fetch("http://localhost:8080/v1/eventos", {method:"GET", headers:{"Content-Type": "application/json", "Authorization": "Bearer " + token} })
+            ]);
+            
 
             if (dadoTemperatura.status === 401) {
+
                 localStorage.removeItem("id");
                 localStorage.removeItem("token");
+
                 setLogado(false);
-                ModalLogin(true);
+                setModalLoginAberto(true);
+
+                clearTimeout(timerId);
+                return;
+            }
+            const [temperaturaJson, temporizadorJson, sessoesJson, eventosJson] = await Promise.all([
+                dadoTemperatura.json(),
+                dadoTemporizador.json(),
+                dadoSessoes.json(),
+                dadoEventos.json()
+            ]);
+
+            if (estaAtivo){
+                setQuentura(temperaturaJson);
+                setTempo(temporizadorJson);
+                setSessoes(sessoesJson);
+                setEventos(eventosJson);
             }
 
-        } catch(erro){
+            if (estaAtivo) {
+                timerId = setTimeout(buscarDados,5000);
+            }
+
+        } catch(erro) {
             console.log("algum erro deu aí, não pergunta para mim");
+
+            if (estaAtivo) {
+                timerId = setTimeout(buscarDados, 5000)
+            }
         }
 
-        }, 1000);
+        };
 
-         return () => clearInterval(intervalo);
+        buscarDados();
 
-        }, []);
+         return () => {estaAtivo = false; clearTimeout(timerId)}
+
+        }, [Logado]);
 
 
     if (!Logado) return null;
