@@ -1,14 +1,14 @@
 import { useState } from "react";
+import API_URL from "./api";
 
-function ModalLogin ({aberto, ModalLogin, ModalCadastro, setLogado, ModalEsqueciSenha}) {
+function ModalLogin ({aberto, setModalLogin, ModalCadastro, setLogado, ModalEsqueciSenha}) {
 
     let [Email, setEmail] = useState("");
     let [Password, setPassword] = useState("");
     let [erroEmail, setErroEmail] = useState("");
     let [erroPassword, setErroPassword] = useState("");
     let [mostrarPassword, setMostrarPassword] = useState(false);
-
-
+    const [carregando, setCarregando] = useState(false);
 
     async function handleSubmitLogin (e){
         e.preventDefault();
@@ -32,20 +32,23 @@ function ModalLogin ({aberto, ModalLogin, ModalCadastro, setLogado, ModalEsqueci
         if(valido === true){
             
             try{
-            const resposta = await fetch("http://localhost:8080/v1/auth/login", {method:"POST", headers:{"Content-Type": "application/json"}, body: JSON.stringify({email: Email, senha: Password})});
+            setCarregando(true);    
+            const resposta = await fetch(`${API_URL}/v1/auth/login`, {method:"POST", headers:{"Content-Type": "application/json"}, body: JSON.stringify({email: Email, senha: Password})});
 
                 if (resposta.ok) {
                 const dados = await resposta.json();
                 localStorage.setItem("token", dados.token);
                 localStorage.setItem("id", dados.id);
-
+                setCarregando(false);
                 setLogado(true);
                 ModalCadastro(false);
-                ModalLogin(false);
+                setModalLogin(false);
                 } else {
+                    setCarregando(false);
                     setErroEmail("O login não é válido");
                 }
             } catch (erro) {
+                setCarregando(false);
                 console.log("o sistema está fora aguarde");
             }
 
@@ -96,12 +99,12 @@ function ModalLogin ({aberto, ModalLogin, ModalCadastro, setLogado, ModalEsqueci
                     <span id="erro-login-senha" role="alert">{erroPassword}</span>
                 </div>
 
-                <button type="submit">Entrar</button>
+                <button type="submit" disabled={carregando}>{carregando ? "Carregando..." : "Entrar"}</button>
 
                 <p>Não tem uma conta?<button type="button" id="ir-para-cadastro"
-                onClick={() => {ModalLogin(false); ModalCadastro(true);}}
+                onClick={() => {setModalLogin(false); ModalCadastro(true);}}
                 >Criar Conta</button></p>
-                <p>Esqueceu sua senha?<button type="button" id="ir-para-esqueci-senha" onClick={() => {ModalLogin(false); ModalEsqueciSenha(true)}}>Esqueci Minha Senha</button></p>
+                <p>Esqueceu sua senha?<button type="button" id="ir-para-esqueci-senha" onClick={() => {setModalLogin(false); ModalEsqueciSenha(true)}}>Esqueci Minha Senha</button></p>
 
             </form>
         </div>

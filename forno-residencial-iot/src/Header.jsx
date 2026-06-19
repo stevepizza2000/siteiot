@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import API_URL from "./api";
 
 function Header({Logado, setLogado, setModalLoginAberto}){
 
@@ -7,13 +8,19 @@ function Header({Logado, setLogado, setModalLoginAberto}){
 
     useEffect(() => { 
     async function fetchData() {
+        try {
         const token = localStorage.getItem("token");
         const id = localStorage.getItem("id");
-        const dadoNome = await fetch(`http://localhost:8080/v1/usuario?id=${id}`, {method:"GET", headers:{"Content-Type": "application/json", "Authorization": "Bearer " + token} });
+        const dadoNome = await fetch(`${API_URL}/v1/usuario?id=${id}`, {method:"GET", headers:{"Content-Type": "application/json", "Authorization": "Bearer " + token} });
         
 
         if(dadoNome.ok){
             setNome(await dadoNome.json());
+        }
+    }
+        catch(erro) {
+            console.log("deu um erro ai manito");
+            
         }
     }
   fetchData();

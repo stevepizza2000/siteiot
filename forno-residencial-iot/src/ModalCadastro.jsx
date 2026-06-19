@@ -1,17 +1,18 @@
 import { useState } from "react";
+import API_URL from "./api";
 
 function ModalCadastro({aberto, ModalLogin, ModalCadastro}) {
 
     const [Nome, setNome] = useState("");
     const [Email, setEmail] = useState("");
-    const [Date, setDate] = useState("");
+    const [dataNascimento, setDataNascimento] = useState("");
     const [Password, setPassword] = useState("");
     const [erroNome, setErroNome] = useState("");
     const [erroEmail, setErroEmail] = useState("");
     const [erroData, setErroData] = useState("");
     const [erroPassword, setErroPassword] = useState("");
     const [mostrarPassword, setMostrarPassword] = useState(false); 
-
+    const [carregando, setCarregando] = useState(false);
 
 async function handleSubmitRegister(e){
     e.preventDefault();
@@ -38,7 +39,7 @@ async function handleSubmitRegister(e){
         setErroEmail("");
     }
 
-    if (Date === "") {
+    if (dataNascimento === "") {
         setErroData("Digite algo no campo");
         valido = false;
     } else {
@@ -64,17 +65,21 @@ async function handleSubmitRegister(e){
     if (valido === true){
 
         try{
-        const resposta = await fetch("http://localhost:8080/v1/usuario", {method:"POST", headers:{"Content-Type": "application/json"}, body: JSON.stringify({nome: Nome, email: Email, nascimento: Date, senha: Password})});
+            setCarregando(true);
+        const resposta = await fetch(`${API_URL}/v1/usuario`, {method:"POST", headers:{"Content-Type": "application/json"}, body: JSON.stringify({nome: Nome, email: Email, nascimento: dataNascimento, senha: Password})});
     
         if (resposta.ok){
             console.log("formulário está valido");
+            setCarregando(false);
             ModalCadastro(false);
             ModalLogin(true);
         } else {
+            setCarregando(false);
             setErroEmail("o email já foi cadastrado");
         }
     
         } catch (erro){
+            setCarregando(false);
             console.log("o sistema está fora aguarde");
 
         }
@@ -120,8 +125,8 @@ async function handleSubmitRegister(e){
                 <div>
                     <label htmlFor="cadastro-data">Data De Nascimento</label>
                     <input 
-                    value={Date}
-                    onChange={(e) => setDate(e.target.value)}
+                    value={dataNascimento}
+                    onChange={(e) => setDataNascimento(e.target.value)}
                     type="date" 
                     id="cadastro-data" 
                     name="data" 
@@ -150,7 +155,7 @@ async function handleSubmitRegister(e){
                     <span id="erro-cadastro-senha" role="alert">{erroPassword}</span>
                 </div>
 
-                <button type="submit">Criar Conta</button>
+                <button type="submit" disabled={carregando}>{carregando ? "Carregando..." : "Criar Conta"}</button>
 
                 <p>Já tem uma conta? <button type="button" id="ir-para-login" 
                 onClick={() => {ModalLogin(true); ModalCadastro(false)}}

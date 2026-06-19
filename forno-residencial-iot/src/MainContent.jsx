@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react"
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+import API_URL from "./api";
 
 function MainContent({Logado, setLogado, setModalLoginAberto}) {
 
@@ -21,10 +22,10 @@ function MainContent({Logado, setLogado, setModalLoginAberto}) {
             try {
                 const token = localStorage.getItem("token");
             const [dadoTemperatura, dadoTemporizador, dadoSessoes, dadoEventos] = await Promise.all([
-                fetch("http://localhost:8080/v1/temperaturas", {method:"GET", headers:{"Content-Type": "application/json", "Authorization": "Bearer " + token} }),
-                fetch("http://localhost:8080/v1/temporizadores/meus", {method:"GET", headers:{"Content-Type": "application/json", "Authorization": "Bearer " + token} }),
-                fetch("http://localhost:8080/v1/sessoes", {method:"GET", headers:{"Content-Type": "application/json", "Authorization": "Bearer " + token} }),
-                fetch("http://localhost:8080/v1/eventos", {method:"GET", headers:{"Content-Type": "application/json", "Authorization": "Bearer " + token} })
+                fetch(`${API_URL}/v1/temperaturas`, {method:"GET", headers:{"Content-Type": "application/json", "Authorization": "Bearer " + token} }),
+                fetch(`${API_URL}/v1/temporizadores/meus`, {method:"GET", headers:{"Content-Type": "application/json", "Authorization": "Bearer " + token} }),
+                fetch(`${API_URL}/v1/sessoes`, {method:"GET", headers:{"Content-Type": "application/json", "Authorization": "Bearer " + token} }),
+                fetch(`${API_URL}/v1/eventos`, {method:"GET", headers:{"Content-Type": "application/json", "Authorization": "Bearer " + token} })
             ]);
             
 
@@ -95,17 +96,17 @@ function MainContent({Logado, setLogado, setModalLoginAberto}) {
 
             <section id="temperatura" aria-labelledby="titulo-temperatura">
                 <h2 id="titulo-temperatura">Temperatura</h2>
-                <p>{quentura.length > 0 && quentura[quentura.length - 1].temperaturaAtual}</p>
+                <p>{quentura.length > 0 ? quentura[quentura.length - 1].temperaturaAtual : "Sem dados atualmente"}</p>
             </section>
 
             <section id="temporizador" aria-labelledby="titulo-temporizador">
                 <h2 id="titulo-temporizador">Temporizador</h2>
-                <p>{tempo.length > 0 && tempo[tempo.length - 1].horarioFim}</p>
+                <p>{tempo.length > 0 ? tempo[tempo.length - 1].horarioFim : "Sem dados atualmente"}</p>
             </section>
 
             <section id="alertas" aria-labelledby="titulo-alertas">
                 <h2 id="titulo-alertas">Alertas</h2>
-                <p>{eventos.length > 0 && eventos[eventos.length - 1].tipo}</p>
+                <p>{eventos.length > 0 ? eventos[eventos.length - 1].tipo : "Sem dados atualmente"}</p>
             </section>
 
             <section id="graficos" aria-labelledby="titulo-graficos">
@@ -114,7 +115,7 @@ function MainContent({Logado, setLogado, setModalLoginAberto}) {
 
             <ResponsiveContainer width="100%" height={300}>
                 <LineChart width={500} height={300} data={quentura}>
-                <XAxis dataKey="registradoEm" />
+                <XAxis dataKey="registradoEm" tickFormatter={(valor) => new Date(valor).toLocaleTimeString("pt-BR", {hour: "2-digit", minute: "2-digit"})} />
                 <YAxis />
                 <Tooltip />
                 <Line dataKey="temperaturaAtual" stroke="var(--cor-destaque)"/>
@@ -125,7 +126,7 @@ function MainContent({Logado, setLogado, setModalLoginAberto}) {
 
             <section id="Registros" aria-labelledby="titulo-registros">
                 <h2 id="titulo-registros">Registros</h2>
-                <p>{sessoes.length > 0 && sessoes[sessoes.length - 1].estadoSistema}</p>
+                <p>{sessoes.length > 0 ? sessoes[sessoes.length - 1].estadoSistema : "Sem dados atualmente"}</p>
             </section>
         </div>
 

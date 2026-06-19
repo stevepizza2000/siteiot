@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
+import API_URL from "./api";
 
 function PaginaRedefinirSenha(){
 
@@ -10,6 +11,7 @@ function PaginaRedefinirSenha(){
     const [searchParams] = useSearchParams();
     const token = searchParams.get("token");
     const navigate = useNavigate();
+    const [carregando, setCarregando] = useState(false);
 
     async function handleSubmitResetPassword(e){
             e.preventDefault();
@@ -48,14 +50,17 @@ function PaginaRedefinirSenha(){
             if (valido === true){
                 
                 try {
-                    const resposta = await fetch("http://localhost:8080/v1/auth/redefinir-senha", {method:"POST", headers:{"Content-Type": "application/json"}, body: JSON.stringify({token: token, novasenha: novaSenha})} )
+                    setCarregando(true);
+                    const resposta = await fetch(`${API_URL}/v1/auth/redefinir-senha`, {method:"POST", headers:{"Content-Type": "application/json"}, body: JSON.stringify({token: token, novasenha: novaSenha})} )
 
                     if(resposta.ok) {
+                        setCarregando(false);
                         console.log("formulário valido")
                         navigate("/");
                     }
 
                 } catch (error) {
+                    setCarregando(false);
                     console.log("deu problema ai");
                 }
 
@@ -83,7 +88,7 @@ function PaginaRedefinirSenha(){
                     <span id="erro-redefinir-senha-segundo" role="alert">{erroConfirmarSenha}</span>
                 </div>
 
-                <button type="submit">Mudar a Senha</button>
+                <button type="submit">{carregando ? "Mudando Senha..." : "Mudar a Senha"}</button>
 
                 <p>Lembrou a senha? <button type="button" id="voltar-login" onClick={() => navigate("/")}>Voltar</button></p>
 

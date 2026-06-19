@@ -40,7 +40,7 @@ function App() {
 
               <ModalLogin 
               aberto={ModalLoginAberto} 
-              ModalLogin={setModalLoginAberto}
+              setModalLogin={setModalLoginAberto}
               ModalCadastro={setModalCadastroAberto}
               ModalEsqueciSenha={setModalEsqueciSenha}
               setLogado={setLogado}

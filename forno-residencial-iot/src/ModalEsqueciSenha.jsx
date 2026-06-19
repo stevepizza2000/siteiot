@@ -1,9 +1,11 @@
 import { useState } from "react";
+import API_URL from "./api";
 
 function ModalEsqueciSenha({setModalLoginAberto, ModalEsqueciSenhaAberto, ModalEsqueciSenhaSet}) {
 
     const [Email, setEmail] = useState("");
     const [erroEmail, setErroEmail] = useState("");
+    const [carregando, setCarregando] = useState(false);
 
     async function handleSubmitPassword(e) {
         e.preventDefault();
@@ -22,17 +24,21 @@ function ModalEsqueciSenha({setModalLoginAberto, ModalEsqueciSenhaAberto, ModalE
 
         if (valido === true) {
             try{
-                const resposta = await fetch("http://localhost:8080/v1/auth/esqueci-minha-senha", {method:"POST", headers:{"Content-Type": "application/json"}, body: JSON.stringify({ email: Email})});
+                setCarregando(true);
+                const resposta = await fetch(`${API_URL}/v1/auth/esqueci-minha-senha`, {method:"POST", headers:{"Content-Type": "application/json"}, body: JSON.stringify({ email: Email})});
                 
                 if (resposta.ok){
                     console.log("Formulário está valido");
+                    setCarregando(false);
                     ModalEsqueciSenhaSet(false);
                     //abrir o link que o rafao te mandou pq sim(outro modal);
                 } else {
+                    setCarregando(false)
                     setErroEmail("O E-mail não é válido")
                 }
             
             } catch (erro) {
+                setCarregando(false);
                 console.log("isso aí é um erro");
             }
         }
@@ -55,7 +61,7 @@ function ModalEsqueciSenha({setModalLoginAberto, ModalEsqueciSenhaAberto, ModalE
                         <span id="erro-esqueci-senha-email" role="alert">{erroEmail}</span>
                     </div>
 
-                    <button type="submit">Mandar</button>
+                    <button type="submit" disabled={carregando}>{carregando ? "Carregando..." : "Mandar"}</button>
 
                     <p>Lembrou sua senha?<button type="button" id="ir-para-login" onClick={() => {setModalLoginAberto(true); ModalEsqueciSenhaSet(false)}}>Login</button></p>
 
