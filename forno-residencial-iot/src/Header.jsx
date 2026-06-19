@@ -37,7 +37,7 @@ function Header({Logado, setLogado, setModalLoginAberto}){
                     <li><a onClick={() => setMenuAberto(false)} href="#temporizador">Temporizador</a></li>
                     <li><a onClick={() => setMenuAberto(false)} href="#alertas">Alertas</a></li>
                     <li><a onClick={() => setMenuAberto(false)} href="#graficos">Gráfico</a></li>
-                    <li><a onClick={() => setMenuAberto(false)} href="#configuracoes">Configurações</a></li>
+                    <li><a onClick={() => setMenuAberto(false)} href="#Registros">Registros</a></li>
                 </ul>
             </nav>
             

@@ -218,7 +218,8 @@ section p {
 
 /* --- MODAIS (LOGIN E CADASTRO) --- */
 #modal-login,
-#modal-cadastro {
+#modal-cadastro,
+#modal-esqueci-senha{
     position: fixed;
     top: 0;
     left: 0;
@@ -232,7 +233,8 @@ section p {
 }
 
 #modal-login > div,
-#modal-cadastro > div {
+#modal-cadastro > div,
+#modal-esqueci-senha > div {
     background-color: var(--cor-cartao);
     padding: 2.5rem;
     border-radius: var(--borda-raio);
@@ -243,7 +245,8 @@ section p {
 }
 
 #modal-login h2,
-#modal-cadastro h2 {
+#modal-cadastro h2,
+#modal-esqueci-senha h2 {
     margin-bottom: 1.5rem;
     text-align: center;
 }
@@ -424,7 +427,8 @@ form p button {
     }
 
     #modal-login > div,
-    #modal-cadastro > div {
+    #modal-cadastro > div,
+    #modal-esqueci-senha > div {
         width: 90%; /* Aumentado para 90% para não quebrar em telas muito finas */
         padding: 1.5rem;
     }
