@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { useSearchParams } from "react-router-dom";
-import ModalLogin from "./ModalLogin";
+import { useSearchParams, useNavigate } from "react-router-dom";
 
 function PaginaRedefinirSenha(){
 
@@ -10,7 +9,7 @@ function PaginaRedefinirSenha(){
     const [erroConfirmarSenha, setErroConfirmarSenha] = useState("");
     const [searchParams] = useSearchParams();
     const token = searchParams.get("token");
-
+    const navigate = useNavigate();
 
     async function handleSubmitResetPassword(e){
             e.preventDefault();
@@ -53,7 +52,7 @@ function PaginaRedefinirSenha(){
 
                     if(resposta.ok) {
                         console.log("formulário valido")
-                        ModalLogin(true);
+                        navigate("/");
                     }
 
                 } catch (error) {
@@ -86,7 +85,7 @@ function PaginaRedefinirSenha(){
 
                 <button type="submit">Mudar a Senha</button>
 
-                <p>Lembrou a senha? <button type="button" id="voltar-login" onClick={() => {}}>Voltar</button></p>
+                <p>Lembrou a senha? <button type="button" id="voltar-login" onClick={() => navigate("/")}>Voltar</button></p>
 
             </form>
 

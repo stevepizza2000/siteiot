@@ -68,7 +68,9 @@ function App() {
           }/>
 
           <Route path="/redefinir-senha" element=  {
-
+              <PaginaRedefinirSenha
+              
+              />
           }/>
 
         </Routes>
