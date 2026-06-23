@@ -331,6 +331,39 @@ form p button {
     text-decoration: underline;
 }
 
+/* --- MENSAGEM DE SUCESSO --- */
+.mensagem-sucesso {
+    background-color: rgba(57, 255, 20, 0.1); /* Verde neon com 10% de opacidade */
+    border: 1px solid var(--cor-destaque);     /* Borda com o seu verde neon */
+    color: var(--cor-destaque);                /* Texto em verde neon */
+    padding: 0.8rem;
+    border-radius: var(--borda-raio);          /* Herdando seus 8px de arredondamento */
+    text-align: center;
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-bottom: 1.2rem;                     /* Empurra o formulário para baixo uniformemente */
+}
+
+/* --- PÁGINA REDEFINIR SENHA --- */
+#redefinir-senha {
+    background-color: var(--cor-cartao);
+    padding: 2.5rem;
+    border-radius: var(--borda-raio);
+    width: 100%;
+    max-width: 400px; /* Mantém a mesma largura padrão dos seus modais */
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(57, 255, 20, 0.2);
+    
+    /* O truque de mestre: centraliza horizontalmente e joga o card 12% para baixo do topo da tela */
+    margin: 12vh auto; 
+}
+
+#titulo-redefinir-senha {
+    margin-bottom: 1.5rem;
+    text-align: center;
+    color: var(--cor-texto);
+}
+
 /* --- RESPONSIVIDADE (MOBILE) --- */
 /* --- RESPONSIVIDADE (MOBILE) --- */
 /* --- RESPONSIVIDADE (MOBILE) --- */
@@ -428,7 +461,8 @@ form p button {
 
     #modal-login > div,
     #modal-cadastro > div,
-    #modal-esqueci-senha > div {
+    #modal-esqueci-senha > div,
+    #redefinir-senha {
         width: 90%; /* Aumentado para 90% para não quebrar em telas muito finas */
         padding: 1.5rem;
     }

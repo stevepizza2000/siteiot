@@ -59,7 +59,7 @@ function MainContent({Logado, setLogado, setModalLoginAberto}) {
             }
 
         } catch(erro) {
-            console.log("algum erro deu aí, não pergunta para mim");
+            console.log("Mensagem de erro: ", erro.message);
 
             if (estaAtivo) {
                 timerId = setTimeout(buscarDados, 5000)

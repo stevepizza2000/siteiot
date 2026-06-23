@@ -1,7 +1,7 @@
 import { useState } from "react";
 import API_URL from "./api";
 
-function ModalEsqueciSenha({setModalLoginAberto, ModalEsqueciSenhaAberto, ModalEsqueciSenhaSet}) {
+function ModalEsqueciSenha({setModalLoginAberto, ModalEsqueciSenhaAberto, ModalEsqueciSenhaSet, setMensagemSucesso}) {
 
     const [Email, setEmail] = useState("");
     const [erroEmail, setErroEmail] = useState("");
@@ -31,7 +31,8 @@ function ModalEsqueciSenha({setModalLoginAberto, ModalEsqueciSenhaAberto, ModalE
                     console.log("Formulário está valido");
                     setCarregando(false);
                     ModalEsqueciSenhaSet(false);
-                    //abrir o link que o rafao te mandou pq sim(outro modal);
+                    setModalLoginAberto(true);
+                    setMensagemSucesso("Link de redefinição de senha enviado, confira seu E-mail. Cheque o span também");
                 } else {
                     setCarregando(false)
                     setErroEmail("O E-mail não é válido")
@@ -39,7 +40,7 @@ function ModalEsqueciSenha({setModalLoginAberto, ModalEsqueciSenhaAberto, ModalE
             
             } catch (erro) {
                 setCarregando(false);
-                console.log("Erro:", erro.message);
+                console.log("Mensagem de erro:", erro.message);
             }
         }
     }

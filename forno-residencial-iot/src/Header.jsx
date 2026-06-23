@@ -19,7 +19,7 @@ function Header({Logado, setLogado, setModalLoginAberto}){
         }
     }
         catch(erro) {
-            console.log("deu um erro ai manito");
+            console.log("Mensagem de erro: ", erro.message);
             
         }
     }

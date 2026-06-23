@@ -1,7 +1,7 @@
 import { useState } from "react";
 import API_URL from "./api";
 
-function ModalLogin ({aberto, setModalLogin, ModalCadastro, setLogado, ModalEsqueciSenha}) {
+function ModalLogin ({aberto, setModalLogin, ModalCadastro, setLogado, ModalEsqueciSenha, mensagemSucesso}) {
 
     let [Email, setEmail] = useState("");
     let [Password, setPassword] = useState("");
@@ -45,11 +45,10 @@ function ModalLogin ({aberto, setModalLogin, ModalCadastro, setLogado, ModalEsqu
                 setModalLogin(false);
                 } else {
                     setCarregando(false);
-                    setErroEmail("O login não é válido");
                 }
             } catch (erro) {
                 setCarregando(false);
-                console.log("o sistema está fora aguarde");
+                console.log("Mensagem de erro: ", erro.message);
             }
 
         }
@@ -64,6 +63,8 @@ function ModalLogin ({aberto, setModalLogin, ModalCadastro, setLogado, ModalEsqu
         <div>
 
             <h2 id="titulo-login">Entrar</h2>
+
+            {mensagemSucesso != "" ? <p>{mensagemSucesso}</p> : null}
             
             <form id="form-login" onSubmit={handleSubmitLogin} noValidate>
 

@@ -14,6 +14,7 @@ function App() {
   const [ModalCadastroAberto, setModalCadastroAberto] = useState(false);
   const [ModalEsqueciSenhaAberto, setModalEsqueciSenha] = useState(false);
   const [Logado, setLogado] = useState(false);
+  const [mensagemSucesso, setMensagemSucesso] = useState("");
 
   useEffect(() =>{
 
@@ -25,6 +26,20 @@ function App() {
     }
   
     }, []);
+
+    useEffect(() => {
+
+      if (mensagemSucesso !== "" ) {
+        
+        const timer = setTimeout(() => {
+          setMensagemSucesso("");
+        }, 45000);
+
+        return () => clearTimeout(timer);
+
+      }
+
+    }, [mensagemSucesso]);
 
   return (
     <BrowserRouter>
@@ -44,12 +59,14 @@ function App() {
               ModalCadastro={setModalCadastroAberto}
               ModalEsqueciSenha={setModalEsqueciSenha}
               setLogado={setLogado}
+              mensagemSucesso = {mensagemSucesso}
               />
 
               <ModalEsqueciSenha
               setModalLoginAberto={setModalLoginAberto}
               ModalEsqueciSenhaAberto={ModalEsqueciSenhaAberto}
               ModalEsqueciSenhaSet={setModalEsqueciSenha}
+              setMensagemSucesso = {setMensagemSucesso}
               />
 
               <ModalCadastro 

@@ -80,7 +80,7 @@ async function handleSubmitRegister(e){
     
         } catch (erro){
             setCarregando(false);
-            console.log("o sistema está fora aguarde");
+            console.log("Mensagem de erro: ", erro.message);
 
         }
     }

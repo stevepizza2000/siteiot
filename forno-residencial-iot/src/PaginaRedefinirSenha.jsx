@@ -61,7 +61,7 @@ function PaginaRedefinirSenha(){
 
                 } catch (error) {
                     setCarregando(false);
-                    console.log("deu problema ai");
+                    console.log("Mensagem de erro: ", erro.message);
                 }
 
             }
