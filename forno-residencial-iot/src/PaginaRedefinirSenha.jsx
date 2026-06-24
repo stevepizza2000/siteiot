@@ -10,6 +10,7 @@ function PaginaRedefinirSenha(){
     const [erroConfirmarSenha, setErroConfirmarSenha] = useState("");
     const [searchParams] = useSearchParams();
     const token = searchParams.get("token");
+    console.log("Token:", token);
     const navigate = useNavigate();
     const [carregando, setCarregando] = useState(false);
 
@@ -51,7 +52,7 @@ function PaginaRedefinirSenha(){
                 
                 try {
                     setCarregando(true);
-                    const resposta = await fetch(`${API_URL}/v1/auth/redefinir-senha`, {method:"POST", headers:{"Content-Type": "application/json"}, body: JSON.stringify({token: token, novasenha: novaSenha})} )
+                    const resposta = await fetch(`${API_URL}/v1/auth/redefinir-senha`, {method:"POST", headers:{"Content-Type": "application/json"}, body: JSON.stringify({token: token, novaSenha: novaSenha})} )
 
                     if(resposta.ok) {
                         setCarregando(false);
@@ -59,7 +60,7 @@ function PaginaRedefinirSenha(){
                         navigate("/");
                     }
 
-                } catch (error) {
+                } catch (erro) {
                     setCarregando(false);
                     console.log("Mensagem de erro: ", erro.message);
                 }

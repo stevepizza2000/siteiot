@@ -25,7 +25,7 @@ function ModalEsqueciSenha({setModalLoginAberto, ModalEsqueciSenhaAberto, ModalE
         if (valido === true) {
             try{
                 setCarregando(true);
-                const resposta = await fetch(`${API_URL}/v1/auth/esqueci-minha-senha?email=${Email}`, {method:"POST", headers:{"Content-Type": "application/json"}});
+                const resposta = await fetch(`${API_URL}/v1/auth/esqueci-minha-senha`, {method:"POST", headers:{"Content-Type": "application/json"}, body: JSON.stringify({email: Email})});
                 
                 if (resposta.ok){
                     console.log("Formulário está valido");

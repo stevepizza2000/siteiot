@@ -9,6 +9,7 @@ function MainContent({Logado, setLogado, setModalLoginAberto}) {
     const [tempo, setTempo] = useState([]);
     const [sessoes, setSessoes] = useState([]);
     const [eventos, setEventos] = useState([]);
+    const [dashboard, setDashboard] = useState(null);
 
     useEffect(() => {
 
@@ -21,6 +22,12 @@ function MainContent({Logado, setLogado, setModalLoginAberto}) {
 
             try {
                 const token = localStorage.getItem("token");
+                const fornoId = localStorage.getItem("fornoId");
+
+            const resposta = await fetch(`${API_URL}/v1/telemetrias/forno/${fornoId}/dashboard`,{method: "GET",headers: {"Content-Type": "application/json","Authorization": "Bearer " + token}})
+            const dashboard = await resposta.json();
+            setDashboard(dashboardJson);
+
             const [dadoTemperatura, dadoTemporizador, dadoSessoes, dadoEventos] = await Promise.all([
                 fetch(`${API_URL}/v1/temperaturas`, {method:"GET", headers:{"Content-Type": "application/json", "Authorization": "Bearer " + token} }),
                 fetch(`${API_URL}/v1/temporizadores/meus`, {method:"GET", headers:{"Content-Type": "application/json", "Authorization": "Bearer " + token} }),
