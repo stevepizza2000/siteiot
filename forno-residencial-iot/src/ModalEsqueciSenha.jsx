@@ -64,7 +64,7 @@ function ModalEsqueciSenha({setModalLoginAberto, ModalEsqueciSenhaAberto, ModalE
 
                     <button type="submit" disabled={carregando}>{carregando ? "Carregando..." : "Mandar"}</button>
 
-                    <p>Lembrou sua senha?<button type="button" id="ir-para-login" onClick={() => {setModalLoginAberto(true); ModalEsqueciSenhaSet(false)}}>Login</button></p>
+                    <p>Lembrou sua senha?<button type="button" id="ir-para-login" onClick={() => {setErroEmail("");setModalLoginAberto(true); ModalEsqueciSenhaSet(false)}}>Login</button></p>
 
                 </form>
 
