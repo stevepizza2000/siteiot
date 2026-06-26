@@ -2,7 +2,7 @@ import { useState, useEffect } from "react"
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import API_URL from "./api";
 
-function MainContent({Logado, setLogado, setModalLoginAberto}) {
+function MainContent({Logado, setLogado, setModalLoginAberto, fornoSelecionado}) {
 
 
     const [quentura, setQuentura] = useState([]);
@@ -22,11 +22,13 @@ function MainContent({Logado, setLogado, setModalLoginAberto}) {
 
             try {
                 const token = localStorage.getItem("token");
-                const fornoId = localStorage.getItem("fornoId");
+                
+                if (fornoSelecionado === null) return;
 
-            const resposta = await fetch(`${API_URL}/v1/telemetrias/forno/${fornoId}/dashboard`,{method: "GET",headers: {"Content-Type": "application/json","Authorization": "Bearer " + token}})
+                const fornoId = fornoSelecionado.id;
+
+            const resposta = await fetch(`${API_URL}/v1/telemetrias/forno/${fornoId}/dashboard`,{method: "GET",headers: {"Content-Type": "application/json","Authorization": "Bearer " + token}});
             const dashboard = await resposta.json();
-            setDashboard(dashboardJson);
 
             const [dadoTemperatura, dadoTemporizador, dadoSessoes, dadoEventos] = await Promise.all([
                 fetch(`${API_URL}/v1/temperaturas`, {method:"GET", headers:{"Content-Type": "application/json", "Authorization": "Bearer " + token} }),
@@ -79,7 +81,7 @@ function MainContent({Logado, setLogado, setModalLoginAberto}) {
 
          return () => {estaAtivo = false; clearTimeout(timerId)}
 
-        }, [Logado]);
+        }, [fornoSelecionado]);
 
 
     if (!Logado) return null;

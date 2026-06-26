@@ -39,7 +39,6 @@ function ModalLogin ({aberto, setModalLogin, ModalCadastro, setLogado, ModalEsqu
                 const dados = await resposta.json();
                 localStorage.setItem("token", dados.token);
                 localStorage.setItem("id", dados.id);
-                localStorage.setItem("fornoId", dados.fornoId)
                 setCarregando(false);
                 setLogado(true);
                 ModalCadastro(false);

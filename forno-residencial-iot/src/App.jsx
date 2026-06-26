@@ -15,6 +15,7 @@ function App() {
   const [ModalEsqueciSenhaAberto, setModalEsqueciSenha] = useState(false);
   const [Logado, setLogado] = useState(false);
   const [mensagemSucesso, setMensagemSucesso] = useState("");
+  const [fornoSelecionado, setFornoSelecionado] = useState(null);
 
   useEffect(() =>{
 
@@ -62,6 +63,12 @@ function App() {
               mensagemSucesso = {mensagemSucesso}
               />
 
+              <SelecionarForno
+                fornoSelecionado = {fornoSelecionado}
+                Logado = {Logado}
+                setFornoSelecionado = {setFornoSelecionado}
+              />
+
               <ModalEsqueciSenha
               setModalLoginAberto={setModalLoginAberto}
               ModalEsqueciSenhaAberto={ModalEsqueciSenhaAberto}
@@ -79,6 +86,7 @@ function App() {
               setModalLoginAberto= {setModalLoginAberto}
               Logado={Logado}
               setLogado={setLogado}
+              fornoSelecionado={fornoSelecionado}
               />
             
             </>
