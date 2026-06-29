@@ -4,9 +4,10 @@ import ModalLogin from "./ModalLogin"
 import MainContent from "./MainContent"
 import ModalEsqueciSenha from "./ModalEsqueciSenha"
 import PaginaRedefinirSenha from "./PaginaRedefinirSenha"
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import SelecionarForno from "./SelecionarForno";
+import { BrowserRouter, Routes, Route } from "react-router-dom"
+import SelecionarForno from "./SelecionarForno"
 import { useState, useEffect } from "react"
+import PainelAdmin from "./PainelAdmin"
 
 function App() {
 
@@ -83,6 +84,7 @@ function App() {
               />
 
               <MainContent
+              setFornoSelecionado= {setFornoSelecionado}
               setModalLoginAberto= {setModalLoginAberto}
               Logado={Logado}
               setLogado={setLogado}
@@ -96,6 +98,12 @@ function App() {
               <PaginaRedefinirSenha
               
               />
+          }/>
+
+          <Route path="/admin" element= {
+            <PainelAdmin
+            
+            />
           }/>
 
         </Routes>

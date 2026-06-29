@@ -2,7 +2,7 @@ import { useState, useEffect } from "react"
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import API_URL from "./api";
 
-function MainContent({Logado, setLogado, setModalLoginAberto, fornoSelecionado}) {
+function MainContent({Logado, setLogado, setModalLoginAberto, fornoSelecionado, setFornoSelecionado}) {
 
 
     const [quentura, setQuentura] = useState([]);
@@ -28,6 +28,7 @@ function MainContent({Logado, setLogado, setModalLoginAberto, fornoSelecionado})
                 const fornoId = fornoSelecionado.id;
 
             const resposta = await fetch(`${API_URL}/v1/telemetrias/forno/${fornoId}/dashboard`,{method: "GET",headers: {"Content-Type": "application/json","Authorization": "Bearer " + token}});
+            if (!resposta.ok) return;
             const dashboard = await resposta.json();
             setDashboard(dashboard);
 
@@ -85,7 +86,7 @@ function MainContent({Logado, setLogado, setModalLoginAberto, fornoSelecionado})
         }, [fornoSelecionado]);
 
 
-    if (!Logado) return null;
+    if (!Logado || fornoSelecionado === null) return null;
     
 
     return(
@@ -99,8 +100,10 @@ function MainContent({Logado, setLogado, setModalLoginAberto, fornoSelecionado})
 
         <div id="secoes-protegidas">
 
-            <section id="dashboard" aria-labelledby="titulo-dashboard">
-                <h2 id="titulo-dashboard">Dashboard</h2>
+            <i className="bi bi-arrow-left-right" id="trocar-forno"  onClick={() => setFornoSelecionado(null)}></i>
+
+            <section id="dashboard" aria-labelledby="titulo-dashboard">    
+                <h2 id="titulo-dashboard">Dashboard - {fornoSelecionado.nome}</h2>
                 <p>status do sistema</p>
             </section>
 

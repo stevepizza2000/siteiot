@@ -12,6 +12,8 @@ function SelecionarForno({setFornoSelecionado, fornoSelecionado, Logado}){
         const token = localStorage.getItem("token");
         const resposta = await fetch(`${API_URL}/v1/fornos/meus`, {method:"GET", headers:{"Content-Type": "application/json", "Authorization": "Bearer " + token}});
 
+        if (!resposta.ok) return;
+
         const dados = await resposta.json();
         setFornos(dados);
 
@@ -19,8 +21,7 @@ function SelecionarForno({setFornoSelecionado, fornoSelecionado, Logado}){
 
         buscar();
 
-    }, []);
-
+    }, [Logado]);
 
     if (!Logado || fornoSelecionado !== null) return null;
 

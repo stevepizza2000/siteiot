@@ -13,3 +13,7 @@ O estado dashboard agora está sendo preenchido corretamente, mas o JSX ainda mo
 Você tem o objeto dashboard com campos como temperaturaAtual, estadoForno, estadoSistema, tempoLigadoMinutos, etc. vindos do Java.
 
 Quando quiser, podemos trabalhar em exibir esses dados no JSX — ou se tiver algo quebrando ao testar, me mostra o erro.
+
+
+
+update usuarios set role = 'USER' where id = '5926b167-b485-464d-97f6-79568b6d8aa5'
