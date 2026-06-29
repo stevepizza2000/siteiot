@@ -29,6 +29,7 @@ function MainContent({Logado, setLogado, setModalLoginAberto, fornoSelecionado})
 
             const resposta = await fetch(`${API_URL}/v1/telemetrias/forno/${fornoId}/dashboard`,{method: "GET",headers: {"Content-Type": "application/json","Authorization": "Bearer " + token}});
             const dashboard = await resposta.json();
+            setDashboard(dashboard);
 
             const [dadoTemperatura, dadoTemporizador, dadoSessoes, dadoEventos] = await Promise.all([
                 fetch(`${API_URL}/v1/temperaturas`, {method:"GET", headers:{"Content-Type": "application/json", "Authorization": "Bearer " + token} }),

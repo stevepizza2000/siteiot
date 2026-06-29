@@ -1,0 +1,15 @@
+14:49
+Perfeito! Tudo correto. ✅
+
+Checklist do que foi feito
+✅ FornoResponseDTO com nome
+✅ SelecionarForno.jsx completo
+✅ App.jsx com estado fornoSelecionado
+✅ MainContent.jsx usando fornoSelecionado.id, protegido contra null, reagindo à troca de forno
+✅ Bug do setDashboard corrigido
+Próximo passo sugerido
+O estado dashboard agora está sendo preenchido corretamente, mas o JSX ainda mostra <p>status do sistema</p> na seção dashboard — dados estáticos.
+
+Você tem o objeto dashboard com campos como temperaturaAtual, estadoForno, estadoSistema, tempoLigadoMinutos, etc. vindos do Java.
+
+Quando quiser, podemos trabalhar em exibir esses dados no JSX — ou se tiver algo quebrando ao testar, me mostra o erro.

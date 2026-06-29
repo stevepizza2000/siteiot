@@ -5,7 +5,7 @@ import MainContent from "./MainContent"
 import ModalEsqueciSenha from "./ModalEsqueciSenha"
 import PaginaRedefinirSenha from "./PaginaRedefinirSenha"
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-
+import SelecionarForno from "./SelecionarForno";
 import { useState, useEffect } from "react"
 
 function App() {
