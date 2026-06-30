@@ -22,3 +22,5 @@ update usuarios set role = 'USER' where id = '5926b167-b485-464d-97f6-79568b6d8a
                 <h2>Gerenciar Usuários</h2>
                 <p>Usuarios</p>
             </section>
+
+            a68b650

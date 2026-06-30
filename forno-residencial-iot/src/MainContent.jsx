@@ -13,6 +13,19 @@ function MainContent({Logado, setLogado, setModalLoginAberto, fornoSelecionado, 
 
     useEffect(() => {
 
+          if (!fornoSelecionado) return;
+
+         const fornoId = fornoSelecionado.id;
+
+         const controller = new AbortController();
+        const signal = controller.signal;
+
+           setQuentura([]);
+            setTempo([]);
+            setSessoes([]);
+            setEventos([]);
+            setDashboard(null);
+
         let estaAtivo = true;
         let timerId;
 
@@ -23,20 +36,18 @@ function MainContent({Logado, setLogado, setModalLoginAberto, fornoSelecionado, 
             try {
                 const token = localStorage.getItem("token");
                 
-                if (fornoSelecionado === null) return;
 
-                const fornoId = fornoSelecionado.id;
-
-            const resposta = await fetch(`${API_URL}/v1/telemetrias/forno/${fornoId}/dashboard`,{method: "GET",headers: {"Content-Type": "application/json","Authorization": "Bearer " + token}});
+            const resposta = await fetch(`${API_URL}/v1/telemetrias/forno/${fornoId}/dashboard`,{method: "GET",headers: {"Content-Type": "application/json","Authorization": "Bearer " + token}, signal});
             if (!resposta.ok) return;
             const dashboard = await resposta.json();
+            if (!estaAtivo) return;
             setDashboard(dashboard);
 
             const [dadoTemperatura, dadoTemporizador, dadoSessoes, dadoEventos] = await Promise.all([
-                fetch(`${API_URL}/v1/temperaturas/fornos/${fornoId}`, {method:"GET", headers:{"Content-Type": "application/json", "Authorization": "Bearer " + token} }),
-                fetch(`${API_URL}/v1/temporizadores/fornos/${fornoId}`, {method:"GET", headers:{"Content-Type": "application/json", "Authorization": "Bearer " + token} }),
-                fetch(`${API_URL}/v1/sessoes/fornos/${fornoId}`, {method:"GET", headers:{"Content-Type": "application/json", "Authorization": "Bearer " + token} }),
-                fetch(`${API_URL}/v1/eventos/fornos/${fornoId}`, {method:"GET", headers:{"Content-Type": "application/json", "Authorization": "Bearer " + token} })
+                fetch(`${API_URL}/v1/temperaturas/fornos/${fornoId}`, {method:"GET", headers:{"Content-Type": "application/json", "Authorization": "Bearer " + token}, signal}),
+                fetch(`${API_URL}/v1/temporizadores/fornos/${fornoId}`, {method:"GET", headers:{"Content-Type": "application/json", "Authorization": "Bearer " + token}, signal}),
+                fetch(`${API_URL}/v1/sessoes/fornos/${fornoId}`, {method:"GET", headers:{"Content-Type": "application/json", "Authorization": "Bearer " + token}, signal}),
+                fetch(`${API_URL}/v1/eventos/fornos/${fornoId}`, {method:"GET", headers:{"Content-Type": "application/json", "Authorization": "Bearer " + token}, signal })
             ]);
             
 
@@ -76,18 +87,22 @@ function MainContent({Logado, setLogado, setModalLoginAberto, fornoSelecionado, 
             }
 
         } catch(erro) {
-            console.log("Mensagem de erro: ", erro.message);
+            if (erro.name === "AbortError") {
+                return;
+            }
+
+            console.log("Mensagem de erro:", erro.message);
 
             if (estaAtivo) {
-                timerId = setTimeout(buscarDados, 5000)
-            }
+                timerId = setTimeout(buscarDados, 5000);
+             }
         }
 
         };
 
         buscarDados();
 
-         return () => {estaAtivo = false; clearTimeout(timerId)}
+        return () => {estaAtivo = false; clearTimeout(timerId); controller.abort(); }
 
         }, [fornoSelecionado]);
 
