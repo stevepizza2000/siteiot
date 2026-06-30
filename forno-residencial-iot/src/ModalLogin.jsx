@@ -85,7 +85,7 @@ function ModalLogin ({aberto, setModalLogin, ModalCadastro, setLogado, ModalEsqu
 
             <h2 id="titulo-login">Entrar</h2>
 
-            {mensagemSucesso != "" ? <p>{mensagemSucesso}</p> : null}
+            {mensagemSucesso !== "" ? <p className="mensagem-sucesso">{mensagemSucesso}</p> : null}
             
             <form id="form-login" onSubmit={handleSubmitLogin} noValidate>
 
