@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import API_URL from "./api";
 
-function Header({Logado, setLogado, setModalLoginAberto}){
+function Header({Logado, setLogado, setModalLoginAberto, setAdmin, setFornoSelecionado, admin}){
 
     let[menuAberto, setMenuAberto] = useState(false);
     const [nome, setNome] =  useState(null);
@@ -35,7 +35,8 @@ function Header({Logado, setLogado, setModalLoginAberto}){
         <button id="menu-hamburguer" onClick={() => setMenuAberto(!menuAberto)}>
         <i className="bi bi-list"></i>
         </button>
-
+            
+             {!admin && (
             <nav id="menu" className={menuAberto ? "ativo" : ""}>
                 <ul>
                     <li><a onClick={() => setMenuAberto(false)} href="#" id="logo">Monitor</a></li>
@@ -47,12 +48,12 @@ function Header({Logado, setLogado, setModalLoginAberto}){
                     <li><a onClick={() => setMenuAberto(false)} href="#Registros">Registros</a></li>
                 </ul>
             </nav>
-            
+        )}
 
             {Logado && (
             <div id="acoes-logado">
                 <span   id="nome-usuario">{nome && nome.nome}</span>
-                <button id="botao-sair" onClick={() => {setLogado(false); setModalLoginAberto(true); localStorage.removeItem("id"); localStorage.removeItem("token")}}>Sair</button>
+                <button id="botao-sair" onClick={() => {setLogado(false); setAdmin(false); setFornoSelecionado(null); setModalLoginAberto(true); localStorage.removeItem("id"); localStorage.removeItem("token")}}>Sair</button>
             </div>
             )}
 

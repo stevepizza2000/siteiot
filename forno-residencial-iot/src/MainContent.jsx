@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect } from "react";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import API_URL from "./api";
 
-function MainContent({Logado, setLogado, setModalLoginAberto, fornoSelecionado, setFornoSelecionado}) {
+function MainContent({Logado, setLogado, setModalLoginAberto, fornoSelecionado, setFornoSelecionado, admin}) {
 
 
     const [quentura, setQuentura] = useState([]);
@@ -33,10 +33,10 @@ function MainContent({Logado, setLogado, setModalLoginAberto, fornoSelecionado, 
             setDashboard(dashboard);
 
             const [dadoTemperatura, dadoTemporizador, dadoSessoes, dadoEventos] = await Promise.all([
-                fetch(`${API_URL}/v1/temperaturas`, {method:"GET", headers:{"Content-Type": "application/json", "Authorization": "Bearer " + token} }),
-                fetch(`${API_URL}/v1/temporizadores/meus`, {method:"GET", headers:{"Content-Type": "application/json", "Authorization": "Bearer " + token} }),
-                fetch(`${API_URL}/v1/sessoes`, {method:"GET", headers:{"Content-Type": "application/json", "Authorization": "Bearer " + token} }),
-                fetch(`${API_URL}/v1/eventos`, {method:"GET", headers:{"Content-Type": "application/json", "Authorization": "Bearer " + token} })
+                fetch(`${API_URL}/v1/temperaturas/fornos/${fornoId}`, {method:"GET", headers:{"Content-Type": "application/json", "Authorization": "Bearer " + token} }),
+                fetch(`${API_URL}/v1/temporizadores/fornos/${fornoId}`, {method:"GET", headers:{"Content-Type": "application/json", "Authorization": "Bearer " + token} }),
+                fetch(`${API_URL}/v1/sessoes/fornos/${fornoId}`, {method:"GET", headers:{"Content-Type": "application/json", "Authorization": "Bearer " + token} }),
+                fetch(`${API_URL}/v1/eventos/fornos/${fornoId}`, {method:"GET", headers:{"Content-Type": "application/json", "Authorization": "Bearer " + token} })
             ]);
             
 
@@ -86,7 +86,7 @@ function MainContent({Logado, setLogado, setModalLoginAberto, fornoSelecionado, 
         }, [fornoSelecionado]);
 
 
-    if (!Logado || fornoSelecionado === null) return null;
+    if (!Logado || fornoSelecionado === null || admin) return null;
     
 
     return(

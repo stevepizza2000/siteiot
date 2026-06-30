@@ -1,8 +1,11 @@
 import { useState } from "react";
+import { jwtDecode } from "jwt-decode";
+import { useNavigate } from "react-router-dom";
 import API_URL from "./api";
 
-function ModalLogin ({aberto, setModalLogin, ModalCadastro, setLogado, ModalEsqueciSenha, mensagemSucesso}) {
+function ModalLogin ({aberto, setModalLogin, ModalCadastro, setLogado, ModalEsqueciSenha, setAdmin, mensagemSucesso}) {
 
+    const navigate = useNavigate();
     let [Email, setEmail] = useState("");
     let [Password, setPassword] = useState("");
     let [erroEmail, setErroEmail] = useState("");
@@ -39,10 +42,26 @@ function ModalLogin ({aberto, setModalLogin, ModalCadastro, setLogado, ModalEsqu
                 const dados = await resposta.json();
                 localStorage.setItem("token", dados.token);
                 localStorage.setItem("id", dados.id);
+
+                    try {
+                        const tokenDecodificado = jwtDecode(dados.token);
+                        
+                        if (tokenDecodificado.role === "ADMIN" || tokenDecodificado.role === "ROLE_ADMIN"){
+                            setAdmin(true);
+                            navigate("/admin");
+                        } else {
+                            setAdmin(false);
+                        }
+
+                    } catch (erro) {
+                        console.log("Erro ao decodificar o token");
+                    }
+
                 setCarregando(false);
                 setLogado(true);
                 ModalCadastro(false);
                 setModalLogin(false);
+
                 } else {
                     setCarregando(false);
                     setErroEmail("E-mail não cadastrado");

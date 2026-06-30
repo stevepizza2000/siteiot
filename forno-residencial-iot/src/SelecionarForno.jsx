@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import API_URL from "./api";
 
-function SelecionarForno({setFornoSelecionado, fornoSelecionado, Logado}){
+function SelecionarForno({setFornoSelecionado, fornoSelecionado, Logado, admin}){
 
     const [fornos, setFornos] = useState([]);
 
@@ -23,7 +23,7 @@ function SelecionarForno({setFornoSelecionado, fornoSelecionado, Logado}){
 
     }, [Logado]);
 
-    if (!Logado || fornoSelecionado !== null) return null;
+    if (!Logado || fornoSelecionado !== null || admin) return null;
 
 
     return(

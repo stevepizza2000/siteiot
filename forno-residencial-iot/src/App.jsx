@@ -1,13 +1,14 @@
-import Header from "./Header"
-import ModalCadastro from "./ModalCadastro"
-import ModalLogin from "./ModalLogin"
-import MainContent from "./MainContent"
-import ModalEsqueciSenha from "./ModalEsqueciSenha"
-import PaginaRedefinirSenha from "./PaginaRedefinirSenha"
-import { BrowserRouter, Routes, Route } from "react-router-dom"
-import SelecionarForno from "./SelecionarForno"
-import { useState, useEffect } from "react"
-import PainelAdmin from "./PainelAdmin"
+import Header from "./Header";
+import ModalCadastro from "./ModalCadastro";
+import ModalLogin from "./ModalLogin";
+import MainContent from "./MainContent";
+import ModalEsqueciSenha from "./ModalEsqueciSenha";
+import PaginaRedefinirSenha from "./PaginaRedefinirSenha";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import SelecionarForno from "./SelecionarForno";
+import { useState, useEffect } from "react";
+import PainelAdmin from "./PainelAdmin";
+import { jwtDecode } from "jwt-decode";
 
 function App() {
 
@@ -17,17 +18,30 @@ function App() {
   const [Logado, setLogado] = useState(false);
   const [mensagemSucesso, setMensagemSucesso] = useState("");
   const [fornoSelecionado, setFornoSelecionado] = useState(null);
+  const [admin, setAdmin] = useState(false);
+  let [verificandoAuth, setVerificandoAuth] = useState(true);
 
-  useEffect(() =>{
+  useEffect(() => {
 
     const token = localStorage.getItem("token");
 
-    if (token){
-      setModalLoginAberto(false);
-      setLogado(true);
+    if (token) {
+        setModalLoginAberto(false);
+        setLogado(true);
+
+        try {
+            const tokenDecodificado = jwtDecode(token);
+            if (tokenDecodificado.role === "ADMIN" || tokenDecodificado.role === "ROLE_ADMIN") {
+                setAdmin(true);
+            }
+        } catch (erro) {
+            console.log("Erro ao ler token no App.jsx");
+        }
     }
-  
-    }, []);
+
+    setVerificandoAuth(false); 
+
+}, []);
 
     useEffect(() => {
 
@@ -47,12 +61,20 @@ function App() {
     <BrowserRouter>
       <Routes>
           <Route path="/" element={
+            verificandoAuth ? (
+            <p>Carregando...</p>
+    ) : admin ? (
+        <Navigate to="/admin" replace />
+    ) : (
             <>
 
               <Header
               Logado={Logado}
               setLogado={setLogado}
               setModalLoginAberto= {setModalLoginAberto}
+              setAdmin= {setAdmin}
+              setFornoSelecionado= {setFornoSelecionado}
+              admin= {admin}
               />
 
               <ModalLogin 
@@ -62,19 +84,21 @@ function App() {
               ModalEsqueciSenha={setModalEsqueciSenha}
               setLogado={setLogado}
               mensagemSucesso = {mensagemSucesso}
+              setAdmin={setAdmin}
               />
 
               <SelecionarForno
-                fornoSelecionado = {fornoSelecionado}
-                Logado = {Logado}
-                setFornoSelecionado = {setFornoSelecionado}
+              fornoSelecionado= {fornoSelecionado}
+              Logado= {Logado}
+              setFornoSelecionado= {setFornoSelecionado}
+              admin= {admin}
               />
 
               <ModalEsqueciSenha
               setModalLoginAberto={setModalLoginAberto}
               ModalEsqueciSenhaAberto={ModalEsqueciSenhaAberto}
               ModalEsqueciSenhaSet={setModalEsqueciSenha}
-              setMensagemSucesso = {setMensagemSucesso}
+              setMensagemSucesso= {setMensagemSucesso}
               />
 
               <ModalCadastro 
@@ -89,9 +113,11 @@ function App() {
               Logado={Logado}
               setLogado={setLogado}
               fornoSelecionado={fornoSelecionado}
+              admin= {admin}
               />
             
             </>
+    )
           }/>
 
           <Route path="/redefinir-senha" element=  {
@@ -101,9 +127,29 @@ function App() {
           }/>
 
           <Route path="/admin" element= {
-            <PainelAdmin
-            
-            />
+            verificandoAuth ? (
+            <p>Carregando...</p>
+              ) : admin ? (
+                <>
+
+                  <Header
+                  Logado={Logado}
+                  setLogado={setLogado}
+                  setModalLoginAberto= {setModalLoginAberto}
+                  setAdmin= {setAdmin}
+                  setFornoSelecionado= {setFornoSelecionado}
+                  admin= {admin}
+                  />
+
+                  <PainelAdmin 
+                  admin={admin} 
+                  setAdmin={setAdmin} 
+                  />
+
+                </>
+              ) : (
+                  <Navigate to="/" replace />
+              )
           }/>
 
         </Routes>
