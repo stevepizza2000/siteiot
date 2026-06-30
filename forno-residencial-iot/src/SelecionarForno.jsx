@@ -27,19 +27,20 @@ function SelecionarForno({setFornoSelecionado, fornoSelecionado, Logado, admin})
 
 
     return(
-
-         <div>
+         <div id="selecao-forno">
             
             <h2>Selecione O Forno Que Deseja Ver</h2>
 
-            {fornos.map((forno) => (
-                <button key={forno.id} onClick={() => setFornoSelecionado(forno)}>
-                    {forno.nome}
-                </button>
-            ))}
+            <div className="grid-fornos">
+                {fornos.map((forno) => (
+                    <button key={forno.id} className="forno-card" onClick={() => setFornoSelecionado(forno)}>
+                        <i className="bi bi-fire"></i>
+                        <span>{forno.nome}</span>
+                    </button>
+                ))}
+            </div>
             
         </div>
-
     )
 }
 

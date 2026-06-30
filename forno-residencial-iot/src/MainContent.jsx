@@ -128,6 +128,11 @@ function MainContent({Logado, setLogado, setModalLoginAberto, fornoSelecionado, 
                 <p>{eventos.length > 0 ? eventos[eventos.length - 1].tipo : "Sem dados atualmente"}</p>
             </section>
 
+            <section id="Registros" aria-labelledby="titulo-registros">
+                <h2 id="titulo-registros">Registros</h2>
+                <p>{sessoes.length > 0 ? sessoes[sessoes.length - 1].estadoSistema : "Sem dados atualmente"}</p>
+            </section>
+
             <section id="graficos" aria-labelledby="titulo-graficos">
                 <h2 id="titulo-graficos">Gráficos</h2>
                 <p>Gráficos</p>
@@ -143,10 +148,6 @@ function MainContent({Logado, setLogado, setModalLoginAberto, fornoSelecionado, 
 
             </section>
 
-            <section id="Registros" aria-labelledby="titulo-registros">
-                <h2 id="titulo-registros">Registros</h2>
-                <p>{sessoes.length > 0 ? sessoes[sessoes.length - 1].estadoSistema : "Sem dados atualmente"}</p>
-            </section>
         </div>
 
     </main>

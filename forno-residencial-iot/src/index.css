@@ -346,65 +346,189 @@ form p button {
 }
 
 /* =========================================
-   7. DASHBOARD DO USUÁRIO
+   7. DASHBOARD DO USUÁRIO (MAIN CONTENT)
 ========================================= */
 main {
     padding: 2rem;
     max-width: 1200px;
     margin: 0 auto;
+    width: 100%;
 }
 
+/* Container Principal - Grid de 4 colunas */
 #secoes-protegidas {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: repeat(4, 1fr); /* 4 colunas de tamanhos iguais */
     gap: 1.5rem;
+    width: 100%;
 }
 
-section {
+/* --- BOTÃO VOLTAR / TROCAR FORNO --- */
+#trocar-forno {
+    grid-column: 1 / -1; /* Ocupa a linha inteira */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
     background-color: var(--cor-cartao);
-    padding: 1.5rem;
-    border-radius: var(--borda-raio);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-    transition: transform var(--transicao);
-}
-
-section:hover {
-    transform: translateY(-5px);
-    border-color: rgba(57, 255, 20, 0.3);
-}
-
-section h2 {
-    font-size: 1.1rem;
     color: var(--cor-texto-mutado);
-    margin-bottom: 1rem;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-bottom: -0.5rem;
+}
+
+#trocar-forno:hover {
+    background-color: var(--cor-destaque);
+    color: #000;
+    transform: scale(1.05);
+}
+
+/* --- CARTÕES (WIDGETS) PADRÃO --- */
+#secoes-protegidas > section {
+    background-color: var(--cor-cartao);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* Títulos das métricas (Temperatura, Tempo, etc) */
+#secoes-protegidas > section h2 {
+    font-size: 0.85rem;
+    color: var(--cor-texto-mutado);
     text-transform: uppercase;
     letter-spacing: 1px;
+    margin-bottom: 0.8rem;
 }
 
-section p {
-    font-size: 2rem;
+/* Valores das métricas */
+#secoes-protegidas > section p {
+    font-size: 1.6rem;
     font-weight: 700;
-    color: var(--cor-destaque);
+    color: var(--cor-texto);
+}
+
+/* --- CABEÇALHO DO DASHBOARD --- */
+#dashboard {
+    grid-column: 1 / -1; /* Ocupa todas as 4 colunas */
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    background: linear-gradient(90deg, rgba(57, 255, 20, 0.1) 0%, var(--cor-cartao) 100%) !important;
+    border-left: 4px solid var(--cor-destaque) !important;
+}
+
+#dashboard p {
+    font-size: 1rem !important;
+    font-weight: 400 !important;
+    color: var(--cor-destaque) !important;
+}
+
+/* --- ÁREA DO GRÁFICO (RECHARTS) --- */
+#graficos {
+    grid-column: 1 / -1; /* Ocupa todas as 4 colunas */
+    min-height: 400px;
+    padding-bottom: 2rem;
+    overflow: hidden; /* Evita que o SVG do gráfico vaze */
+}
+
+#graficos > p {
+    display: none; /* Esconde o texto estático do react para não atrapalhar o gráfico */
+}
+
+/* Limpando o visual do Tooltip do Gráfico (Hover) */
+.recharts-default-tooltip {
+    background-color: var(--cor-cartao) !important;
+    border: 1px solid rgba(57, 255, 20, 0.3) !important;
+    border-radius: 8px !important;
+}
+
+.recharts-tooltip-label {
+    color: var(--cor-texto-mutado) !important;
+}
+
+.recharts-tooltip-item {
+    color: var(--cor-destaque) !important;
+}
+
+/* --- RESPONSIVIDADE (TABLETS E CELULARES) --- */
+@media screen and (max-width: 1024px) {
+    /* Em telas médias, cai para 2 colunas */
+    #secoes-protegidas {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media screen and (max-width: 600px) {
+    /* Em celulares, cai para 1 coluna (tudo empilhado) */
+    #secoes-protegidas {
+        grid-template-columns: 1fr;
+    }
+
+    #dashboard {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 0.5rem;
+    }
+    
+    #graficos {
+        min-height: 300px;
+        padding: 1rem 0; /* Remove padding lateral para o gráfico caber na tela pequena */
+    }
 }
 
 /* =========================================
-   8. PAINEL DE ADMINISTRAÇÃO
+   8. PAINEL DE ADMINISTRAÇÃO (FORMATO MODAL)
 ========================================= */
 #painel-admin-container {
-    padding: 2rem;
-    max-width: 1200px;
-    margin: 0 auto;
+    background-color: var(--cor-cartao);
+    padding: 2.5rem;
+    border-radius: var(--borda-raio);
+    width: 100%;
+    max-width: 450px; /* Mesma pegada dos modais */
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(57, 255, 20, 0.2);
+    
+    /* O segredo para centralizar: margem em cima/baixo e auto nas laterais */
+    margin: 10vh auto; 
+    text-align: center;
 }
 
 #painel-admin-container h1 {
-    margin-bottom: 2rem;
+    font-size: 1.6rem;
+    margin-bottom: 1.5rem;
     color: var(--cor-texto);
     border-bottom: 2px solid var(--cor-destaque);
     display: inline-block;
     padding-bottom: 0.5rem;
 }
 
+#secao-fabricar-forno h2 {
+    font-size: 1.1rem;
+    color: var(--cor-texto-mutado);
+    margin-bottom: 1.5rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Forçando os inputs do form admin a usarem o espaço todo do cartão */
+#form-admin > div {
+    text-align: left; /* Mantém as labels alinhadas à esquerda */
+    margin-bottom: 1.2rem;
+}
+
+#form-admin input {
+    width: 100%; /* Preenche 100% da largura disponível no cartão */
+}
+
+/* Reutilizando as tabelas e estilos do admin para quando você for listar os fornos no futuro */
 .admin-toolbar {
     display: flex;
     justify-content: space-between;
@@ -496,6 +620,75 @@ section p {
 
 .btn-icone.excluir:hover {
     color: var(--cor-erro);
+}
+
+/* =========================================
+   --- SELEÇÃO DE FORNOS --- 
+========================================= */
+#selecao-forno {
+    padding: 4rem 2rem;
+    max-width: 1000px;
+    margin: 0 auto;
+    text-align: center;
+    animation: fadeIn 0.4s ease-in-out;
+}
+
+#selecao-forno h2 {
+    color: var(--cor-texto);
+    margin-bottom: 3rem;
+    font-weight: 500;
+    font-size: 1.8rem;
+    letter-spacing: 1px;
+}
+
+.grid-fornos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    justify-items: center;
+}
+
+/* Transformando os botões em Cartões */
+.forno-card {
+    background-color: var(--cor-cartao);
+    border: 2px solid rgba(57, 255, 20, 0.15); /* Borda verde bem suave */
+    color: var(--cor-texto);
+    width: 100%;
+    padding: 2.5rem 1.5rem;
+    border-radius: var(--borda-raio);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    font-size: 1.2rem;
+    font-weight: 700;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+    transition: all var(--transicao);
+}
+
+.forno-card i {
+    font-size: 2.5rem;
+    color: var(--cor-destaque);
+    transition: transform var(--transicao);
+}
+
+/* Efeito Hover do Cartão */
+.forno-card:hover {
+    background-color: rgba(57, 255, 20, 0.05); /* Fundo levemente esverdeado */
+    border-color: var(--cor-destaque);
+    color: var(--cor-destaque);
+    transform: translateY(-8px);
+    box-shadow: 0 10px 20px rgba(57, 255, 20, 0.1);
+}
+
+.forno-card:hover i {
+    transform: scale(1.1);
+}
+
+/* Animação suave ao abrir a tela */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 /* =========================================
