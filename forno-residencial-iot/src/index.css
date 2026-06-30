@@ -1,13 +1,14 @@
-/* Importando uma fonte moderna e limpa do Google Fonts */
+/* =========================================
+   1. IMPORTAÇÕES E VARIÁVEIS
+========================================= */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
 
-/* --- VARIÁVEIS UNIFICADAS --- */
 :root {
     --cor-fundo: #101010;
     --cor-cartao: #1a1d24;
     --cor-texto: #e2e8f0;
     --cor-texto-mutado: #94a3b8;
-    --cor-destaque: #39ff14; /* Seu verde neon mantido */
+    --cor-destaque: #39ff14; /* Verde neon */
     --cor-destaque-hover: #2ee60b;
     --cor-botao: #3da93d;
     --cor-erro: #ef4444;
@@ -15,7 +16,9 @@
     --transicao: 0.3s ease;
 }
 
-/* Reset Básico */
+/* =========================================
+   2. RESET E BASE
+========================================= */
 * {
     margin: 0;
     padding: 0;
@@ -34,12 +37,13 @@ body {
     line-height: 1.6;
 }
 
-/* --- UTILITÁRIOS --- */
 [hidden] {
     display: none !important;
 }
 
-/* --- CABEÇALHO (HEADER) --- */
+/* =========================================
+   3. CABEÇALHO E NAVEGAÇÃO
+========================================= */
 header {
     background-color: var(--cor-cartao);
     padding: 1rem 2rem;
@@ -48,6 +52,12 @@ header {
     align-items: center;
     border-bottom: 1px solid rgba(57, 255, 20, 0.2);
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+#logo {
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: var(--cor-destaque);
 }
 
 nav {
@@ -63,7 +73,6 @@ nav ul {
 
 nav a {
     color: var(--cor-texto);
-    text-decoration: none;
     font-weight: 500;
     transition: color var(--transicao);
     position: relative;
@@ -86,23 +95,22 @@ nav a:hover {
 }
 
 nav a:hover::after {
-    background-color: var(--cor-destaque);
     width: 100%;
-}
-
-#logo {
-    font-weight: 700;
-    font-size: 1.2rem;
-    color: var(--cor-destaque);
 }
 
 #acoes-logado {
     display: flex;
     align-items: center;
-    gap: 24px; /* É esse cara aqui que vai criar o espaço. Aumente ou diminua se precisar */
+    gap: 24px;
 }
 
-/* --- BOTÕES --- */
+#menu-hamburguer {
+    display: none; /* Escondido no Desktop */
+}
+
+/* =========================================
+   4. BOTÕES E BADGES
+========================================= */
 button {
     background-color: var(--cor-destaque);
     color: #000;
@@ -122,7 +130,7 @@ button:active {
     transform: scale(0.98);
 }
 
-/* Botões secundários e Botão Sair no React */
+/* Botões secundários */
 #botao-sair,
 header button:last-child,
 form p button {
@@ -138,15 +146,11 @@ form p button:hover {
 }
 
 #botao-login {
-    background-color: var(--cor-destaque);
     color: var(--cor-texto);
-    font-weight: bold;
-    padding: 0.5rem 1.5rem; /* Corrigido de 0.5v para 0.5rem */
+    padding: 0.5rem 1.5rem;
     border-radius: 2rem;
     border: 0.125rem solid var(--cor-texto);
-    cursor: pointer;
     font-size: 20px;
-    transition: 0.3s;
 }
 
 #botao-login:hover {
@@ -156,26 +160,194 @@ form p button:hover {
 #botao-cadastro {
     background-color: var(--cor-texto);
     color: var(--cor-destaque);
-    font-weight: bold;
     padding: 0.5rem 1.5rem;
     border-radius: 1rem;
     border: 0.125rem solid var(--cor-destaque);
     font-size: 20px;
-    cursor: pointer;
-    transition: 0.3s;
 }
 
 #botao-cadastro:hover {
     color: var(--cor-botao);
-    border: 0.125rem solid var(--cor-botao);
+    border-color: var(--cor-botao);
 }
 
-/* Esconde o menu hamburguer no Desktop (Corrigido erro de digitação) */
-#menu-hamburguer {
-    display: none;
+/* Badges (Status) */
+.badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    display: inline-block;
+    text-align: center;
 }
 
-/* --- DASHBOARD E SEÇÕES --- */
+.badge-ativo {
+    background-color: rgba(57, 255, 20, 0.15);
+    color: var(--cor-destaque);
+    border: 1px solid rgba(57, 255, 20, 0.3);
+}
+
+.badge-inativo, 
+.badge-erro {
+    background-color: rgba(239, 68, 68, 0.15);
+    color: var(--cor-erro);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.badge-alerta {
+    background-color: rgba(234, 179, 8, 0.15);
+    color: #eab308;
+    border: 1px solid rgba(234, 179, 8, 0.3);
+}
+
+/* =========================================
+   5. FORMULÁRIOS E INPUTS
+========================================= */
+form > div {
+    margin-bottom: 1.2rem;
+    position: relative;
+}
+
+label {
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--cor-texto-mutado);
+    display: block;
+}
+
+input {
+    background-color: var(--cor-fundo);
+    border: 1px solid #333;
+    color: var(--cor-texto);
+    padding: 0.8rem;
+    border-radius: var(--borda-raio);
+    outline: none;
+    width: 320px;
+    transition: border-color var(--transicao);
+}
+
+input:focus {
+    border-color: var(--cor-destaque);
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    cursor: pointer;
+    opacity: 0.6;
+    transition: opacity var(--transicao);
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator:hover {
+    opacity: 1;
+}
+
+form > div i {
+    position: absolute;
+    right: 15px;
+    top: 54px;
+    transform: translateY(-50%); 
+    cursor: pointer;
+    color: #cccc;
+}
+
+span[role="alert"] {
+    color: var(--cor-erro);
+    font-size: 0.8rem;
+    margin-top: 0.4rem;
+    height: 1rem;
+    display: block;
+}
+
+form button[type="submit"] {
+    width: 100%;
+    margin-top: 1rem;
+    padding: 1rem;
+    font-size: 1rem;
+}
+
+form p {
+    text-align: center;
+    margin-top: 1.5rem;
+    font-size: 0.9rem;
+}
+
+form p button {
+    border: none;
+    background: none;
+    padding: 0;
+    margin-left: 0.5rem;
+    text-decoration: underline;
+}
+
+.mensagem-sucesso {
+    background-color: rgba(57, 255, 20, 0.1);
+    border: 1px solid var(--cor-destaque);
+    color: var(--cor-destaque);
+    padding: 0.8rem;
+    border-radius: var(--borda-raio);
+    text-align: center;
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-bottom: 1.2rem;
+}
+
+/* =========================================
+   6. MODAIS E PÁGINAS ESPECÍFICAS
+========================================= */
+#modal-login,
+#modal-cadastro,
+#modal-esqueci-senha {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+#modal-login > div,
+#modal-cadastro > div,
+#modal-esqueci-senha > div {
+    background-color: var(--cor-cartao);
+    padding: 2.5rem;
+    border-radius: var(--borda-raio);
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(57, 255, 20, 0.2);
+}
+
+#modal-login h2,
+#modal-cadastro h2,
+#modal-esqueci-senha h2 {
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+#redefinir-senha {
+    background-color: var(--cor-cartao);
+    padding: 2.5rem;
+    border-radius: var(--borda-raio);
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(57, 255, 20, 0.2);
+    margin: 12vh auto; 
+}
+
+#titulo-redefinir-senha {
+    margin-bottom: 1.5rem;
+    text-align: center;
+    color: var(--cor-texto);
+}
+
+/* =========================================
+   7. DASHBOARD DO USUÁRIO
+========================================= */
 main {
     padding: 2rem;
     max-width: 1200px;
@@ -216,182 +388,138 @@ section p {
     color: var(--cor-destaque);
 }
 
-/* --- MODAIS (LOGIN E CADASTRO) --- */
-#modal-login,
-#modal-cadastro,
-#modal-esqueci-senha{
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.9);
+/* =========================================
+   8. PAINEL DE ADMINISTRAÇÃO
+========================================= */
+#painel-admin-container {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+#painel-admin-container h1 {
+    margin-bottom: 2rem;
+    color: var(--cor-texto);
+    border-bottom: 2px solid var(--cor-destaque);
+    display: inline-block;
+    padding-bottom: 0.5rem;
+}
+
+.admin-toolbar {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
-    z-index: 1000;
-}
-
-#modal-login > div,
-#modal-cadastro > div,
-#modal-esqueci-senha > div {
-    background-color: var(--cor-cartao);
-    padding: 2.5rem;
-    border-radius: var(--borda-raio);
-    width: 100%;
-    max-width: 400px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-    border: 1px solid rgba(57, 255, 20, 0.2);
-}
-
-#modal-login h2,
-#modal-cadastro h2,
-#modal-esqueci-senha h2 {
     margin-bottom: 1.5rem;
-    text-align: center;
+    gap: 1rem;
+    flex-wrap: wrap;
 }
 
-/* --- FORMULÁRIOS --- */
-form > div {
-    margin-bottom: 1.2rem;
+.admin-search-wrapper {
     position: relative;
+    width: 100%;
+    max-width: 350px;
 }
 
-form > div input {
-    width: 320px;
+.admin-search-wrapper input {
+    width: 100%;
+    padding-left: 2.5rem;
 }
 
-form > div i {
+.admin-search-wrapper i {
     position: absolute;
-    right: 15px;
-    top: 54px;
-    transform: translateY(-50%); 
-    cursor: pointer;
-    color: #cccc;
-}
-
-label {
-    margin-bottom: 0.5rem;
-    font-size: 0.9rem;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
     color: var(--cor-texto-mutado);
-    display: block; /* Garante que a label fique em cima do input */
 }
 
-input {
-    background-color: var(--cor-fundo);
-    border: 1px solid #333;
-    color: var(--cor-texto);
-    padding: 0.8rem;
-    border-radius: var(--borda-raio);
-    outline: none;
-    transition: border-color var(--transicao);
-}
-
-input:focus {
-    border-color: var(--cor-destaque);
-}
-
-input[type="date"]::-webkit-calendar-picker-indicator {
-    filter: invert(1);
-    cursor: pointer;
-    opacity: 0.6;
-    transition: opacity var(--transicao);
-}
-
-input[type="date"]::-webkit-calendar-picker-indicator:hover {
-    opacity: 1;
-}
-
-span[role="alert"] {
-    color: var(--cor-erro);
-    font-size: 0.8rem;
-    margin-top: 0.4rem;
-    height: 1rem;
-    display: block;
-}
-
-form button[type="submit"] {
-    width: 100%;
-    margin-top: 1rem;
-    padding: 1rem;
-    font-size: 1rem;
-}
-
-form p {
-    text-align: center;
-    margin-top: 1.5rem;
-    font-size: 0.9rem;
-}
-
-form p button {
-    border: none;
-    background: none;
-    padding: 0;
-    margin-left: 0.5rem;
-    text-decoration: underline;
-}
-
-/* --- MENSAGEM DE SUCESSO --- */
-.mensagem-sucesso {
-    background-color: rgba(57, 255, 20, 0.1); /* Verde neon com 10% de opacidade */
-    border: 1px solid var(--cor-destaque);     /* Borda com o seu verde neon */
-    color: var(--cor-destaque);                /* Texto em verde neon */
-    padding: 0.8rem;
-    border-radius: var(--borda-raio);          /* Herdando seus 8px de arredondamento */
-    text-align: center;
-    font-size: 0.9rem;
-    font-weight: 500;
-    margin-bottom: 1.2rem;                     /* Empurra o formulário para baixo uniformemente */
-}
-
-/* --- PÁGINA REDEFINIR SENHA --- */
-#redefinir-senha {
+.tabela-container {
     background-color: var(--cor-cartao);
-    padding: 2.5rem;
     border-radius: var(--borda-raio);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    overflow-x: auto;
     width: 100%;
-    max-width: 400px; /* Mantém a mesma largura padrão dos seus modais */
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-    border: 1px solid rgba(57, 255, 20, 0.2);
-    
-    /* O truque de mestre: centraliza horizontalmente e joga o card 12% para baixo do topo da tela */
-    margin: 12vh auto; 
 }
 
-#titulo-redefinir-senha {
-    margin-bottom: 1.5rem;
-    text-align: center;
-    color: var(--cor-texto);
+.tabela-admin {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
 }
 
-/* --- RESPONSIVIDADE (MOBILE) --- */
-/* --- RESPONSIVIDADE (MOBILE) --- */
-/* --- RESPONSIVIDADE (MOBILE) --- */
+.tabela-admin th, 
+.tabela-admin td {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.tabela-admin th {
+    color: var(--cor-texto-mutado);
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+.tabela-admin tr {
+    transition: background-color var(--transicao);
+}
+
+.tabela-admin tbody tr:hover {
+    background-color: rgba(57, 255, 20, 0.05);
+}
+
+.admin-acoes {
+    display: flex;
+    gap: 0.8rem;
+}
+
+.btn-icone {
+    background: transparent;
+    border: none;
+    color: var(--cor-texto-mutado);
+    font-size: 1.1rem;
+    cursor: pointer;
+    padding: 0.2rem;
+    transition: color var(--transicao), transform 0.1s;
+}
+
+.btn-icone:hover {
+    transform: scale(1.1);
+}
+
+.btn-icone.editar:hover {
+    color: var(--cor-destaque);
+}
+
+.btn-icone.excluir:hover {
+    color: var(--cor-erro);
+}
+
+/* =========================================
+   9. RESPONSIVIDADE (MOBILE) - UNIFICADO
+========================================= */
 @media screen and (max-width: 968px) {
 
-    /* 1. AJUSTE DO HEADER MOBILE (Espalha os elementos para os cantos) */
+    /* Cabeçalho e Menu */
     header {
-        display: flex;
         flex-direction: row;
-        justify-content: space-between; /* Empurra o menu para a esquerda e o Sair para a direita */
-        align-items: center;       
+        justify-content: space-between;
         padding: 1rem 1.5rem;
     }
 
-    /* 2. BOTÃO SAIR (Vai para a extrema direita) */
     #acoes-logado {
-        display: flex;
-        align-items: center;
-        order: 2; /* Invertido: agora ele fica depois (na direita) */
+        order: 2;
         margin: 0; 
     }
 
-    /* 3. MENU HAMBÚRGUER (Vai para a extrema esquerda) */
     #menu-hamburguer {
         display: flex;
-        align-items: center;
         justify-content: center;
-        order: 1; /* Invertido: agora ele fica primeiro (na esquerda) */
+        align-items: center;
+        order: 1;
         background: none;
         border: none;
         color: var(--cor-texto);
@@ -401,8 +529,6 @@ form p button {
         margin: 0;
         line-height: 1; 
     }
-
-    /* ... mantenha o restante das regras do @media como o #menu, #overlay, etc. ... */
 
     #menu-hamburguer:hover,
     #menu-hamburguer:active {
@@ -419,8 +545,8 @@ form p button {
         background-color: var(--cor-cartao);
         transition: 0.3s ease-in-out;
         z-index: 2000;
-        display: flex; /* Adicionado para corrigir comportamento do flex */
-        padding-top: 4rem; /* Espaço no topo para não colar os itens */
+        display: flex;
+        padding-top: 4rem;
     }
 
     #menu.ativo {
@@ -435,7 +561,6 @@ form p button {
         width: 100%;
     }
 
-    /* O Overlay (Fundo escuro atrás do menu) */
     #overlay {
         position: fixed;
         top: 0;
@@ -454,8 +579,8 @@ form p button {
         visibility: visible;
     }
 
-    /* Ajustes Gerais para Telas Menores */
-    main {
+    /* Layouts Gerais */
+    main, #painel-admin-container {
         padding: 1rem;
     }
 
@@ -463,10 +588,12 @@ form p button {
     #modal-cadastro > div,
     #modal-esqueci-senha > div,
     #redefinir-senha {
-        width: 90%; /* Aumentado para 90% para não quebrar em telas muito finas */
+        width: 90%; 
         padding: 1.5rem;
     }
 
+    /* Formulários */
+    input, 
     form > div input {
         width: 100%;
     }
@@ -475,13 +602,23 @@ form p button {
         right: 15px;
     }
 
-    section p {
-        font-size: 1.5rem;
-    }
-
     #botao-login,
     #botao-cadastro {
         width: 100%;
         font-size: 1rem;
+    }
+
+    section p {
+        font-size: 1.5rem;
+    }
+
+    /* Painel Admin */
+    .admin-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .admin-search-wrapper {
+        max-width: 100%;
     }
 }

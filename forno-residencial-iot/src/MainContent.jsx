@@ -51,6 +51,12 @@ function MainContent({Logado, setLogado, setModalLoginAberto, fornoSelecionado, 
                 clearTimeout(timerId);
                 return;
             }
+
+            if (!dadoTemperatura.ok || !dadoTemporizador.ok || !dadoSessoes.ok || !dadoEventos.ok) {
+   
+            throw new Error("Uma ou mais rotas falharam ao retornar os dados.");
+            }
+
             const [temperaturaJson, temporizadorJson, sessoesJson, eventosJson] = await Promise.all([
                 dadoTemperatura.json(),
                 dadoTemporizador.json(),
