@@ -24,3 +24,19 @@ update usuarios set role = 'USER' where id = '5926b167-b485-464d-97f6-79568b6d8a
             </section>
 
             a68b650
+
+
+            fundamentos de eletronica aplicada
+            programação em C com arduino
+            banco de dados
+            python
+            Java
+            mobile
+            iot
+            modelagem de sistemas: é a unidade curricular que propricia as capacidades tecnicas e socioemocionais requeridas
+            para estruturação de sistemas por meio de tecnicas de modelagem, assegurando padrão de qualidade, robustez, integridade e segurança
+            desenvolvimento de sistemas
+            teste de sistema
+            implementação de sisytemas
+            manual de usuario
+            manutenção de sistemas

@@ -5,10 +5,9 @@ function PainelAdmin() {
 
     const [serialNumber, setSerialNumber] = useState("");
     const [nomeForno, setNomeForno] = useState("");
-    const [pinSeguranca, setPinSeguranca] = useState("");
+    const [pinSegurança, setPinSegurança] = useState("");
     const [carregando, setCarregando] = useState(false);
     const [mensagem, setMensagem] = useState({texto: "", tipo: ""});
-    const [erroPin, setErroPin] = useState("");
     const [erroNome, setErroNome] = useState("");
     const [erroSerial, setErroSerial] = useState("");
 
@@ -17,20 +16,7 @@ function PainelAdmin() {
         setCarregando(true);
         let valido = true;
         setMensagem({texto: "", tipo: ""});
-        let padraoPinCaracteres     = /.{20,}/;
         const token = localStorage.getItem("token");
-
-        if (pinSeguranca === "") {
-            setErroPin("Digite algo");
-            valido = false;
-            setCarregando(false);
-        } else if (!padraoPinCaracteres.test(pinSeguranca)){
-            setErroPin("o pin deve conter ao menos 20 caracteres");
-            valido = false;
-            setCarregando(false);
-        } else {
-            setErroPin("");
-        }
 
         if (nomeForno === "") {
             setErroNome("Digite algo");
@@ -50,11 +36,13 @@ function PainelAdmin() {
 
         if (valido === true){
         try {
-            const resposta = await fetch(`${API_URL}/v1/fornos/fabricar`, {method: "POST", headers: {"Content-Type": "application/json", "Authorization": "Bearer " + token }, body: JSON.stringify({serialNumber: serialNumber, nome: nomeForno, pinSeguranca: pinSeguranca})});
-             
+            const resposta = await fetch(`${API_URL}/v1/fornos/fabricar`, {method: "POST", headers: {"Content-Type": "application/json", "Authorization": "Bearer " + token }, body: JSON.stringify({serialNumber: serialNumber, nome: nomeForno})});
+            forno.setPinSeguranca(dto.getPinSeguranca())
+            
             if (resposta.ok) {
                 const dadosForno = await resposta.json();
                 
+                setCarregando(false);
                 setMensagem({ texto: `Forno ${dadosForno.nome} (Serial: ${dadosForno.serialNumber}) fabricado com sucesso!`, tipo: "sucesso" });
 
 
@@ -93,12 +81,6 @@ function PainelAdmin() {
                         <label htmlFor="nome-forno">Nome do Forno</label>
                         <input type="text" value={nomeForno} id="nome-forno" onChange={(e) => setNomeForno(e.target.value)} required/>
                         <span id="erro-nome-forno" role="alert">{erroNome}</span>
-                    </div>
-
-                    <div>
-                        <label htmlFor="pin">Pin de Segurança</label>
-                        <input type="text" value={pinSeguranca} id="pin" onChange={(e) => setPinSeguranca(e.target.value)} required/>
-                        <span id="erro-pin" role="alert">{erroPin}</span>
                     </div>
 
                     <button type="submit" disabled={carregando}>{carregando ? "Fabricando..." : "Fabricar Forno"}</button>
