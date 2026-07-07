@@ -37,7 +37,7 @@ function PainelAdmin() {
         if (valido === true){
         try {
             const resposta = await fetch(`${API_URL}/v1/fornos/fabricar`, {method: "POST", headers: {"Content-Type": "application/json", "Authorization": "Bearer " + token }, body: JSON.stringify({serialNumber: serialNumber, nome: nomeForno})});
-            forno.setPinSeguranca(dto.getPinSeguranca())
+            
             
             if (resposta.ok) {
                 const dadosForno = await resposta.json();
