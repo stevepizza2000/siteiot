@@ -20,7 +20,7 @@ function MainContent({Logado, setLogado, setModalLoginAberto, fornoSelecionado, 
          const controller = new AbortController();
         const signal = controller.signal;
 
-           setQuentura([]);
+            setQuentura([]);
             setTempo([]);
             setSessoes([]);
             setEventos([]);
@@ -106,29 +106,6 @@ function MainContent({Logado, setLogado, setModalLoginAberto, fornoSelecionado, 
 
         }, [fornoSelecionado]);
 
-        const formatarTemporizador = (dataIso) => {
-            if (!dataIso || !dataIso.includes("T")) {
-                return dataIso;
-            }
-
-            try {
-                const dataFimObj = new Date(dataIso);
-                const agora = new Date();
-
-                const opcoesHora = { hour: "2-digit", minute: "2-digit" };
-                const opcoesData = { day: "2-digit", month: "2-digit", year: "numeric" };
-
-                const horaInicio = agora.toLocaleTimeString("pt-BR", opcoesHora);
-                const horaFim = dataFimObj.toLocaleTimeString("pt-BR", opcoesHora);
-                const diaFim = dataFimObj.toLocaleDateString("pt-BR", opcoesData);
-
-                return `${horaInicio} às ${horaFim} - ${diaFim}`;
-            } catch (e) {
-                console.error("Erro ao formatar data: ", e);
-                return dataIso;
-            }
-        };
-
 
     if (!Logado || fornoSelecionado === null || admin) return null;
     
@@ -158,7 +135,7 @@ function MainContent({Logado, setLogado, setModalLoginAberto, fornoSelecionado, 
 
             <section id="temporizador" aria-labelledby="titulo-temporizador">
                 <h2 id="titulo-temporizador">Temporizador</h2>
-                <p>{tempo.length > 0 ? formatarTemporizador(tempo[tempo.length - 1].horarioFim) : "Sem dados atualmente"}</p>
+                <p>{tempo.length > 0 ? tempo[tempo.length - 1].horarioFim : "Sem dados atualmente"}</p>
             </section>
 
             <section id="alertas" aria-labelledby="titulo-alertas">
@@ -179,12 +156,7 @@ function MainContent({Logado, setLogado, setModalLoginAberto, fornoSelecionado, 
                 <LineChart width={500} height={300} data={quentura}>
                 <XAxis dataKey="registradoEm" tickFormatter={(valor) => new Date(valor).toLocaleTimeString("pt-BR", {hour: "2-digit", minute: "2-digit"})} />
                 <YAxis />
-                <Tooltip 
-                        labelFormatter={(valor) => new Date(valor).toLocaleString("pt-BR", {
-                        day: "2-digit", month: "2-digit", year: "numeric", 
-                        hour: "2-digit", minute: "2-digit"
-                    })}
-                />
+                <Tooltip />
                 <Line dataKey="temperaturaAtual" stroke="var(--cor-destaque)"/>
                 </LineChart>
             </ResponsiveContainer>
