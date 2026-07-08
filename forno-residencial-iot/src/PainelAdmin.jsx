@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import API_URL from "./api";
 import QRCode from "react-qr-code";
 
@@ -9,6 +9,7 @@ function PainelAdmin() {
     const [mensagem, setMensagem] = useState({ texto: "", tipo: "" });
     const [erroNome, setErroNome] = useState("");
     const [dados, setDados] = useState(null);
+    const qrCodeRef = useRef(null);
 
     async function handleCriarForno(e) {
         e.preventDefault();
@@ -34,7 +35,7 @@ function PainelAdmin() {
                 const dadosForno = await resposta.json();
                 const objetoQrCode = {
                     serialNumber: dadosForno.serialNumber, 
-                    pinSeguranca: dadosForno.pinSeguranca
+                    pinSeguranca: dadosForno.pinSeguranca,
                 };
 
                 setDados(objetoQrCode);
@@ -58,6 +59,10 @@ function PainelAdmin() {
 
     }
 
+    function aparecer(){
+        console.log(qrCodeRef.current);
+    }
+
     return (
         <div id="painel-admin-container">
            
@@ -70,7 +75,7 @@ function PainelAdmin() {
                         {mensagem.texto}
                     </p>
                 )}
-                
+
                 <form id="form-admin" onSubmit={handleCriarForno} noValidate>
 
                     <div>
@@ -86,9 +91,16 @@ function PainelAdmin() {
             </section>
 
             {dados && (
-                <QRCode
-                    value={JSON.stringify(dados)}
-                />
+                <section>
+                    <div ref={qrCodeRef}>
+                    <QRCode
+                        value={JSON.stringify(dados)}
+                    />
+                    </div>
+
+                    <button onClick={aparecer}>Baixar QR code</button>
+
+                </section>
             )}
 
 
