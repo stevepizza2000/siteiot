@@ -32,7 +32,7 @@ function ModalEsqueciSenha({setModalLoginAberto, ModalEsqueciSenhaAberto, ModalE
                     setCarregando(false);
                     ModalEsqueciSenhaSet(false);
                     setModalLoginAberto(true);
-                    setMensagemSucesso("Link de redefinição de senha enviado, confira seu E-mail. Cheque o span também");
+                    setMensagemSucesso("Link de redefinição de senha enviado, confira seu E-mail. Cheque o spam também");
                 } else {
                     setCarregando(false)
                     setErroEmail("O E-mail não é válido")

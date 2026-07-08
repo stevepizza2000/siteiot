@@ -6,54 +6,55 @@ function PainelAdmin() {
 
     const [nomeForno, setNomeForno] = useState("");
     const [carregando, setCarregando] = useState(false);
-    const [mensagem, setMensagem] = useState({texto: "", tipo: ""});
+    const [mensagem, setMensagem] = useState({ texto: "", tipo: "" });
     const [erroNome, setErroNome] = useState("");
     const [dados, setDados] = useState(null);
 
     async function handleCriarForno(e) {
         e.preventDefault();
-        setCarregando(true);
-        let valido = true;
         setMensagem({texto: "", tipo: ""});
-        const token = localStorage.getItem("token");
+        setDados(null);
 
-        if (nomeForno === "") {
-            setErroNome("Digite algo");
-            valido = false;
-            setCarregando(false);
-        } else {
-            setErroNome("");
+        const nomeValido = nomeForno.trim() !== "";
+        setErroNome(nomeValido ? "" : "É necessário digitar um nome");
+
+        if (!nomeValido){
+            return;
         }
 
+        setCarregando(true);
+        const token = localStorage.getItem("token");
 
-        if (valido === true){
+        
         try {
 
             const resposta = await fetch(`${API_URL}/v1/fornos/fabricar`, {method: "POST", headers: {"Content-Type": "application/json", "Authorization": "Bearer " + token }, body: JSON.stringify({nome: nomeForno})});
             
-            
             if (resposta.ok) {
                 const dadosForno = await resposta.json();
-                const objetoQrCode = {serialNumber: dadosForno.serialNumber, pinSeguranca: dadosForno.pinSeguranca};
-
+                const objetoQrCode = {
+                    serialNumber: dadosForno.serialNumber, 
+                    pinSeguranca: dadosForno.pinSeguranca
+                };
 
                 setDados(objetoQrCode);
 
-                setCarregando(false);
-                setMensagem({ texto: `Forno ${dadosForno.nome} (Serial: ${dadosForno.serialNumber}) fabricado com sucesso!`, tipo: "sucesso" });
+                setMensagem({ 
+                    texto: `Forno ${dadosForno.nome} (Serial: ${dadosForno.serialNumber}) fabricado com sucesso!`, 
+                    tipo: "sucesso", 
+                });
 
-
-            } else {
-                console.log("Erro ao criar forno. Verifique os dados.");
-            }
+            } 
 
         } catch (erro) {
-            console.log("deu erro ai");
-            setCarregando(false);
-        }
-    } else {
-        console.log("seu formulário não é válido");
-    }
+                setMensagem({
+                    texto: erroBody?.mensagem || "Erro ao criar forno. Verifique os dados.",
+                    tipo: "erro",
+                });
+            } finally {
+                setCarregando(false);
+            }
+
 
     }
 
@@ -64,8 +65,12 @@ function PainelAdmin() {
 
             <section id="secao-fabricar-forno">
                 <h2>Fabricar Novo Forno</h2>
-                {mensagem.texto !== "" ? <p className="mensagem-sucesso">{mensagem.texto}</p> : null}
-
+                {mensagem.texto !== "" && (
+                    <p className={mensagem.tipo === "erro" ? "mensagem-erro" : "mensagem-sucesso"}>
+                        {mensagem.texto}
+                    </p>
+                )}
+                
                 <form id="form-admin" onSubmit={handleCriarForno} noValidate>
 
                     <div>
