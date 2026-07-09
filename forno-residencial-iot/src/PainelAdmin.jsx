@@ -5,8 +5,10 @@ import QRCode from "react-qr-code";
 function PainelAdmin() {
 
     const [nomeForno, setNomeForno] = useState("");
+    const [serialNumber, setSerialNumber] = useState("");
     const [carregando, setCarregando] = useState(false);
     const [mensagem, setMensagem] = useState({ texto: "", tipo: "" });
+    const [erroSerial, setErroSerial] = useState("");
     const [erroNome, setErroNome] = useState("");
     const [dados, setDados] = useState(null);
     const qrCodeRef = useRef(null);
@@ -18,9 +20,12 @@ function PainelAdmin() {
         setDados(null);
 
         const nomeValido = nomeForno.trim() !== "";
-        setErroNome(nomeValido ? "" : "É necessário digitar um nome");
+        setErroNome(nomeValido ? "" : "é necessário digitar um nome");
 
-        if (!nomeValido){
+        const serialValido = serialValido.trim() !== "";
+        setErroSerial(serialValido ? "" : "É necessário digitar um nome");
+
+        if (!serialValido || !nomeValido){
             return;
         }
 
@@ -30,19 +35,20 @@ function PainelAdmin() {
         
         try {
 
-            const resposta = await fetch(`${API_URL}/v1/fornos/fabricar`, {method: "POST", headers: {"Content-Type": "application/json", "Authorization": "Bearer " + token }, body: JSON.stringify({nome: nomeForno})});
+            const resposta = await fetch(`${API_URL}/v1/fornos/pre-registrar`, {method: "POST", headers: {"Content-Type": "application/json", "Authorization": "Bearer " + token }, body: JSON.stringify({nome: nomeForno, serialNumber: serialNumber})});
             
             if (resposta.ok) {
                 const dadosForno = await resposta.json();
-                const objetoQrCode = {
-                    serialNumber: dadosForno.serialNumber, 
+                const objetoQrCode = { 
+                    
+                    serialNumber: serialNumber,
                     pinSeguranca: dadosForno.pinSeguranca,
                 };
 
                 setDados(objetoQrCode);
 
                 setMensagem({ 
-                    texto: `Forno ${dadosForno.nome} (Serial: ${dadosForno.serialNumber}) fabricado com sucesso!`, 
+                    texto: `Forno Serial: ${serialNumber} fabricado com sucesso!`, 
                     tipo: "sucesso", 
                 });
 
@@ -109,9 +115,15 @@ function PainelAdmin() {
                 <form id="form-admin" onSubmit={handleCriarForno} noValidate>
 
                     <div>
-                        <label htmlFor="nome-forno">Nome do Forno</label>
-                        <input type="text" value={nomeForno} id="nome-forno" onChange={(e) => setNomeForno(e.target.value)} required/>
-                        <span id="erro-nome-forno" role="alert">{erroNome}</span>
+                        <label htmlFor="nome-forno">Nome de Fabricação</label>
+                        <input type="text" value={serialNumber} id="serial-forno" onChange={(e) => setSerialNumber(e.target.value)} required/>
+                        <span id="erro-serial-forno" role="alert">{erroSerial}</span>
+                    </div>
+
+                    <div>
+                        <label htmlFor="serial-forno">Serial do Forno</label>
+                        <input type="text" value={serialNumber} id="serial-forno" onChange={(e) => setSerialNumber(e.target.value)} required/>
+                        <span id="erro-serial-forno" role="alert">{erroSerial}</span>
                     </div>
 
                     <button type="submit" disabled={carregando}>{carregando ? "Fabricando..." : "Fabricar Forno"}</button>
