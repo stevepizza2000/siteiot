@@ -10,6 +10,7 @@ function PainelAdmin() {
     const [erroNome, setErroNome] = useState("");
     const [dados, setDados] = useState(null);
     const qrCodeRef = useRef(null);
+    
 
     async function handleCriarForno(e) {
         e.preventDefault();
@@ -59,8 +60,37 @@ function PainelAdmin() {
 
     }
 
-    function aparecer(){
-        console.log(qrCodeRef.current);
+    function baixarQrCodePng(){
+        const svgElement = qrCodeRef.current.querySelector("svg");
+        const serializer = new XMLSerializer();
+        const svgString = serializer.serializeToString(svgElement);
+        const svgBlob = new Blob([svgString], { type: "image/svg+xml;charset=utf-8" });
+        const svgUrl = URL.createObjectURL(svgBlob);
+        const img = new Image();
+
+        img.onload = () => {
+            const canvas = document.createElement("canvas");
+            const escala = 4; // aumenta a resolução final pra não ficar borrado
+            canvas.width = img.width * escala;
+            canvas.height = img.height * escala;
+            const ctx = canvas.getContext("2d");
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            const pngUrl = canvas.toDataURL("image/png");
+            const link = document.createElement("a");
+            link.href = pngUrl;
+            link.download = `qrcode-forno-${dados?.serialNumber || "forno"}.png`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(svgUrl)
+
+            console.log("Imagem carregada: ", img.width, img.height);
+        };
+
+        img.src = svgUrl;
+
     }
 
     return (
@@ -98,7 +128,7 @@ function PainelAdmin() {
                     />
                     </div>
 
-                    <button onClick={aparecer}>Baixar QR code</button>
+                    <button onClick={baixarQrCodePng}>Baixar QR code</button>
 
                 </section>
             )}
