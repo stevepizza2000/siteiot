@@ -20,12 +20,12 @@ function PainelAdmin() {
         setDados(null);
 
         const nomeValido = nomeForno.trim() !== "";
-        setErroNome(nomeValido ? "" : "é necessário digitar um nome");
+        setErroNome(nomeValido ? null : "é necessário digitar um nome");
 
-        const serialValido = serialValido.trim() !== "";
+        const serialValido = serialNumber.trim() !== "";
         setErroSerial(serialValido ? "" : "É necessário digitar um nome");
 
-        if (!serialValido || !nomeValido){
+        if (!serialValido){
             return;
         }
 
@@ -34,8 +34,8 @@ function PainelAdmin() {
 
         
         try {
-
-            const resposta = await fetch(`${API_URL}/v1/fornos/pre-registrar`, {method: "POST", headers: {"Content-Type": "application/json", "Authorization": "Bearer " + token }, body: JSON.stringify({nome: nomeForno, serialNumber: serialNumber})});
+            const nomeFinal = nomeValido ? nomeForno : null;
+            const resposta = await fetch(`${API_URL}/v1/fornos/pre-registrar`, {method: "POST", headers: {"Content-Type": "application/json", "Authorization": "Bearer " + token }, body: JSON.stringify({nome: nomeFinal, serialNumber: serialNumber})});
             
             if (resposta.ok) {
                 const dadosForno = await resposta.json();
@@ -116,8 +116,8 @@ function PainelAdmin() {
 
                     <div>
                         <label htmlFor="nome-forno">Nome de Fabricação</label>
-                        <input type="text" value={serialNumber} id="serial-forno" onChange={(e) => setSerialNumber(e.target.value)} required/>
-                        <span id="erro-serial-forno" role="alert">{erroSerial}</span>
+                        <input type="text" value={nomeForno} id="nome-forno" onChange={(e) => setNomeForno(e.target.value)} required/>
+                        <span id="erro-nome-forno" role="alert">{erroNome}</span>
                     </div>
 
                     <div>
