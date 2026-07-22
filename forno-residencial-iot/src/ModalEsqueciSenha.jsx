@@ -3,7 +3,7 @@ import API_URL from "./api";
 
 function ModalEsqueciSenha({setModalLoginAberto, ModalEsqueciSenhaAberto, ModalEsqueciSenhaSet, setMensagemSucesso}) {
 
-    const [Email, setEmail] = useState("");
+    const [email, setEmail] = useState("");
     const [erroEmail, setErroEmail] = useState("");
     const [carregando, setCarregando] = useState(false);
 
@@ -12,10 +12,10 @@ function ModalEsqueciSenha({setModalLoginAberto, ModalEsqueciSenhaAberto, ModalE
         let valido = true;
         let padraoEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-        if (Email === ""){
+        if (email === ""){
             setErroEmail("Digite algo no campo");
             valido = false;
-        } else if (!padraoEmail.test(Email)){
+        } else if (!padraoEmail.test(email)){
             setErroEmail("Digite um E-mail verdadeiro");
             valido = false;
         } else {
@@ -25,13 +25,14 @@ function ModalEsqueciSenha({setModalLoginAberto, ModalEsqueciSenhaAberto, ModalE
         if (valido === true) {
             try{
                 setCarregando(true);
-                const resposta = await fetch(`${API_URL}/v1/auth/esqueci-minha-senha`, {method:"POST", headers:{"Content-Type": "application/json"}, body: JSON.stringify({email: Email})});
+                const resposta = await fetch(`${API_URL}/v1/auth/esqueci-minha-senha`, {method:"POST", headers:{"Content-Type": "application/json"}, body: JSON.stringify({email: email})});
                 
                 if (resposta.ok){
                     console.log("Formulário está valido");
                     setCarregando(false);
                     ModalEsqueciSenhaSet(false);
                     setModalLoginAberto(true);
+                    valido = false;
                     setMensagemSucesso("Link de redefinição de senha enviado, confira seu E-mail. Cheque o spam também");
                 } else {
                     setCarregando(false)
@@ -62,7 +63,7 @@ function ModalEsqueciSenha({setModalLoginAberto, ModalEsqueciSenhaAberto, ModalE
                         <span id="erro-esqueci-senha-email" role="alert">{erroEmail}</span>
                     </div>
 
-                    <button type="submit" disabled={carregando}>{carregando ? "Carregando..." : "Mandar"}</button>
+                    <button type="submit" disabled={carregando}>{carregando ? "Carregando..." : "Enviar"}</button>
 
                     <p>Lembrou sua senha?<button type="button" id="ir-para-login" onClick={() => {setErroEmail("");setModalLoginAberto(true); ModalEsqueciSenhaSet(false)}}>Login</button></p>
 

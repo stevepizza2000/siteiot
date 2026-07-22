@@ -123,7 +123,7 @@ function ModalLogin ({aberto, setModalLogin, ModalCadastro, setLogado, ModalEsqu
 
                 <button type="submit" disabled={carregando}>{carregando ? "Carregando..." : "Entrar"}</button>
 
-                <p>Não tem uma conta?<button type="button" id="ir-para-cadastro"
+                <p>Não possui uma conta?<button type="button" id="ir-para-cadastro"
                 onClick={() => {setErroEmail("");setErroPassword("");setModalLogin(false); ModalCadastro(true);}}
                 >Criar Conta</button></p>
                 <p>Esqueceu sua senha?<button type="button" id="ir-para-esqueci-senha" onClick={() => {setModalLogin(false); ModalEsqueciSenha(true)}}>Esqueci Minha Senha</button></p>

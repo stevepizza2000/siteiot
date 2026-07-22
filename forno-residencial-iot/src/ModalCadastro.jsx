@@ -157,7 +157,7 @@ async function handleSubmitRegister(e){
 
                 <button type="submit" disabled={carregando}>{carregando ? "Carregando..." : "Criar Conta"}</button>
 
-                <p>Já tem uma conta? <button type="button" id="ir-para-login" 
+                <p>Já possui uma conta? <button type="button" id="ir-para-login" 
                 onClick={() => {setErroPassword("");setErroNome("");setErroEmail("");setErroData("");ModalLogin(true); ModalCadastro(false)}}
                 >Entrar</button></p>
 
