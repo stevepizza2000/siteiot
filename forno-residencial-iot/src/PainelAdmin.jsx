@@ -19,11 +19,11 @@ function PainelAdmin() {
         setMensagem({texto: "", tipo: ""});
         setDados(null);
 
+        setErroNome("");
         const nomeValido = nomeForno.trim() !== "";
-        setErroNome(nomeValido ? null : "é necessário digitar um nome");
 
         const serialValido = serialNumber.trim() !== "";
-        setErroSerial(serialValido ? "" : "É necessário digitar um nome");
+        setErroSerial(serialValido ? "" : "É necessário digitar um Serial valido");
 
         if (!serialValido){
             return;
@@ -40,7 +40,6 @@ function PainelAdmin() {
             if (resposta.ok) {
                 const dadosForno = await resposta.json();
                 const objetoQrCode = { 
-                    
                     serialNumber: serialNumber,
                     pinSeguranca: dadosForno.pinSeguranca,
                 };
@@ -51,17 +50,25 @@ function PainelAdmin() {
                     texto: `Forno Serial: ${serialNumber} fabricado com sucesso!`, 
                     tipo: "sucesso", 
                 });
-
-            } 
-
-        } catch (erro) {
+                
+            }else {
+                const erroBody = await resposta.json().catch(() => null);
+                
                 setMensagem({
                     texto: erroBody?.mensagem || "Erro ao criar forno. Verifique os dados.",
                     tipo: "erro",
                 });
-            } finally {
-                setCarregando(false);
-            }
+            } 
+
+        } catch (erro) {
+                setMensagem({
+                    texto: "Erro de conexão. Tente novamente.",
+                    tipo:  "erro",
+                });
+        
+        } finally {
+            setCarregando(false);
+        }
 
 
     }
@@ -116,13 +123,13 @@ function PainelAdmin() {
 
                     <div>
                         <label htmlFor="nome-forno">Nome de Fabricação</label>
-                        <input type="text" value={nomeForno} id="nome-forno" onChange={(e) => setNomeForno(e.target.value)} required/>
+                        <input type="text" value={nomeForno} id="nome-forno" onChange={(e) => setNomeForno(e.target.value)}/>
                         <span id="erro-nome-forno" role="alert">{erroNome}</span>
                     </div>
 
                     <div>
                         <label htmlFor="serial-forno">Serial do Forno</label>
-                        <input type="text" value={serialNumber} id="serial-forno" onChange={(e) => setSerialNumber(e.target.value)} required/>
+                        <input type="text" value={serialNumber} id="serial-forno" onChange={(e) => setSerialNumber(e.target.value)}/>
                         <span id="erro-serial-forno" role="alert">{erroSerial}</span>
                     </div>
 
