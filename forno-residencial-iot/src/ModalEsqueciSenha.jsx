@@ -7,6 +7,13 @@ function ModalEsqueciSenha({setModalLoginAberto, ModalEsqueciSenhaAberto, ModalE
     const [erroEmail, setErroEmail] = useState("");
     const [carregando, setCarregando] = useState(false);
 
+    useEffect(() => {
+        if (ModalEsqueciSenhaAberto) {
+            setEmail("");
+            setErroEmail("");
+        }
+    }, [ModalEsqueciSenhaAberto]);
+
     async function handleSubmitPassword(e) {
         e.preventDefault();
         let valido = true;

@@ -27,7 +27,7 @@ function Header({Logado, setLogado, setModalLoginAberto, setAdmin, setFornoSelec
 
 
     }, [Logado]);
-
+    
     return (
         <>
         <header>
