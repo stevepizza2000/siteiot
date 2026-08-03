@@ -35,7 +35,7 @@ function PainelAdmin() {
         
         try {
             const nomeFinal = nomeValido ? nomeForno : null;
-            const resposta = await fetch(`${API_URL}/v1/fornos/pre-registrar`, {method: "POST", headers: {"Content-Type": "application/json", "Authorization": "Bearer " + token }, body: JSON.stringify({nome: nomeFinal, serialNumber: serialNumber})});
+            const resposta = await fetch(`${API_URL}/fornos/pre-registrar`, {method: "POST", headers: {"Content-Type": "application/json", "Authorization": "Bearer " + token }, body: JSON.stringify({nome: nomeFinal, serialNumber: serialNumber})});
             
             if (resposta.ok) {
                 const dadosForno = await resposta.json();

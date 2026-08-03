@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import API_URL from "./api";
 
 function ModalEsqueciSenha({setModalLoginAberto, ModalEsqueciSenhaAberto, ModalEsqueciSenhaSet, setMensagemSucesso}) {
@@ -32,7 +32,7 @@ function ModalEsqueciSenha({setModalLoginAberto, ModalEsqueciSenhaAberto, ModalE
         if (valido === true) {
             try{
                 setCarregando(true);
-                const resposta = await fetch(`${API_URL}/v1/auth/esqueci-minha-senha`, {method:"POST", headers:{"Content-Type": "application/json"}, body: JSON.stringify({email: email})});
+                const resposta = await fetch(`${API_URL}/auth/esqueci-minha-senha`, {method:"POST", headers:{"Content-Type": "application/json"}, body: JSON.stringify({email: email})});
                 
                 if (resposta.ok){
                     console.log("Formulário está valido");

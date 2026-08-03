@@ -36,7 +36,7 @@ function ModalLogin ({aberto, setModalLogin, ModalCadastro, setLogado, ModalEsqu
             
             try{
             setCarregando(true);    
-            const resposta = await fetch(`${API_URL}/v1/auth/login`, {method:"POST", headers:{"Content-Type": "application/json"}, body: JSON.stringify({email: Email, senha: Password})});
+            const resposta = await fetch(`${API_URL}/auth/login`, {method:"POST", headers:{"Content-Type": "application/json"}, body: JSON.stringify({email: Email, senha: Password})});
 
                 if (resposta.ok) {
                 const dados = await resposta.json();

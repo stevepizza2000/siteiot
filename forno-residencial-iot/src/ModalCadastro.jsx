@@ -66,7 +66,7 @@ async function handleSubmitRegister(e){
 
         try{
             setCarregando(true);
-        const resposta = await fetch(`${API_URL}/v1/usuario`, {method:"POST", headers:{"Content-Type": "application/json"}, body: JSON.stringify({nome: Nome, email: Email, nascimento: dataNascimento, senha: Password})});
+        const resposta = await fetch(`${API_URL}/usuario`, {method:"POST", headers:{"Content-Type": "application/json"}, body: JSON.stringify({nome: Nome, email: Email, nascimento: dataNascimento, senha: Password})});
     
         if (resposta.ok){
             console.log("formulário está valido");

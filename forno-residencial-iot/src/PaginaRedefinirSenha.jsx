@@ -52,7 +52,7 @@ function PaginaRedefinirSenha(){
                 
                 try {
                     setCarregando(true);
-                    const resposta = await fetch(`${API_URL}/v1/auth/redefinir-senha`, {method:"POST", headers:{"Content-Type": "application/json"}, body: JSON.stringify({token: token, novaSenha: novaSenha})} )
+                    const resposta = await fetch(`${API_URL}/auth/redefinir-senha`, {method:"POST", headers:{"Content-Type": "application/json"}, body: JSON.stringify({token: token, novaSenha: novaSenha})} )
 
                     if(resposta.ok) {
                         setCarregando(false);

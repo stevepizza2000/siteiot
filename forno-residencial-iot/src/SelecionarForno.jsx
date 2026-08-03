@@ -10,7 +10,7 @@ function SelecionarForno({setFornoSelecionado, fornoSelecionado, Logado, admin})
         const buscar = async () => {
 
         const token = localStorage.getItem("token");
-        const resposta = await fetch(`${API_URL}/v1/fornos/meus`, {method:"GET", headers:{"Content-Type": "application/json", "Authorization": "Bearer " + token}});
+        const resposta = await fetch(`${API_URL}/fornos/meus`, {method:"GET", headers:{"Content-Type": "application/json", "Authorization": "Bearer " + token}});
 
         if (!resposta.ok) return;
 

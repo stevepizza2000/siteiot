@@ -37,17 +37,17 @@ function MainContent({Logado, setLogado, setModalLoginAberto, fornoSelecionado, 
                 const token = localStorage.getItem("token");
                 
 
-            const resposta = await fetch(`${API_URL}/v1/telemetrias/forno/${fornoId}/dashboard`,{method: "GET",headers: {"Content-Type": "application/json","Authorization": "Bearer " + token}, signal});
+            const resposta = await fetch(`${API_URL}/telemetrias/forno/${fornoId}/dashboard`,{method: "GET",headers: {"Content-Type": "application/json","Authorization": "Bearer " + token}, signal});
             if (!resposta.ok) return;
             const dashboard = await resposta.json();
             if (!estaAtivo) return;
             setDashboard(dashboard);
 
             const [dadoTemperatura, dadoTemporizador, dadoSessoes, dadoEventos] = await Promise.all([
-                fetch(`${API_URL}/v1/temperaturas/fornos/${fornoId}`, {method:"GET", headers:{"Content-Type": "application/json", "Authorization": "Bearer " + token}, signal}),
-                fetch(`${API_URL}/v1/temporizadores/fornos/${fornoId}`, {method:"GET", headers:{"Content-Type": "application/json", "Authorization": "Bearer " + token}, signal}),
-                fetch(`${API_URL}/v1/sessoes/fornos/${fornoId}`, {method:"GET", headers:{"Content-Type": "application/json", "Authorization": "Bearer " + token}, signal}),
-                fetch(`${API_URL}/v1/eventos/fornos/${fornoId}`, {method:"GET", headers:{"Content-Type": "application/json", "Authorization": "Bearer " + token}, signal })
+                fetch(`${API_URL}/temperaturas/fornos/${fornoId}`, {method:"GET", headers:{"Content-Type": "application/json", "Authorization": "Bearer " + token}, signal}),
+                fetch(`${API_URL}/temporizadores/fornos/${fornoId}`, {method:"GET", headers:{"Content-Type": "application/json", "Authorization": "Bearer " + token}, signal}),
+                fetch(`${API_URL}/sessoes/fornos/${fornoId}`, {method:"GET", headers:{"Content-Type": "application/json", "Authorization": "Bearer " + token}, signal}),
+                fetch(`${API_URL}/eventos/fornos/${fornoId}`, {method:"GET", headers:{"Content-Type": "application/json", "Authorization": "Bearer " + token}, signal })
             ]);
             
 
