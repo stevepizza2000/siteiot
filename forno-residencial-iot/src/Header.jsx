@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import API_URL from "./api";
 
-function Header({Logado, setLogado, setModalLoginAberto, setAdmin, setFornoSelecionado, admin}){
+function Header({Logado, setLogado, setModalLoginAberto, setAdmin, setFornoSelecionado, admin, setModalPerfil}){
 
     let[menuAberto, setMenuAberto] = useState(false);
     const [nome, setNome] =  useState(null);
@@ -52,7 +52,7 @@ function Header({Logado, setLogado, setModalLoginAberto, setAdmin, setFornoSelec
 
             {Logado && (
             <div id="acoes-logado">
-                <span   id="nome-usuario">{nome && nome.nome}</span>
+                <button   id="nome-usuario" onClick={() => {setModalPerfil(true)}}>{nome && nome.nome}</button>
                 <button id="botao-sair" onClick={() => {setLogado(false); setAdmin(false); setFornoSelecionado(null); setModalLoginAberto(true); localStorage.removeItem("id"); localStorage.removeItem("token")}}>Sair</button>
             </div>
             )}

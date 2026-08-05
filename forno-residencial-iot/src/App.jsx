@@ -8,6 +8,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import SelecionarForno from "./SelecionarForno";
 import { useState, useEffect } from "react";
 import PainelAdmin from "./PainelAdmin";
+import ModalPerfil from "./ModalPerfil";
 import { jwtDecode } from "jwt-decode";
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
   const [ModalLoginAberto, setModalLoginAberto] = useState(true);
   const [ModalCadastroAberto, setModalCadastroAberto] = useState(false);
   const [ModalEsqueciSenhaAberto, setModalEsqueciSenha] = useState(false);
+  const [ModalPerfilAberto, setModalPerfil] = useState(false);
   const [Logado, setLogado] = useState(false);
   const [mensagemSucesso, setMensagemSucesso] = useState("");
   const [fornoSelecionado, setFornoSelecionado] = useState(null);
@@ -74,7 +76,13 @@ function App() {
               setModalLoginAberto= {setModalLoginAberto}
               setAdmin= {setAdmin}
               setFornoSelecionado= {setFornoSelecionado}
+              setModalPerfil= {setModalPerfil}
               admin= {admin}
+              />
+
+              <ModalPerfil
+              Logado= {Logado}
+              ModalPerfil= {ModalPerfilAberto}
               />
 
               <ModalLogin 
