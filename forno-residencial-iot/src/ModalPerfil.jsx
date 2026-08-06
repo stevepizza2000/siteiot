@@ -1,4 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import DadosPerfil from "./DadosPerfil";
+import ModalEmail from "./ModalEmail";
+import ModalSenha from "./ModalSenha";
 
 function ModalPerfil({ModalPerfil, Logado}) {
 
@@ -7,33 +10,35 @@ function ModalPerfil({ModalPerfil, Logado}) {
     const [nascimento, setNascimento] = useState("");
     const [carregandoPerfil, setCarregandoPerfil] = useState(true);
 
-    const [modalEmailAberto, setModalEmailAberto] = useState(false);
-    const [modalSenhaAberto, setModalSenhaAberto] = useState(false);
+    const [ModalEmail, setModalEmail] = useState(false);
+    const [ModalSenha, setModalSenha] = useState(false);
+    const [DadosPerfil, setDadosPerfil] = useState(false)
 
-    // ---- Busca os dados assim que o modal abre ----
     useEffect(() => {
         if (!ModalPerfil) return;
-        // busca GET /usuario/meu-perfil aqui
     }, [ModalPerfil]);
 
     if (!ModalPerfil) return null; 
 
     return (
-               <div id="modal-perfil" role="dialog" aria-modal="true">
-            <div>
-                {/* Dados somente leitura */}
-                <p>{nome}</p>
-                <p>{email}</p>
-                <p>{nascimento}</p>
+               
+        <div>
 
-                <button onClick={() => setModalEmailAberto(true)}>Alterar E-mail</button>
-                <button onClick={() => setModalSenhaAberto(true)}>Alterar Senha</button>
+            <DadosPerfil
+            DadosPerfil= {DadosPerfil}
+            setDadosPErfil= {setDadosPerfil}
+            />
 
-                <button onClick={() => setModalPerfil(false)}>Fechar</button>
-            </div>
+            <ModalEmail 
+            ModalEmail= {ModalEmail} 
+            setModalEmail= {setModalEmail} 
+            />
 
-            <ModalAlterarEmail aberto={ModalEmailAberto} setModalAlterarEmail={setModalEmailAberto} />
-            <ModalAlterarSenha aberto={ModalSenhaAberto} setModalAlterarSenha={setModalSenhaAberto} />
+            <ModalSenha 
+            ModalSenha= {ModalSenha} 
+            setModalSenha= {setModalSenha} 
+            />
+
         </div>
     );
 
