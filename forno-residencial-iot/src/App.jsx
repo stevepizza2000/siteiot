@@ -82,7 +82,8 @@ function App() {
 
               <ModalPerfil
               Logado= {Logado}
-              ModalPerfil= {ModalPerfilAberto}
+              ModalPerfilAberto= {ModalPerfilAberto}
+              setModalPerfil= {setModalPerfil}
               />
 
               <ModalLogin 

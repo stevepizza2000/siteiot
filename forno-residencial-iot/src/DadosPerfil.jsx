@@ -1,6 +1,8 @@
-function DadosPerfil({DadosPerfil, setDadosPErfil}){
 
 
+function DadosPerfil({setModalEmailAberto}){
+
+    if (!DadosPerfilAberto) return null;
 
     return(
         
@@ -14,7 +16,7 @@ function DadosPerfil({DadosPerfil, setDadosPErfil}){
                 <button onClick={() => setModalSenhaAberto(true)}>Alterar Senha</button>
 
                 <button onClick={() => setModalPerfil(false)}>Fechar</button>
-            </div>
+            </div>  
         </div>
     );
 

@@ -3,39 +3,40 @@ import DadosPerfil from "./DadosPerfil";
 import ModalEmail from "./ModalEmail";
 import ModalSenha from "./ModalSenha";
 
-function ModalPerfil({ModalPerfil, Logado}) {
+function ModalPerfil({ModalPerfilAberto, Logado, setModalPerfil}) {
 
     const [nome, setNome] = useState("");
     const [email, setEmail] = useState("");
     const [nascimento, setNascimento] = useState("");
     const [carregandoPerfil, setCarregandoPerfil] = useState(true);
 
-    const [ModalEmail, setModalEmail] = useState(true);
-    const [ModalSenha, setModalSenha] = useState(true);
-    const [DadosPerfil, setDadosPerfil] = useState(true)
+    const [ModalEmailAberto, setModalEmail] = useState(true);
+    const [ModalSenhaAberto, setModalSenha] = useState(true);
+    const [DadosPerfilAberto, setDadosPerfil] = useState(true)
 
     useEffect(() => {
-        if (!ModalPerfil) return;
-    }, [ModalPerfil]);
+        if (!ModalPerfilAberto) return;
+    }, [ModalPerfilAberto]);
 
-    if (!ModalPerfil) return null; 
+    if (!ModalPerfilAberto) return null; 
 
     return (
                
         <div>
 
-            <DadosPerfil
-            DadosPerfil= {DadosPerfil}
-            setDadosPErfil= {setDadosPerfil}
+            <DadosPerfil 
+            setModalEmailAberto= {setModalEmail}
+            setModalSenhaAberto= {setModalSenha}
+            setModalPerfilAberto= {setModalPerfil}
             />
 
             <ModalEmail 
-            ModalEmail= {ModalEmail} 
+            ModalEmailAberto= {ModalEmailAberto} 
             setModalEmail= {setModalEmail} 
             />
 
             <ModalSenha 
-            ModalSenha= {ModalSenha} 
+            ModalSenhaAberto= {ModalSenhaAberto} 
             setModalSenha= {setModalSenha} 
             />
 
