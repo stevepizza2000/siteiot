@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-function ModalSenha(){
+function ModalSenha({ModalSenha, setModalSenha}){
 
     if (!ModalSenha) return null;
 

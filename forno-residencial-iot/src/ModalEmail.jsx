@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-function ModalEmail(){
+function ModalEmail({ModalEmail, setModalEmail}){
 
     if (!ModalEmail) return null;
 

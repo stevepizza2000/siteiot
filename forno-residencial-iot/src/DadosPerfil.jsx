@@ -1,4 +1,4 @@
-function DadosPerfil(){
+function DadosPerfil({DadosPerfil, setDadosPErfil}){
 
 
 
