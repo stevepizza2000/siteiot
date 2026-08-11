@@ -1,8 +1,7 @@
 
 
-function DadosPerfil({setModalEmailAberto}){
+function DadosPerfil({setModalEmailAberto, setModalSenhaAberto, setModalPerfilAberto}){
 
-    if (!DadosPerfilAberto) return null;
 
     return(
         
