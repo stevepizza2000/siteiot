@@ -11,7 +11,7 @@ function Header({Logado, setLogado, setModalLoginAberto, setAdmin, setFornoSelec
         try {
         const token = localStorage.getItem("token");
         const id = localStorage.getItem("id");
-        const dadoNome = await fetch(`${API_URL}/usuario/meu-perfil?id=${id}`, {method:"GET", headers:{"Content-Type": "application/json", "Authorization": "Bearer " + token} });
+        const dadoNome = await fetch(`${API_URL}/usuario/meu-perfil`, {method:"GET", headers:{"Content-Type": "application/json", "Authorization": "Bearer " + token} });
         
 
         if(dadoNome.ok){

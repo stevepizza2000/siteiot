@@ -10,8 +10,8 @@ function ModalPerfil({ModalPerfilAberto, Logado, setModalPerfil}) {
     const [nascimento, setNascimento] = useState("");
     const [carregandoPerfil, setCarregandoPerfil] = useState(true);
 
-    const [ModalEmailAberto, setModalEmail] = useState(true);
-    const [ModalSenhaAberto, setModalSenha] = useState(true);
+    const [ModalEmailAberto, setModalEmail] = useState(false);
+    const [ModalSenhaAberto, setModalSenha] = useState(false);
     const [DadosPerfilAberto, setDadosPerfil] = useState(true)
 
     useEffect(() => {
