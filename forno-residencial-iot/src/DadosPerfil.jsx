@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import API_URL from "./api";
 
 function DadosPerfil({setModalEmailAberto, setModalSenhaAberto, setModalPerfilAberto}){
 
@@ -16,10 +17,16 @@ function DadosPerfil({setModalEmailAberto, setModalSenhaAberto, setModalPerfilAb
             if (!resposta.ok) return;
 
             const dados = await resposta.json();
-            setEmail(await dados.Email);
-            setNome(await dados.nome);
-            setNascimento(await dados.nascimento);
+
+            const dataFormatada = new Date(dados.nascimento).toLocaleDateString("pt-BR");
+
+            setEmail(dados.email);
+            setNome(dados.nome);
+            setNascimento(dataFormatada);
+
         };
+
+        buscar();
 
     }, []);
 
