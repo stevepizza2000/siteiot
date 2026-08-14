@@ -6,6 +6,15 @@ function ModalEmail({ModalEmailAberto, setModalEmail}){
     const [novoEmail, setNovoEmail] = useState("");
     const [password, setPassword] = useState("");
 
+    async function handleSubmitChangeEmail(e) {
+        e.preventDefault();
+        let valido = true;
+
+        if (novoEmail === ""){
+            valido = false
+        } 
+
+    }
 
     if (!ModalEmailAberto) return null;
 
@@ -19,6 +28,7 @@ function ModalEmail({ModalEmailAberto, setModalEmail}){
         <div id="campo-trocar-email">
             <label htmlFor="change-email">Novo E-mail</label>
             <input onChange={(e) => setEmail(e.target.value)} type="email" name="email" id="change-email" placeholder="Digite o novo E-mail" required/>
+            <span id="erro-trocar-email"></span>
         </div>
 
         <div id="campo-colocar-senha">
