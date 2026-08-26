@@ -66,23 +66,24 @@ async function handleSubmitRegister(e){
 
         try{
             setCarregando(true);
-        const resposta = await fetch(`${API_URL}/usuario`, {method:"POST", headers:{"Content-Type": "application/json"}, body: JSON.stringify({nome: Nome, email: Email, nascimento: dataNascimento, senha: Password})});
+            const resposta = await fetch(`${API_URL}/usuario`, {method:"POST", headers:{"Content-Type": "application/json"}, body: JSON.stringify({nome: Nome, email: Email, nascimento: dataNascimento, senha: Password})});
     
-        if (resposta.ok){
-            console.log("formulário está valido");
-            setCarregando(false);
-            ModalCadastro(false);
-            ModalLogin(true);
-        } else {
-            setCarregando(false);
-            setErroEmail("o email já foi cadastrado");
-        }
+            if (resposta.ok){
+                console.log("formulário está valido");
+                setCarregando(false);
+                ModalCadastro(false);
+                ModalLogin(true);
+            } else {
+                setCarregando(false);
+                setErroEmail("o email já foi cadastrado");
+            }
     
         } catch (erro){
             setCarregando(false);
             console.log("Mensagem de erro: ", erro.message);
 
         }
+        
     }
 
 }   

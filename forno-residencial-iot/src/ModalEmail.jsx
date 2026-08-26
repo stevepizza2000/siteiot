@@ -8,17 +8,22 @@ function ModalEmail({ModalEmailAberto, setModalEmail}){
     const [password, setPassword] = useState("");
     const [erroSenha, setErroSenha] = useState("");
     const [erroNovoEmail, setErroNovoEmail] = useState("");
+    const [mostrarPassword, setMostrarPassword] = useState(false); 
 
     async function handleSubmitChangeEmail(e) {
         e.preventDefault();
         let valido = true;
+        let padraoNovoEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         const token = localStorage.getItem("token");
 
 
         if (novoEmail === ""){
             valido = false;
             setErroNovoEmail("Digite um E-mail");
-        }  else {
+        } else if (!padraoNovoEmail.test(novoEmail)){
+            valido = false;
+            setErroNovoEmail("Digite um E-mail verdadeiro");
+        } else {
             setErroNovoEmail("");
         }
 
@@ -30,19 +35,24 @@ function ModalEmail({ModalEmailAberto, setModalEmail}){
         }
 
         if (valido === true) {
-            setCarregando(true);
-            const resposta = await fetch(`${API_URL}/enviar-codigo-redefinir-email`, {method:"POST", headers:{"Content-Type": "application/json"}, body: JSON.stringify({email: novoEmail ,senha: password})});
-            
-            if(resposta.ok) {
-                const dados = await resposta.json();
-                
+
             try{
-                
+                setCarregando(true);
+                const resposta = await fetch(`${API_URL}/enviar-codigo-redefinir-email`, {method:"POST", headers:{"Content-Type": "application/json" ,"Authorization": "Bearer " + token}, body: JSON.stringify({novoEmail: novoEmail ,senhaAtual: password})});
+            
+                if(resposta.ok) {
+                    const dados = await resposta.text();
+                } else {
+                    setCarregando(false);
+                    setErroNovoEmail("O E-mail já está cadastrado como principal ou a senha está incorreta");
+                }
+            
             } catch (erro) {
                 console.log("Erro");
             }
+            
             setCarregando(false);
-            }
+        }
 
     }
 
@@ -63,7 +73,12 @@ function ModalEmail({ModalEmailAberto, setModalEmail}){
 
         <div id="campo-colocar-senha">
             <label htmlFor="password-required">Senha Atual</label>
-            <input type="password" onChange={(e) => setPassword(e.target.value)} value={password} name="password" id="password-required" placeholder="Digite sua senha" required/>
+            <input type={mostrarPassword ? "text" : "password"} onChange={(e) => setPassword(e.target.value)} value={password} name="password" id="password-required" placeholder="Digite sua senha" required/>
+            <i
+            className={mostrarPassword ? "bi bi-eye-slash" : "bi bi-eye"}
+            id="olhoCadastro"
+            onClick={() => setMostrarPassword(!mostrarPassword)}>
+            </i>
             <span id="erro-senha-trcar-email" role="alert" >{erroSenha}</span>
         </div>
 
