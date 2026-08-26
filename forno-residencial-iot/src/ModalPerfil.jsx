@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import DadosPerfil from "./DadosPerfil";
 import ModalEmail from "./ModalEmail";
 import ModalSenha from "./ModalSenha";
+import ModalConfirmar from "./ModalConfirmar"
 
 function ModalPerfil({ModalPerfilAberto, Logado, setModalPerfil}) {
 
@@ -10,6 +11,7 @@ function ModalPerfil({ModalPerfilAberto, Logado, setModalPerfil}) {
     const [nascimento, setNascimento] = useState("");
     const [carregandoPerfil, setCarregandoPerfil] = useState(true);
 
+    const [ModalConfirmar, setModalConfirmar] = useState(false);
     const [ModalEmailAberto, setModalEmail] = useState(false);
     const [ModalSenhaAberto, setModalSenha] = useState(false);
     const [DadosPerfilAberto, setDadosPerfil] = useState(true)
@@ -33,6 +35,12 @@ function ModalPerfil({ModalPerfilAberto, Logado, setModalPerfil}) {
             <ModalEmail 
             ModalEmailAberto= {ModalEmailAberto} 
             setModalEmail= {setModalEmail} 
+            setModalConfirmarAberto= {setModalConfirmar}
+            />
+
+            <ModalConfirmar
+            ModalConfirmarAberto= {ModalConfirmar}
+            setModalConfirmarAberto= {setModalConfirmar}
             />
 
             <ModalSenha 

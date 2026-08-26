@@ -1,7 +1,7 @@
 import { useState } from "react";
 import API_URL from "./api";
 
-function ModalEmail({ModalEmailAberto, setModalEmail}){
+function ModalEmail({ModalEmailAberto, setModalEmail, setModalConfirmarAberto}){
 
     const [carregando, setCarregando] = useState(false);
     const [novoEmail, setNovoEmail] = useState("");
@@ -42,6 +42,8 @@ function ModalEmail({ModalEmailAberto, setModalEmail}){
             
                 if(resposta.ok) {
                     const dados = await resposta.text();
+                    setModalEmail(false);
+                    setModalConfirmar(true);
                 } else {
                     setCarregando(false);
                     setErroNovoEmail("O E-mail já está cadastrado como principal ou a senha está incorreta");
