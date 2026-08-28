@@ -11,7 +11,7 @@ function ModalPerfil({ModalPerfilAberto, Logado, setModalPerfil}) {
     const [nascimento, setNascimento] = useState("");
     const [carregandoPerfil, setCarregandoPerfil] = useState(true);
 
-    const [ModalConfirmar, setModalConfirmar] = useState(false);
+    const [ModalConfirmarAberto, setModalConfirmarAberto] = useState(false);
     const [ModalEmailAberto, setModalEmail] = useState(false);
     const [ModalSenhaAberto, setModalSenha] = useState(false);
     const [DadosPerfilAberto, setDadosPerfil] = useState(true)
@@ -35,12 +35,12 @@ function ModalPerfil({ModalPerfilAberto, Logado, setModalPerfil}) {
             <ModalEmail 
             ModalEmailAberto= {ModalEmailAberto} 
             setModalEmail= {setModalEmail} 
-            setModalConfirmarAberto= {setModalConfirmar}
+            setModalConfirmarAberto= {setModalConfirmarAberto}
             />
 
             <ModalConfirmar
-            ModalConfirmarAberto= {ModalConfirmar}
-            setModalConfirmarAberto= {setModalConfirmar}
+            ModalConfirmarAberto= {ModalConfirmarAberto}
+            setModalConfirmarAberto= {setModalConfirmarAberto}
             />
 
             <ModalSenha 

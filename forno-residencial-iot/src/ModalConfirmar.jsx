@@ -11,6 +11,7 @@ function ModalConfirmar({ModalConfirmarAberto, setModalConfirmarAberto}) {
         e.preventDefault();
         let valido = true;
         let padraoCodigo = /^\d{6}$/;
+        const token = localStorage.getItem("token");
 
         if (codigo === "") {
             valido = false;
@@ -25,16 +26,18 @@ function ModalConfirmar({ModalConfirmarAberto, setModalConfirmarAberto}) {
         if (valido === true) {
             try{
                 setCarregando(true);
-                const resposta = await fetch(`${API_URL}/verificar-codigo-redefinir-email`, {method:"POST", headers:{"Content-type": "application/json", "Authorization": "Bearer " + token}, body: JSON.stringify({codigo: codigo})});
+                const resposta = await fetch(`${API_URL}/verificar-codigo-redefinir-email`, {method:"POST", headers:{"Content-Type": "application/json", "Authorization": "Bearer " + token}, body: JSON.stringify({codigo: codigo})});
 
             } catch (error) {
                 console.log("deu erro meu chapa");
             }
+
+            setCarregando(false);
         }
 
     }
 
-    if (!ModalConfirmar) return null;
+    if (!ModalConfirmarAberto) return null;
 
     return(
         

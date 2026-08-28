@@ -43,7 +43,7 @@ function ModalEmail({ModalEmailAberto, setModalEmail, setModalConfirmarAberto}){
                 if(resposta.ok) {
                     const dados = await resposta.text();
                     setModalEmail(false);
-                    setModalConfirmar(true);
+                    setModalConfirmarAberto(true);
                 } else {
                     setCarregando(false);
                     setErroNovoEmail("O E-mail já está cadastrado como principal ou a senha está incorreta");
