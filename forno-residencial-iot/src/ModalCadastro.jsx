@@ -154,7 +154,7 @@ async function handleSubmitRegister(e){
                     onClick={() => setMostrarPassword(!mostrarPassword)}
                     ></i>
                     <span id="erro-cadastro-senha" role="alert">{erroPassword}</span>
-                </div>
+                </div>      
 
                 <button type="submit" disabled={carregando}>{carregando ? "Carregando..." : "Criar Conta"}</button>
 
