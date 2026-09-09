@@ -6,10 +6,12 @@ function ModalCadastro({aberto, ModalLogin, ModalCadastro}) {
     const [Nome, setNome] = useState("");
     const [Email, setEmail] = useState("");
     const [dataNascimento, setDataNascimento] = useState("");
+    const [cpf, setCpf] = useState("");
     const [Password, setPassword] = useState("");
     const [erroNome, setErroNome] = useState("");
     const [erroEmail, setErroEmail] = useState("");
     const [erroData, setErroData] = useState("");
+    const [erroCpf, setErroCpf] = useState("");
     const [erroPassword, setErroPassword] = useState("");
     const [mostrarPassword, setMostrarPassword] = useState(false); 
     const [carregando, setCarregando] = useState(false);
@@ -21,6 +23,7 @@ async function handleSubmitRegister(e){
     let padraoSenhaCaracteres     = /.{8,}/;
     let padraoSenhaLetraMaiuscula = /[A-Z]/;
     let padraoSenhaNumeros        = /\d/;
+    let padraoCpf                 = /^\d{3}\.\d{3}\.\d{3}-\d{2}$/;
 
     if (Nome === "") {
         setErroNome("Digite algo no campo");
@@ -46,6 +49,16 @@ async function handleSubmitRegister(e){
         setErroData("");
     }
 
+    if (cpf === "") {
+        setErroCpf("Digite algo no campo");
+        valido = false;
+    } else if (!padraoCpf.test(cpf)) {
+        setErroCpf("Digite um CPF válido");
+        valido = false;
+    } else {
+        setErroCpf("");
+    }
+
     if (Password === "") {
         setErroPassword("Digite algo no campo");
         valido = false;
@@ -66,7 +79,7 @@ async function handleSubmitRegister(e){
 
         try{
             setCarregando(true);
-            const resposta = await fetch(`${API_URL}/usuario`, {method:"POST", headers:{"Content-Type": "application/json"}, body: JSON.stringify({nome: Nome, email: Email, nascimento: dataNascimento, senha: Password})});
+            const resposta = await fetch(`${API_URL}/usuario`, {method:"POST", headers:{"Content-Type": "application/json"}, body: JSON.stringify({nome: Nome, email: Email, nascimento: dataNascimento, cpf: cpf, senha: Password})});
     
             if (resposta.ok){
                 console.log("formulário está valido");
@@ -87,6 +100,13 @@ async function handleSubmitRegister(e){
     }
 
 }   
+
+function formatarCpf (cpf) {
+    const cpfNumeros = cpf.replace(/\D/g, '');
+    const cpfFormatado = cpfNumeros.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+    let apenasNumeros = cpfFormatado.slice(0, 14);
+    return apenasNumeros;
+}
 
     if (!aberto) return null;
 
@@ -135,6 +155,20 @@ async function handleSubmitRegister(e){
                     placeholder="Digite Sua Data De Nascimento" 
                     required/>
                     <span id="erro-cadastro-data" role="alert">{erroData}</span>
+                </div>
+
+                <div>
+                    <label htmlFor="cadastro-cpf">CPF</label>
+                    <input 
+                    value={cpf}
+                    onChange={(e) => setCpf(formatarCpf(e.target.value))}    
+                    type="text" 
+                    id="cadastro-cpf" 
+                    name="cpf" 
+                    autoComplete="cpf" 
+                    placeholder="Digite Seu CPF" 
+                    required/>
+                    <span id="erro-cadastro-cpf" role="alert">{erroCpf}</span>
                 </div>
 
                 <div>
