@@ -79,6 +79,7 @@ function App() {
               setModalPerfil= {setModalPerfil}
               admin= {admin}
               fornoSelecionado= {fornoSelecionado}
+              
               />
 
               <ModalPerfil

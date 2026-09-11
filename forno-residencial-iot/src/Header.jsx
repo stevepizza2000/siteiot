@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import API_URL from "./api";
 
 function Header({Logado, setLogado, setModalLoginAberto, setAdmin, setFornoSelecionado, admin, setModalPerfil, fornoSelecionado}){
 
     let[menuAberto, setMenuAberto] = useState(false);
     const [nome, setNome] =  useState(null);
+    const navigate = useNavigate();
 
     useEffect(() => { 
     async function fetchData() {
@@ -54,7 +56,7 @@ function Header({Logado, setLogado, setModalLoginAberto, setAdmin, setFornoSelec
             {Logado && (
             <div id="acoes-logado">
                 <button   id="nome-usuario" onClick={() => {setModalPerfil(true)}}>{nome && nome.nome}</button>
-                <button id="botao-sair" onClick={() => {setLogado(false); setModalPerfil(false); setAdmin(false); setFornoSelecionado(null); setModalLoginAberto(true); localStorage.removeItem("id"); localStorage.removeItem("token")}}>Sair</button>
+                <button id="botao-sair" onClick={() => {setLogado(false); setModalPerfil(false); setAdmin(false); setFornoSelecionado(null); setModalLoginAberto(true); localStorage.removeItem("id"); localStorage.removeItem("token"); navigate("/")}}>Sair</button>
             </div>
             )}
 
