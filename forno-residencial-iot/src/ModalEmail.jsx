@@ -38,10 +38,9 @@ function ModalEmail({ModalEmailAberto, setModalEmail, setModalConfirmarAberto}){
 
             try{
                 setCarregando(true);
-                const resposta = await fetch(`${API_URL}/enviar-codigo-redefinir-email`, {method:"POST", headers:{"Content-Type": "application/json" ,"Authorization": "Bearer " + token}, body: JSON.stringify({novoEmail: novoEmail ,senhaAtual: password})});
+                const resposta = await fetch(`${API_URL}/auth/enviar-codigo-redefinir-email`, {method:"POST", headers:{"Content-Type": "application/json" ,"Authorization": "Bearer " + token}, body: JSON.stringify({novoEmail: novoEmail ,senhaAtual: password})});
             
                 if(resposta.ok) {
-                    const dados = await resposta.text();
                     setModalEmail(false);
                     setModalConfirmarAberto(true);
                 } else {
@@ -50,10 +49,11 @@ function ModalEmail({ModalEmailAberto, setModalEmail, setModalConfirmarAberto}){
                 }
             
             } catch (erro) {
-                console.log("Erro");
+                console.log("Erro: " + erro.message);
+            } finally {
+                setCarregando(false);
             }
             
-            setCarregando(false);
         }
 
     }
@@ -62,8 +62,13 @@ function ModalEmail({ModalEmailAberto, setModalEmail, setModalConfirmarAberto}){
 
     return(
         <div id="sub-modal-trocar-email">
-            
-        <h2 id="Trocar E-mail">Trocar E-mail</h2>
+            <div className="conteudo-sub-modal">
+
+        <button className="botao-fechar-perfil" onClick={() => setModalEmail(false)}>
+            <i className="bi bi-x-lg"></i>
+        </button>
+
+        <h2 id="Titulo-trocar-email">Trocar E-mail</h2>
 
         <form onSubmit={handleSubmitChangeEmail} noValidate>
 
@@ -87,7 +92,7 @@ function ModalEmail({ModalEmailAberto, setModalEmail, setModalConfirmarAberto}){
         <button type="submit" disabled={carregando}>{carregando ? "Carregando..." : "Trocar"}</button>
 
         </form>
-
+        </div>
         </div>
     );
 

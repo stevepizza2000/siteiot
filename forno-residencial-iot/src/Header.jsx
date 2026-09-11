@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import API_URL from "./api";
 
-function Header({Logado, setLogado, setModalLoginAberto, setAdmin, setFornoSelecionado, admin, setModalPerfil}){
+function Header({Logado, setLogado, setModalLoginAberto, setAdmin, setFornoSelecionado, admin, setModalPerfil, fornoSelecionado}){
 
     let[menuAberto, setMenuAberto] = useState(false);
     const [nome, setNome] =  useState(null);
@@ -10,7 +10,6 @@ function Header({Logado, setLogado, setModalLoginAberto, setAdmin, setFornoSelec
     async function fetchData() {
         try {
         const token = localStorage.getItem("token");
-        const id = localStorage.getItem("id");
         const dadoNome = await fetch(`${API_URL}/usuario/meu-perfil`, {method:"GET", headers:{"Content-Type": "application/json", "Authorization": "Bearer " + token} });
         
 
@@ -32,28 +31,30 @@ function Header({Logado, setLogado, setModalLoginAberto, setAdmin, setFornoSelec
         <>
         <header>
 
-        <button id="menu-hamburguer" onClick={() => setMenuAberto(!menuAberto)}>
-        <i className="bi bi-list"></i>
-        </button>
+            {!admin && fornoSelecionado && (
+            <>
+                <button id="menu-hamburguer" onClick={() => setMenuAberto(!menuAberto)}>
+                <i className="bi bi-list"></i>
+                </button>
             
-             {!admin && (
-            <nav id="menu" className={menuAberto ? "ativo" : ""}>
-                <ul>
-                    <li><a onClick={() => setMenuAberto(false)} href="#" id="logo">Monitor</a></li>
-                    <li><a onClick={() => setMenuAberto(false)} href="#dashboard">Dashboard</a></li>
-                    <li><a onClick={() => setMenuAberto(false)} href="#temperatura">Temperatura</a></li>
-                    <li><a onClick={() => setMenuAberto(false)} href="#temporizador">Temporizador</a></li>
-                    <li><a onClick={() => setMenuAberto(false)} href="#alertas">Alertas</a></li>
-                    <li><a onClick={() => setMenuAberto(false)} href="#graficos">Gráfico</a></li>
-                    <li><a onClick={() => setMenuAberto(false)} href="#Registros">Registros</a></li>
-                </ul>
-            </nav>
+                <nav id="menu" className={menuAberto ? "ativo" : ""}>
+                    <ul>
+                        <li><a onClick={() => setMenuAberto(false)} href="#" id="logo">Monitor</a></li>
+                        <li><a onClick={() => setMenuAberto(false)} href="#dashboard">Dashboard</a></li>
+                        <li><a onClick={() => setMenuAberto(false)} href="#temperatura">Temperatura</a></li>
+                        <li><a onClick={() => setMenuAberto(false)} href="#temporizador">Temporizador</a></li>
+                        <li><a onClick={() => setMenuAberto(false)} href="#alertas">Alertas</a></li>
+                        <li><a onClick={() => setMenuAberto(false)} href="#graficos">Gráfico</a></li>
+                        <li><a onClick={() => setMenuAberto(false)} href="#Registros">Registros</a></li>
+                    </ul>
+                </nav>
+            </>
         )}
 
             {Logado && (
             <div id="acoes-logado">
                 <button   id="nome-usuario" onClick={() => {setModalPerfil(true)}}>{nome && nome.nome}</button>
-                <button id="botao-sair" onClick={() => {setLogado(false); setAdmin(false); setFornoSelecionado(null); setModalLoginAberto(true); localStorage.removeItem("id"); localStorage.removeItem("token")}}>Sair</button>
+                <button id="botao-sair" onClick={() => {setLogado(false); setModalPerfil(false); setAdmin(false); setFornoSelecionado(null); setModalLoginAberto(true); localStorage.removeItem("id"); localStorage.removeItem("token")}}>Sair</button>
             </div>
             )}
 

@@ -101,6 +101,7 @@ nav a:hover::after {
 #acoes-logado {
     display: flex;
     align-items: center;
+    margin-left: auto;
     gap: 24px;
 }
 
@@ -706,6 +707,7 @@ main {
     #acoes-logado {
         order: 2;
         margin: 0; 
+        margin-left: auto;
     }
 
     #menu-hamburguer {
@@ -813,5 +815,255 @@ main {
 
     .admin-search-wrapper {
         max-width: 100%;
+    }
+}
+
+/* =========================================
+   10. MODAL DE PERFIL E SUB-MODAIS
+========================================= */
+
+/* --- Modal Perfil (contêiner principal) --- */
+#modal-perfil {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+#modal-perfil > div {
+    background-color: var(--cor-cartao);
+    padding: 2.5rem;
+    border-radius: var(--borda-raio);
+    width: 100%;
+    max-width: 700px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(57, 255, 20, 0.2);
+    position: relative;
+    display: flex;
+    gap: 2.5rem;
+}
+
+/* Botão de fechar (X) no canto superior direito */
+.botao-fechar-perfil {
+    position: absolute;
+    top: 1.2rem;
+    right: 1.2rem;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: var(--cor-texto-mutado);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 0;
+}
+
+.botao-fechar-perfil:hover {
+    background-color: rgba(239, 68, 68, 0.15);
+    border-color: var(--cor-erro);
+    color: var(--cor-erro);
+}
+
+/* --- Coluna esquerda: foto + dados --- */
+.perfil-coluna-esquerda {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    flex: 1;
+    padding-right: 2rem;
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.perfil-foto-container {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    background-color: var(--cor-fundo);
+    border: 2px solid var(--cor-destaque);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    cursor: pointer;
+    position: relative;
+    flex-shrink: 0;
+}
+
+.perfil-foto-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.perfil-foto-container i {
+    font-size: 2.5rem;
+    color: var(--cor-texto-mutado);
+}
+
+.perfil-foto-container:hover::after {
+    content: "Trocar foto";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: var(--cor-texto);
+    font-size: 0.7rem;
+    text-align: center;
+    padding: 4px 0;
+}
+
+.perfil-info-card {
+    background-color: var(--cor-fundo);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--borda-raio);
+    padding: 1.2rem;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+}
+
+.perfil-info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.perfil-info-item span.label {
+    font-size: 0.75rem;
+    color: var(--cor-texto-mutado);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.perfil-info-item span.valor {
+    font-size: 0.95rem;
+    color: var(--cor-texto);
+    font-weight: 500;
+    word-break: break-word;
+}
+
+/* --- Coluna direita: ações --- */
+.perfil-coluna-direita {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding-top: 2.5rem;
+}
+
+.perfil-coluna-direita button {
+    width: 100%;
+    text-align: left;
+    background-color: transparent;
+    color: var(--cor-texto);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 1rem 1.2rem;
+    border-radius: var(--borda-raio);
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.perfil-coluna-direita button:hover {
+    background-color: rgba(57, 255, 20, 0.08);
+    border-color: var(--cor-destaque);
+    color: var(--cor-destaque);
+}
+
+.perfil-coluna-direita button i {
+    font-size: 1.1rem;
+}
+
+/* --- Sub-modais: Email, Senha, Confirmar código --- */
+#sub-modal-trocar-email,
+#sub-modal-trocar-senha,
+#container-codigo-email {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1100; /* acima do modal-perfil */
+}
+
+/* Card interno de cada sub-modal (a div direta dentro do overlay) */
+#sub-modal-trocar-email form,
+#sub-modal-trocar-senha form,
+#container-codigo-email form {
+    display: flex;
+    flex-direction: column;
+}
+
+#sub-modal-trocar-email .conteudo-sub-modal,
+#sub-modal-trocar-senha .conteudo-sub-modal,
+#container-codigo-email .conteudo-sub-modal {
+    background-color: var(--cor-cartao);
+    padding: 2.5rem;
+    border-radius: var(--borda-raio);
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(57, 255, 20, 0.2);
+    position: relative;
+}
+
+#sub-modal-trocar-email h2,
+#sub-modal-trocar-senha h2 {
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+/* Mensagens de sucesso dentro dos sub-modais */
+#mensagem-sucesso-senha,
+#mensagem-sucesso-email {
+    text-align: center;
+    padding: 1rem;
+}
+
+#mensagem-sucesso-senha i,
+#mensagem-sucesso-email i {
+    font-size: 3rem !important;
+    color: var(--cor-destaque) !important;
+    margin-bottom: 0.8rem;
+    display: block;
+}
+
+#mensagem-sucesso-senha h3,
+#mensagem-sucesso-email h3 {
+    color: var(--cor-texto);
+    font-weight: 500;
+}
+
+/* --- Responsividade: empilha as colunas em telas pequenas --- */
+@media screen and (max-width: 700px) {
+    #modal-perfil > div {
+        flex-direction: column;
+        max-width: 90%;
+        padding: 1.5rem;
+    }
+
+    .perfil-coluna-esquerda {
+        border-right: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        padding-right: 0;
+        padding-bottom: 1.5rem;
     }
 }
