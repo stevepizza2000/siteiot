@@ -47,7 +47,6 @@ function MainContent({
                     "Authorization": "Bearer " + token
                 };
 
-                // Dashboard
                 const respostaDashboard = await fetch(
                     `${API_URL}/telemetrias/forno/${fornoId}/dashboard`,
                     {
@@ -71,18 +70,12 @@ function MainContent({
 
                 const dashboardData = await respostaDashboard.json();
 
-                // Buscar somente:
-                // - temporizadores
-                // - sessões
-                //
-                // Temperaturas e eventos serão retirados da sessão atual.
                 const [dadoTemporizador, dadoSessoes] = await Promise.all([
                     fetch(`${API_URL}/temporizadores/fornos/${fornoId}`, {
                         method: "GET",
                         headers,
                         signal: controller.signal
                     }),
-
                     fetch(`${API_URL}/sessoes/fornos/${fornoId}`, {
                         method: "GET",
                         headers,
@@ -90,7 +83,10 @@ function MainContent({
                     })
                 ]);
 
-                if (dadoTemporizador.status === 401 || dadoSessoes.status === 401) {
+                if (
+                    dadoTemporizador.status === 401 ||
+                    dadoSessoes.status === 401
+                ) {
                     localStorage.removeItem("id");
                     localStorage.removeItem("token");
                     setLogado(false);
@@ -109,16 +105,6 @@ function MainContent({
                     dadoSessoes.json()
                 ]);
 
-                /*
-                 * A API retorna cada sessão com:
-                 * - id
-                 * - inicioSessao
-                 * - fimSessao
-                 * - temperaturas
-                 * - eventos
-                 *
-                 * Então pegamos a sessão que ainda está aberta.
-                 */
                 const sessaoAtual =
                     sessoesJson
                         .filter((sessao) => sessao.fimSessao === null)
@@ -135,12 +121,10 @@ function MainContent({
                     sessaoAtual?.eventos ?? [];
 
                 setDashboard(dashboardData);
-
                 setQuentura(temperaturasSessaoAtual);
                 setTempo(temporizadorJson);
                 setSessoes(sessoesJson);
                 setEventos(eventosSessaoAtual);
-
             } catch (erro) {
                 if (erro.name !== "AbortError") {
                     console.error(
@@ -173,22 +157,27 @@ function MainContent({
         return null;
     }
 
-    // Última temperatura da sessão atual
     const ultimaTemp = quentura.at(-1)?.temperaturaAtual;
-
-    // Último horário do temporizador
     const ultimoTempo = tempo.at(-1)?.horarioFim;
-
-    // Último evento da sessão atual
     const ultimoEvento = eventos.at(-1)?.tipo;
 
-    // Última sessão
-    const ultimaSessao = sessoes.at(-1);
+    const sessaoAtual =
+        sessoes
+            .filter((sessao) => sessao.fimSessao === null)
+            .sort(
+                (a, b) =>
+                    new Date(b.inicioSessao) -
+                    new Date(a.inicioSessao)
+            )[0] ?? null;
 
-    /*
-     * Formata o nome dos alertas para não mostrar
-     * diretamente o enum vindo da API.
-     */
+    const ultimaSessao = sessaoAtual ?? sessoes.at(-1);
+
+    const estadoForno = String(
+        ultimaSessao?.estadoFornoAtual ?? ""
+    ).toUpperCase();
+
+    const fornoLigado = !estadoForno.includes("DESLIG");
+
     const formatarAlerta = (tipo) => {
         if (!tipo) {
             return "Sem alertas no momento";
@@ -203,29 +192,20 @@ function MainContent({
         return alertas[tipo] ?? tipo;
     };
 
-    /*
-     * Temperatura sem casas decimais.
-     *
-     * Exemplo:
-     * 180.73 -> 181
-     * 180.21 -> 180
-     */
     const temperaturaFormatada =
-        ultimaTemp !== undefined
+        fornoLigado && ultimaTemp !== undefined
             ? `${Math.round(Number(ultimaTemp))} °C`
-            : "Sem dados atualmente";
+            : "Forno desligado";
 
     return (
         <main>
             <div id="secoes-protegidas">
-
                 <i
                     className="bi bi-arrow-left-right"
                     id="trocar-forno"
                     onClick={() => setFornoSelecionado(null)}
                 ></i>
 
-                {/* DASHBOARD */}
                 <section
                     id="dashboard"
                     aria-labelledby="titulo-dashboard"
@@ -241,7 +221,6 @@ function MainContent({
                     </p>
                 </section>
 
-                {/* TEMPERATURA */}
                 <section
                     id="temperatura"
                     aria-labelledby="titulo-temperatura"
@@ -257,7 +236,6 @@ function MainContent({
                     </p>
                 </section>
 
-                {/* TEMPORIZADOR */}
                 <section
                     id="temporizador"
                     aria-labelledby="titulo-temporizador"
@@ -273,7 +251,6 @@ function MainContent({
                     </p>
                 </section>
 
-                {/* ALERTAS */}
                 <section
                     id="alertas"
                     aria-labelledby="titulo-alertas"
@@ -289,7 +266,6 @@ function MainContent({
                     </p>
                 </section>
 
-                {/* REGISTROS */}
                 <section
                     id="Registros"
                     aria-labelledby="titulo-registros"
@@ -307,7 +283,6 @@ function MainContent({
                     </p>
                 </section>
 
-                {/* GRÁFICO */}
                 <section
                     id="graficos"
                     aria-labelledby="titulo-graficos"
@@ -317,17 +292,15 @@ function MainContent({
                     </h2>
 
                     {carregando ? (
-                        <p>
-                            Carregando gráfico...
-                        </p>
+                        <p>Carregando gráfico...</p>
+                    ) : !fornoLigado ? (
+                        <p>Forno desligado</p>
                     ) : quentura.length > 0 ? (
-
                         <ResponsiveContainer
                             width="100%"
                             height={300}
                         >
                             <LineChart data={quentura}>
-
                                 <XAxis
                                     dataKey="registradoEm"
                                     tickFormatter={(valor) =>
@@ -361,10 +334,8 @@ function MainContent({
                                     dataKey="temperaturaAtual"
                                     stroke="var(--cor-destaque)"
                                 />
-
                             </LineChart>
                         </ResponsiveContainer>
-
                     ) : (
                         <p>
                             Nenhum dado de temperatura disponível
@@ -372,10 +343,9 @@ function MainContent({
                         </p>
                     )}
                 </section>
-
             </div>
         </main>
     );
 }
 
-export default MainContent;
+export default MainContent; 
