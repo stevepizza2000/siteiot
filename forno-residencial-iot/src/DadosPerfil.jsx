@@ -32,10 +32,6 @@ function DadosPerfil({setModalEmailAberto, setModalSenhaAberto, setModalPerfilAb
                             <span className="label">Nascimento</span>
                             <span className="valor">{nascimento}</span>
                         </div>
-                        <div className="perfil-info-item">
-                            <span className="label">CPF</span>
-                            <span className="valor">{cpf}</span>
-                        </div>
                     </div>
 
                 </div>

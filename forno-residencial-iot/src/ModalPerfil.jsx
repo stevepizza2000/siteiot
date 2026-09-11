@@ -32,7 +32,6 @@ function ModalPerfil({ModalPerfilAberto, Logado, setModalPerfil}) {
                 setEmail(dados.email);
                 setNome(dados.nome);
                 setNascimento(dataFormatada);
-                setCpf(dados.cpf);
     };
 
     useEffect (() => {
