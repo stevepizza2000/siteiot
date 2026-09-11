@@ -136,7 +136,7 @@ function MainContent({
                 setCarregando(false);
 
                 if (!controller.signal.aborted) {
-                    timerId = setTimeout(buscarDados, 5000);
+                    timerId = setTimeout(buscarDados, 500);
                 }
             }
         };

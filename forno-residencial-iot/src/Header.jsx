@@ -56,7 +56,7 @@ function Header({Logado, setLogado, setModalLoginAberto, setAdmin, setFornoSelec
             {Logado && (
             <div id="acoes-logado">
                 <button   id="nome-usuario" onClick={() => {setModalPerfil(true)}}>{nome && nome.nome}</button>
-                <button id="botao-sair" onClick={() => {setLogado(false); setModalPerfil(false); setAdmin(false); setFornoSelecionado(null); setModalLoginAberto(true); localStorage.removeItem("id"); localStorage.removeItem("token"); navigate("/")}}>Sair</button>
+                <button id="botao-sair" onClick={() => {setLogado(false); setModalPerfil(false); setAdmin(false); setFornoSelecionado(null); setModalLoginAberto(true); setNome(null); setMenuAberto(false); localStorage.removeItem("id"); localStorage.removeItem("token"); navigate("/")}}>Sair</button>
             </div>
             )}
 

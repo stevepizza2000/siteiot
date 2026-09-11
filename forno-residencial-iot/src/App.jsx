@@ -79,7 +79,7 @@ function App() {
               setModalPerfil= {setModalPerfil}
               admin= {admin}
               fornoSelecionado= {fornoSelecionado}
-              
+
               />
 
               <ModalPerfil
@@ -140,7 +140,7 @@ function App() {
           <Route path="/admin" element= {
             verificandoAuth ? (
             <p>Carregando...</p>
-              ) : admin ? (
+              ) : admin && Logado ? (
                 <>
 
                   <Header
@@ -150,6 +150,8 @@ function App() {
                   setAdmin= {setAdmin}
                   setFornoSelecionado= {setFornoSelecionado}
                   admin= {admin}
+                  setModalPerfil={setModalPerfil}
+                  fornoSelecionado={fornoSelecionado}
                   />
 
                   <PainelAdmin 
