@@ -37,7 +37,7 @@ function App() {
                 setAdmin(true);
             }
         } catch (erro) {
-            console.log("Erro ao ler token no App.jsx");
+            console.log("Erro ao ler token no App.jsx: " + erro.message);
         }
     }
 
@@ -78,6 +78,7 @@ function App() {
               setFornoSelecionado= {setFornoSelecionado}
               setModalPerfil= {setModalPerfil}
               admin= {admin}
+              fornoSelecionado= {fornoSelecionado}
               />
 
               <ModalPerfil
