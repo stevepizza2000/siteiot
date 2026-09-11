@@ -41,6 +41,7 @@ function MainContent({
         const buscarDados = async () => {
             try {
                 const token = localStorage.getItem("token");
+
                 const headers = {
                     "Content-Type": "application/json",
                     "Authorization": "Bearer " + token
@@ -48,64 +49,92 @@ function MainContent({
 
                 const respostaDashboard = await fetch(
                     `${API_URL}/telemetrias/forno/${fornoId}/dashboard`,
-                    { method: "GET", headers, signal: controller.signal }
+                    {
+                        method: "GET",
+                        headers,
+                        signal: controller.signal
+                    }
                 );
 
-                if (respostaDashboard.status === 401) throw new Error("Não autorizado");
-                if (!respostaDashboard.ok) throw new Error("Falha ao carregar o dashboard.");
+                if (respostaDashboard.status === 401) {
+                    localStorage.removeItem("id");
+                    localStorage.removeItem("token");
+                    setLogado(false);
+                    setModalLoginAberto(true);
+                    return;
+                }
+
+                if (!respostaDashboard.ok) {
+                    throw new Error("Falha ao carregar o dashboard.");
+                }
 
                 const dashboardData = await respostaDashboard.json();
 
                 const [dadoTemporizador, dadoSessoes] = await Promise.all([
-                    fetch(`${API_URL}/temporizadores/fornos/${fornoId}`, { method: "GET", headers, signal: controller.signal }),
-                    fetch(`${API_URL}/sessoes/fornos/${fornoId}`, { method: "GET", headers, signal: controller.signal })
+                    fetch(`${API_URL}/temporizadores/fornos/${fornoId}`, {
+                        method: "GET",
+                        headers,
+                        signal: controller.signal
+                    }),
+                    fetch(`${API_URL}/sessoes/fornos/${fornoId}`, {
+                        method: "GET",
+                        headers,
+                        signal: controller.signal
+                    })
                 ]);
 
-                if (dadoTemporizador.status === 401 || dadoSessoes.status === 401) throw new Error("Não autorizado");
-                if (!dadoTemporizador.ok || !dadoSessoes.ok) throw new Error("Uma ou mais rotas falharam.");
+                if (
+                    dadoTemporizador.status === 401 ||
+                    dadoSessoes.status === 401
+                ) {
+                    localStorage.removeItem("id");
+                    localStorage.removeItem("token");
+                    setLogado(false);
+                    setModalLoginAberto(true);
+                    return;
+                }
 
-                const temporizadorJson = await dadoTemporizador.json();
-                const sessoesJson = await dadoSessoes.json();
+                if (!dadoTemporizador.ok || !dadoSessoes.ok) {
+                    throw new Error(
+                        "Uma ou mais rotas falharam ao retornar os dados."
+                    );
+                }
 
-                // 1. Blindagem no Sort das Sessões (Garante que é um array e cria uma cópia)
-                const sessoesArray = Array.isArray(sessoesJson) ? sessoesJson : [];
-                const sessoesOrdenadas = [...sessoesArray].sort(
-                    (a, b) => new Date(b.inicioSessao) - new Date(a.inicioSessao)
-                );
+                const [temporizadorJson, sessoesJson] = await Promise.all([
+                    dadoTemporizador.json(),
+                    dadoSessoes.json()
+                ]);
 
-                // Encontra a sessão ativa
-                const sessaoAtual = sessoesOrdenadas.find((sessao) => sessao.fimSessao === null) ?? null;
+                const sessaoAtual =
+                    sessoesJson
+                        .filter((sessao) => sessao.fimSessao === null)
+                        .sort(
+                            (a, b) =>
+                                new Date(b.inicioSessao) -
+                                new Date(a.inicioSessao)
+                        )[0] ?? null;
 
-                // 2. Blindagem no Sort das Temperaturas e Eventos
-                const tempsArray = Array.isArray(sessaoAtual?.temperaturas) ? sessaoAtual.temperaturas : [];
-                const temperaturasSessaoAtual = [...tempsArray].sort(
-                    (a, b) => new Date(a.registradoEm) - new Date(b.registradoEm)
-                );
+                const temperaturasSessaoAtual =
+                    sessaoAtual?.temperaturas ?? [];
 
-                const eventosArray = Array.isArray(sessaoAtual?.eventos) ? sessaoAtual.eventos : [];
-                const eventosSessaoAtual = [...eventosArray].sort(
-                    (a, b) => new Date(a.registradoEm) - new Date(b.registradoEm)
-                );
+                const eventosSessaoAtual =
+                    sessaoAtual?.eventos ?? [];
 
                 setDashboard(dashboardData);
                 setQuentura(temperaturasSessaoAtual);
-                setTempo(Array.isArray(temporizadorJson) ? temporizadorJson : []);
-                setSessoes(sessoesOrdenadas);
+                setTempo(temporizadorJson);
+                setSessoes(sessoesJson);
                 setEventos(eventosSessaoAtual);
-
             } catch (erro) {
                 if (erro.name !== "AbortError") {
-                    console.error("Erro ao carregar dashboard:", erro.message);
-                    if (erro.message === "Não autorizado") {
-                        localStorage.removeItem("id");
-                        localStorage.removeItem("token");
-                        setLogado(false);
-                        setModalLoginAberto(true);
-                        return;
-                    }
+                    console.error(
+                        "Erro ao carregar dashboard:",
+                        erro.message
+                    );
                 }
             } finally {
                 setCarregando(false);
+
                 if (!controller.signal.aborted) {
                     timerId = setTimeout(buscarDados, 500);
                 }
@@ -118,39 +147,59 @@ function MainContent({
             clearTimeout(timerId);
             controller.abort();
         };
-    }, [fornoSelecionado, setLogado, setModalLoginAberto]);
+    }, [
+        fornoSelecionado,
+        setLogado,
+        setModalLoginAberto
+    ]);
 
     if (!Logado || fornoSelecionado === null || admin) {
         return null;
     }
 
-    // SUBSTITUIÇÃO DO .at(-1) PELA FORMA TRADICIONAL BLINDADA
-    const ultimaTemp = quentura.length > 0 ? quentura[quentura.length - 1]?.temperaturaAtual : undefined;
-    const ultimoTempo = tempo.length > 0 ? tempo[tempo.length - 1]?.horarioFim : undefined;
-    const ultimoEvento = eventos.length > 0 ? eventos[eventos.length - 1]?.tipo : undefined;
+    const ultimaTemp = quentura.at(-1)?.temperaturaAtual;
+    const ultimoTempo = tempo.at(-1)?.horarioFim;
+    const ultimoEvento = eventos.at(-1)?.tipo;
 
-    // Sessão atual já está filtrada corretamente no state
-    const sessaoAtual = sessoes.find((sessao) => sessao.fimSessao === null) ?? null;
-    const ultimaSessao = sessaoAtual ?? sessoes[0] ?? null;
+    const sessaoAtual =
+        sessoes
+            .filter((sessao) => sessao.fimSessao === null)
+            .sort(
+                (a, b) =>
+                    new Date(b.inicioSessao) -
+                    new Date(a.inicioSessao)
+            )[0] ?? null;
 
-    const estadoForno = String(ultimaSessao?.estadoFornoAtual ?? "").toUpperCase();
-    
-    // Forno só está ligado se houver sessão e o estado não contiver "DESLIG"
-    const fornoLigado = sessaoAtual !== null && !estadoForno.includes("DESLIG");
+    const ultimaSessao = sessaoAtual ?? sessoes.at(-1);
+
+    const estadoForno = String(
+        ultimaSessao?.estadoFornoAtual ?? ""
+    ).toUpperCase();
+
+    const fornoLigado = !estadoForno.includes("DESLIG");
 
     const formatarAlerta = (tipo) => {
-        if (!tipo) return "Sem alertas no momento";
+        if (!tipo) {
+            return "Sem alertas no momento";
+        }
+
         const alertas = {
-            ALERTA_ENTRADA: "Alerta de entrada",
-            ALERTA_TEMPERATURA: "Alerta de temperatura",
-            ALERTA_SISTEMA: "Alerta do sistema"
+            ALERTA_ENTRADA: "Entrou em alerta",
+            ALERTA_SAIDA: "Saiu do estado alerta",
+            CRITICO_SAIDA: "Saiu do estado critico",
+            ERRO_SENSOR_SAIDA: "Erro de sensor resolvido",
+            CRITICO_ENTRADA: "Entrou em critico",
+            ERRO_SENSOR_ENTRADA: "Erro de",
+
         };
+
         return alertas[tipo] ?? tipo;
     };
 
-    const temperaturaFormatada = (fornoLigado && ultimaTemp !== undefined)
-        ? `${Math.round(Number(ultimaTemp))} °C`
-        : "Forno desligado";
+    const temperaturaFormatada =
+        fornoLigado && ultimaTemp !== undefined
+            ? `${Math.round(Number(ultimaTemp))} °C`
+            : "Forno desligado";
 
     return (
         <main>
@@ -161,10 +210,14 @@ function MainContent({
                     onClick={() => setFornoSelecionado(null)}
                 ></i>
 
-                <section id="dashboard" aria-labelledby="titulo-dashboard">
+                <section
+                    id="dashboard"
+                    aria-labelledby="titulo-dashboard"
+                >
                     <h2 id="titulo-dashboard">
                         Dashboard - {fornoSelecionado.nome}
                     </h2>
+
                     <p>
                         {carregando
                             ? "Carregando status..."
@@ -172,13 +225,29 @@ function MainContent({
                     </p>
                 </section>
 
-                <section id="temperatura" aria-labelledby="titulo-temperatura">
-                    <h2 id="titulo-temperatura">Temperatura</h2>
-                    <p>{carregando ? "Carregando..." : temperaturaFormatada}</p>
+                <section
+                    id="temperatura"
+                    aria-labelledby="titulo-temperatura"
+                >
+                    <h2 id="titulo-temperatura">
+                        Temperatura
+                    </h2>
+
+                    <p>
+                        {carregando
+                            ? "Carregando..."
+                            : temperaturaFormatada}
+                    </p>
                 </section>
 
-                <section id="temporizador" aria-labelledby="titulo-temporizador">
-                    <h2 id="titulo-temporizador">Temporizador</h2>
+                <section
+                    id="temporizador"
+                    aria-labelledby="titulo-temporizador"
+                >
+                    <h2 id="titulo-temporizador">
+                        Temporizador
+                    </h2>
+
                     <p>
                         {carregando
                             ? "Carregando..."
@@ -186,8 +255,14 @@ function MainContent({
                     </p>
                 </section>
 
-                <section id="alertas" aria-labelledby="titulo-alertas">
-                    <h2 id="titulo-alertas">Alertas</h2>
+                <section
+                    id="alertas"
+                    aria-labelledby="titulo-alertas"
+                >
+                    <h2 id="titulo-alertas">
+                        Alertas
+                    </h2>
+
                     <p>
                         {carregando
                             ? "Carregando..."
@@ -195,8 +270,14 @@ function MainContent({
                     </p>
                 </section>
 
-                <section id="Registros" aria-labelledby="titulo-registros">
-                    <h2 id="titulo-registros">Registros</h2>
+                <section
+                    id="Registros"
+                    aria-labelledby="titulo-registros"
+                >
+                    <h2 id="titulo-registros">
+                        Registros
+                    </h2>
+
                     <p>
                         {carregando
                             ? "Carregando..."
@@ -206,42 +287,64 @@ function MainContent({
                     </p>
                 </section>
 
-                <section id="graficos" aria-labelledby="titulo-graficos">
-                    <h2 id="titulo-graficos">Gráficos</h2>
-                    
+                <section
+                    id="graficos"
+                    aria-labelledby="titulo-graficos"
+                >
+                    <h2 id="titulo-graficos">
+                        Gráficos
+                    </h2>
+
                     {carregando ? (
                         <p>Carregando gráfico...</p>
                     ) : !fornoLigado ? (
                         <p>Forno desligado</p>
                     ) : quentura.length > 0 ? (
-                        <ResponsiveContainer width="100%" height={300}>
+                        <ResponsiveContainer
+                            width="100%"
+                            height={300}
+                        >
                             <LineChart data={quentura}>
                                 <XAxis
                                     dataKey="registradoEm"
                                     tickFormatter={(valor) =>
                                         valor
-                                            ? new Date(valor).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })
+                                            ? new Date(
+                                                  valor
+                                              ).toLocaleTimeString(
+                                                  "pt-BR",
+                                                  {
+                                                      hour: "2-digit",
+                                                      minute: "2-digit"
+                                                  }
+                                              )
                                             : ""
                                     }
                                 />
+
                                 <YAxis />
+
                                 <Tooltip
                                     formatter={(valor) => [
-                                        `${Math.round(Number(valor))} °C`,
+                                        `${Math.round(
+                                            Number(valor)
+                                        )} °C`,
                                         "Temperatura"
                                     ]}
-                                    labelFormatter={(label) => new Date(label).toLocaleTimeString("pt-BR")}
                                 />
+
                                 <Line
                                     type="monotone"
                                     dataKey="temperaturaAtual"
                                     stroke="var(--cor-destaque)"
-                                    isAnimationActive={false}
                                 />
                             </LineChart>
                         </ResponsiveContainer>
                     ) : (
-                        <p>Aguardando dados de temperatura para esta sessão...</p>
+                        <p>
+                            Nenhum dado de temperatura disponível
+                            para o gráfico.
+                        </p>
                     )}
                 </section>
             </div>
@@ -249,4 +352,4 @@ function MainContent({
     );
 }
 
-export default MainContent;
+export default MainContent; 
