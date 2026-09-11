@@ -2,172 +2,151 @@ import { useState, useEffect } from "react";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import API_URL from "./api";
 
-function MainContent({Logado, setLogado, setModalLoginAberto, fornoSelecionado, setFornoSelecionado, admin}) {
-
-
+function MainContent({ Logado, setLogado, setModalLoginAberto, fornoSelecionado, setFornoSelecionado, admin }) {
     const [quentura, setQuentura] = useState([]);
     const [tempo, setTempo] = useState([]);
     const [sessoes, setSessoes] = useState([]);
     const [eventos, setEventos] = useState([]);
     const [dashboard, setDashboard] = useState(null);
+    const [carregando, setCarregando] = useState(true);
 
     useEffect(() => {
+        if (!fornoSelecionado) return;
 
-          if (!fornoSelecionado) return;
-
-         const fornoId = fornoSelecionado.id;
-
-         const controller = new AbortController();
-        const signal = controller.signal;
-
-            setQuentura([]);
-            setTempo([]);
-            setSessoes([]);
-            setEventos([]);
-            setDashboard(null);
-
-        let estaAtivo = true;
+        const fornoId = fornoSelecionado.id;
+        const controller = new AbortController();
         let timerId;
 
-        const buscarDados = async () => {
-            
-            if(!estaAtivo) return;
+        setQuentura([]);
+        setTempo([]);
+        setSessoes([]);
+        setEventos([]);
+        setDashboard(null);
+        setCarregando(true);
 
+        const buscarDados = async () => {
             try {
                 const token = localStorage.getItem("token");
-                
 
-            const resposta = await fetch(`${API_URL}/telemetrias/forno/${fornoId}/dashboard`,{method: "GET",headers: {"Content-Type": "application/json","Authorization": "Bearer " + token}, signal});
-            if (!resposta.ok) return;
-            const dashboard = await resposta.json();
-            if (!estaAtivo) return;
-            setDashboard(dashboard);
+                const resposta = await fetch(`${API_URL}/telemetrias/forno/${fornoId}/dashboard`, {
+                    method: "GET",
+                    headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token },
+                    signal: controller.signal
+                });
 
-            const [dadoTemperatura, dadoTemporizador, dadoSessoes, dadoEventos] = await Promise.all([
-                fetch(`${API_URL}/temperaturas/fornos/${fornoId}`, {method:"GET", headers:{"Content-Type": "application/json", "Authorization": "Bearer " + token}, signal}),
-                fetch(`${API_URL}/temporizadores/fornos/${fornoId}`, {method:"GET", headers:{"Content-Type": "application/json", "Authorization": "Bearer " + token}, signal}),
-                fetch(`${API_URL}/sessoes/fornos/${fornoId}`, {method:"GET", headers:{"Content-Type": "application/json", "Authorization": "Bearer " + token}, signal}),
-                fetch(`${API_URL}/eventos/fornos/${fornoId}`, {method:"GET", headers:{"Content-Type": "application/json", "Authorization": "Bearer " + token}, signal })
-            ]);
-            
+                if (resposta.status === 401) {
+                    localStorage.removeItem("id");
+                    localStorage.removeItem("token");
+                    setLogado(false);
+                    setModalLoginAberto(true);
+                    return;
+                }
 
-            if (dadoTemperatura.status === 401) {
+                if (!resposta.ok) throw new Error("Falha na requisição principal");
+                const dashboardData = await resposta.json();
 
-                localStorage.removeItem("id");
-                localStorage.removeItem("token");
+                const [dadoTemperatura, dadoTemporizador, dadoSessoes, dadoEventos] = await Promise.all([
+                    fetch(`${API_URL}/temperaturas/fornos/${fornoId}`, { headers: { "Authorization": "Bearer " + token }, signal: controller.signal }),
+                    fetch(`${API_URL}/temporizadores/fornos/${fornoId}`, { headers: { "Authorization": "Bearer " + token }, signal: controller.signal }),
+                    fetch(`${API_URL}/sessoes/fornos/${fornoId}`, { headers: { "Authorization": "Bearer " + token }, signal: controller.signal }),
+                    fetch(`${API_URL}/eventos/fornos/${fornoId}`, { headers: { "Authorization": "Bearer " + token }, signal: controller.signal })
+                ]);
 
-                setLogado(false);
-                setModalLoginAberto(true);
+                if (!dadoTemperatura.ok || !dadoTemporizador.ok || !dadoSessoes.ok || !dadoEventos.ok) {
+                    throw new Error("Uma ou mais rotas falharam ao retornar os dados.");
+                }
 
-                clearTimeout(timerId);
-                return;
-            }
+                const [temperaturaJson, temporizadorJson, sessoesJson, eventosJson] = await Promise.all([
+                    dadoTemperatura.json(),
+                    dadoTemporizador.json(),
+                    dadoSessoes.json(),
+                    dadoEventos.json()
+                ]);
 
-            if (!dadoTemperatura.ok || !dadoTemporizador.ok || !dadoSessoes.ok || !dadoEventos.ok) {
-   
-            throw new Error("Uma ou mais rotas falharam ao retornar os dados.");
-            }
-
-            const [temperaturaJson, temporizadorJson, sessoesJson, eventosJson] = await Promise.all([
-                dadoTemperatura.json(),
-                dadoTemporizador.json(),
-                dadoSessoes.json(),
-                dadoEventos.json()
-            ]);
-
-            if (estaAtivo){
+                setDashboard(dashboardData);
                 setQuentura(temperaturaJson);
                 setTempo(temporizadorJson);
                 setSessoes(sessoesJson);
                 setEventos(eventosJson);
-            }
-
-            if (estaAtivo) {
-                timerId = setTimeout(buscarDados,5000);
-            }
-
-        } catch(erro) {
-            if (erro.name === "AbortError") {
-                return;
-            }
-
-            console.log("Mensagem de erro:", erro.message);
-
-            if (estaAtivo) {
+            } catch (erro) {
+                if (erro.name !== "AbortError") {
+                    console.error("Erro ao carregar dashboard:", erro.message);
+                }
+            } finally {
+                setCarregando(false);
                 timerId = setTimeout(buscarDados, 5000);
-             }
-        }
-
+            }
         };
 
         buscarDados();
 
-        return () => {estaAtivo = false; clearTimeout(timerId); controller.abort(); }
-
-        }, [fornoSelecionado]);
-
+        return () => {
+            clearTimeout(timerId);
+            controller.abort();
+        };
+    }, [fornoSelecionado]);
 
     if (!Logado || fornoSelecionado === null || admin) return null;
-    
 
-    return(
+    // Acesso seguro aos últimos itens dos arrays
+    const ultimaTemp = quentura.at(-1)?.temperaturaAtual;
+    const ultimoTempo = tempo.at(-1)?.horarioFim;
+    const ultimoEvento = eventos.at(-1)?.tipo;
+    const ultimaSessao = sessoes.at(-1)?.estadoSistema;
+
+    return (
         <main>
-            
-        <div id="aviso-auth" hidden>
-            <p>Faça login ou crie uma conta para continuar.</p>
-            <button id="aviso-btn-login">Entrar</button>
-            <button id="aviso-btn-cadastro">Criar Conta</button>
-        </div>
+            <div id="secoes-protegidas">
+                <i className="bi bi-arrow-left-right" id="trocar-forno" onClick={() => setFornoSelecionado(null)}></i>
 
-        <div id="secoes-protegidas">
+                <section id="dashboard" aria-labelledby="titulo-dashboard">    
+                    <h2 id="titulo-dashboard">Dashboard - {fornoSelecionado.nome}</h2>
+                    <p>{carregando ? "Carregando status..." : (dashboard?.status ?? "Status indisponível")}</p>
+                </section>
 
-            <i className="bi bi-arrow-left-right" id="trocar-forno"  onClick={() => setFornoSelecionado(null)}></i>
+                <section id="temperatura" aria-labelledby="titulo-temperatura">
+                    <h2 id="titulo-temperatura">Temperatura</h2>
+                    <p>{carregando ? "Carregando..." : (ultimaTemp !== undefined ? `${ultimaTemp} °C` : "Sem dados atualmente")}</p>
+                </section>
 
-            <section id="dashboard" aria-labelledby="titulo-dashboard">    
-                <h2 id="titulo-dashboard">Dashboard - {fornoSelecionado.nome}</h2>
-                <p>status do sistema</p>
-            </section>
+                <section id="temporizador" aria-labelledby="titulo-temporizador">
+                    <h2 id="titulo-temporizador">Temporizador</h2>
+                    <p>{carregando ? "Carregando..." : (ultimoTempo ?? "Sem dados atualmente")}</p>
+                </section>
 
-            <section id="temperatura" aria-labelledby="titulo-temperatura">
-                <h2 id="titulo-temperatura">Temperatura</h2>
-                <p>{quentura.length > 0 ? quentura[quentura.length - 1].temperaturaAtual : "Sem dados atualmente"}</p>
-            </section>
+                <section id="alertas" aria-labelledby="titulo-alertas">
+                    <h2 id="titulo-alertas">Alertas</h2>
+                    <p>{carregando ? "Carregando..." : (ultimoEvento ?? "Sem alertas no momento")}</p>
+                </section>
 
-            <section id="temporizador" aria-labelledby="titulo-temporizador">
-                <h2 id="titulo-temporizador">Temporizador</h2>
-                <p>{tempo.length > 0 ? tempo[tempo.length - 1].horarioFim : "Sem dados atualmente"}</p>
-            </section>
+                <section id="Registros" aria-labelledby="titulo-registros">
+                    <h2 id="titulo-registros">Registros</h2>
+                    <p>{carregando ? "Carregando..." : (ultimaSessao ?? "Sem dados atualmente")}</p>
+                </section>
 
-            <section id="alertas" aria-labelledby="titulo-alertas">
-                <h2 id="titulo-alertas">Alertas</h2>
-                <p>{eventos.length > 0 ? eventos[eventos.length - 1].tipo : "Sem dados atualmente"}</p>
-            </section>
-
-            <section id="Registros" aria-labelledby="titulo-registros">
-                <h2 id="titulo-registros">Registros</h2>
-                <p>{sessoes.length > 0 ? sessoes[sessoes.length - 1].estadoSistema : "Sem dados atualmente"}</p>
-            </section>
-
-            <section id="graficos" aria-labelledby="titulo-graficos">
-                <h2 id="titulo-graficos">Gráficos</h2>
-                <p>Gráficos</p>
-
-            <ResponsiveContainer width="100%" height={300}>
-                <LineChart width={500} height={300} data={quentura}>
-                <XAxis dataKey="registradoEm" tickFormatter={(valor) => new Date(valor).toLocaleTimeString("pt-BR", {hour: "2-digit", minute: "2-digit"})} />
-                <YAxis />
-                <Tooltip />
-                <Line dataKey="temperaturaAtual" stroke="var(--cor-destaque)"/>
-                </LineChart>
-            </ResponsiveContainer>
-
-            </section>
-
-        </div>
-
-    </main>
-    )
-
+                <section id="graficos" aria-labelledby="titulo-graficos">
+                    <h2 id="titulo-graficos">Gráficos</h2>
+                    {carregando ? (
+                        <p>Carregando gráfico...</p>
+                    ) : quentura.length > 0 ? (
+                        <ResponsiveContainer width="100%" height={300}>
+                            <LineChart data={quentura}>
+                                <XAxis 
+                                    dataKey="registradoEm" 
+                                    tickFormatter={(valor) => valor ? new Date(valor).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }) : ""} 
+                                />
+                                <YAxis />
+                                <Tooltip />
+                                <Line type="monotone" dataKey="temperaturaAtual" stroke="var(--cor-destaque)" />
+                            </LineChart>
+                        </ResponsiveContainer>
+                    ) : (
+                        <p>Nenhum dado de temperatura disponível para o gráfico.</p>
+                    )}
+                </section>
+            </div>
+        </main>
+    );
 }
 
-export default MainContent
+export default MainContent;
