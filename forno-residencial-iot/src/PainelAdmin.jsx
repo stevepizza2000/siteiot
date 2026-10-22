@@ -51,6 +51,9 @@ function PainelAdmin() {
                     tipo: "sucesso", 
                 });
                 
+                setNomeForno("");
+                setSerialNumber("");
+                
             }else {
                 const erroBody = await resposta.json().catch(() => null);
                 
@@ -58,6 +61,7 @@ function PainelAdmin() {
                     texto: erroBody?.mensagem || "Erro ao criar forno. Verifique os dados.",
                     tipo: "erro",
                 });
+
             } 
 
         } catch (erro) {
@@ -65,6 +69,8 @@ function PainelAdmin() {
                     texto: "Erro de conexão. Tente novamente.",
                     tipo:  "erro",
                 });
+                setNomeForno("");
+                setSerialNumber("");
         
         } finally {
             setCarregando(false);
