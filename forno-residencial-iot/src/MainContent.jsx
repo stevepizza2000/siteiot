@@ -170,7 +170,11 @@ function MainContent({
     const estadoSistema = dashboard?.estadoSistema ?? "";
     const fornoLigado = Boolean(estadoForno && estadoForno !== "FORNO_DESLIGADO");
     const temperaturaAtual = dashboard?.temperaturaAtual;
-    const ultimoTemporizador = temporizadores[0] ?? null;
+    const agora = Date.now();
+    const ultimoTemporizador = temporizadores.find((temporizador) => {
+        const fim = temporizador.horarioFim ? new Date(temporizador.horarioFim).getTime() : NaN;
+        return temporizador.executado !== true && Number.isFinite(fim) && fim > agora;
+    }) ?? null;
     const ultimoEvento = eventos[eventos.length - 1] ?? null;
     const sessaoAtual = sessoes.find((sessao) => sessao.fimSessao == null) ?? null;
 
@@ -187,12 +191,12 @@ function MainContent({
     const formatarAlerta = (tipo) => {
         if (!tipo) return "Sem alertas no momento";
         const alertas = {
-            ALERTA_ENTRADA: "Alerta de entrada",
-            ALERTA_SAIDA: "Alerta de saída",
-            ALERTA_TEMPERATURA: "Alerta de temperatura",
-            ALERTA_SISTEMA: "Alerta do sistema"
+            ALERTA_ENTRADA: "O forno foi ligado",
+            ALERTA_SAIDA: "O forno foi desligado",
+            ALERTA_TEMPERATURA: "A temperatura precisa de atenção",
+            ALERTA_SISTEMA: "O sistema registrou uma ocorrência"
         };
-        return alertas[tipo] ?? tipo;
+        return alertas[tipo] ?? "Evento registrado";
     };
 
     const formatarData = (valor) => {
@@ -201,9 +205,15 @@ function MainContent({
         return Number.isNaN(data.getTime()) ? String(valor) : data.toLocaleString("pt-BR");
     };
 
-    const temperaturaFormatada = temperaturaAtual !== null && temperaturaAtual !== undefined && Number.isFinite(Number(temperaturaAtual))
+    const temperaturaFormatada = fornoLigado && temperaturaAtual !== null && temperaturaAtual !== undefined && Number.isFinite(Number(temperaturaAtual))
         ? `${Number(temperaturaAtual).toFixed(1)} °C`
-        : "Sem leitura";
+        : "-";
+
+    const temporizadorFormatado = !fornoLigado
+        ? "-"
+        : ultimoTemporizador
+            ? `${formatarData(ultimoTemporizador.horarioInicio)} — ${formatarData(ultimoTemporizador.horarioFim)}`
+            : "-";
 
     return (
         <main>
@@ -224,9 +234,7 @@ function MainContent({
                     <h2 id="titulo-dashboard">Dashboard - {fornoSelecionado.nome}</h2>
                     <p>{carregando ? "Carregando status..." : formatarEstadoForno(estadoForno)}</p>
                     {erro && <p role="status">{erro}</p>}
-                    {dashboard?.atualizadoEm && (
-                        <small>Atualizado em: {formatarData(dashboard.atualizadoEm)}</small>
-                    )}
+                    <small>Atualizado em: {fornoLigado && dashboard?.atualizadoEm ? formatarData(dashboard.atualizadoEm) : "-"}</small>
                 </section>
 
                 <section id="temperatura" aria-labelledby="titulo-temperatura">
@@ -236,30 +244,26 @@ function MainContent({
 
                 <section id="temporizador" aria-labelledby="titulo-temporizador">
                     <h2 id="titulo-temporizador">Temporizador</h2>
-                    <p>
-                        {carregando
-                            ? "Carregando..."
-                            : ultimoTemporizador
-                                ? `${formatarData(ultimoTemporizador.horarioInicio)} — ${formatarData(ultimoTemporizador.horarioFim)}`
-                                : "Sem temporizador"}
-                    </p>
+                    <p>{carregando ? "Carregando..." : temporizadorFormatado}</p>
                 </section>
 
                 <section id="alertas" aria-labelledby="titulo-alertas">
                     <h2 id="titulo-alertas">Alertas</h2>
-                    <p>{carregando ? "Carregando..." : formatarAlerta(ultimoEvento?.tipo ?? dashboard?.ultimoEvento)}</p>
+                    <p>{carregando ? "Carregando..." : fornoLigado ? formatarAlerta(ultimoEvento?.tipo ?? dashboard?.ultimoEvento) : "-"}</p>
                 </section>
 
                 <section id="Registros" aria-labelledby="titulo-registros">
                     <h2 id="titulo-registros">Registros</h2>
-                    <p>{carregando ? "Carregando..." : estadoSistema || "Sem dados atualmente"}</p>
-                    <p>Sessão atual: {sessaoAtual ? "Em andamento" : "Nenhuma sessão aberta"}</p>
+                    <p>{carregando ? "Carregando..." : fornoLigado ? (estadoSistema || "-") : "-"}</p>
+                    <p>Sessão de uso: {carregando ? "Carregando..." : fornoLigado ? (sessaoAtual ? "Em andamento" : "Nenhuma sessão ativa") : "-"}</p>
                 </section>
 
                 <section id="graficos" aria-labelledby="titulo-graficos">
                     <h2 id="titulo-graficos">Gráficos</h2>
                     {carregando ? (
                         <p>Carregando gráfico...</p>
+                    ) : !fornoLigado ? (
+                        <p>-</p>
                     ) : temperaturas.length > 0 ? (
                         <ResponsiveContainer width="100%" height={300}>
                             <LineChart data={temperaturas}>
