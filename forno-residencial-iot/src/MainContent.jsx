@@ -189,16 +189,14 @@ function MainContent({
     };
 
     const formatarAlerta = (tipo) => {
-        if (!tipo || tipo === "NENHUM") return "-";
-        const mensagensEventos = {
-            ALERTA_ENTRADA: "O sistema entrou em estado de alerta",
-            ALERTA_SAIDA: "O estado alerta durou X segundos",
-            CRITICO_ENTRADA: "O sistema entrou em estado crítico",
-            CRITICO_SAIDA: "O estado crítico durou X segundos",
-            ERRO_SENSOR_ENTRADA: "Entrada no estado de erro de sensor",
-            ERRO_SENSOR_SAIDA: "Saída do estado de erro de sensor"
+        if (!tipo) return "Sem alertas no momento";
+        const alertas = {
+            ALERTA_ENTRADA: "O forno foi ligado",
+            ALERTA_SAIDA: "O forno foi desligado",
+            ALERTA_TEMPERATURA: "A temperatura precisa de atenção",
+            ALERTA_SISTEMA: "O sistema registrou uma ocorrência"
         };
-        return mensagensEventos[tipo] ?? "-";
+        return alertas[tipo] ?? "Evento registrado";
     };
 
     const formatarData = (valor) => {
@@ -244,21 +242,20 @@ function MainContent({
                     <p>{carregando ? "Carregando..." : temperaturaFormatada}</p>
                 </section>
 
-                {(!fornoLigado || ultimoTemporizador) && (
-                    <section id="temporizador" aria-labelledby="titulo-temporizador">
-                        <h2 id="titulo-temporizador">Temporizador</h2>
-                        <p>{carregando ? "Carregando..." : temporizadorFormatado}</p>
-                    </section>
-                )}
+                <section id="temporizador" aria-labelledby="titulo-temporizador">
+                    <h2 id="titulo-temporizador">Temporizador</h2>
+                    <p>{carregando ? "Carregando..." : temporizadorFormatado}</p>
+                </section>
 
                 <section id="alertas" aria-labelledby="titulo-alertas">
                     <h2 id="titulo-alertas">Alertas</h2>
                     <p>{carregando ? "Carregando..." : fornoLigado ? formatarAlerta(ultimoEvento?.tipo ?? dashboard?.ultimoEvento) : "-"}</p>
                 </section>
 
-                <section id="estado" aria-labelledby="titulo-estado">
-                    <h2 id="titulo-estado">Estado</h2>
+                <section id="Registros" aria-labelledby="titulo-registros">
+                    <h2 id="titulo-registros">Registros</h2>
                     <p>{carregando ? "Carregando..." : fornoLigado ? (estadoSistema || "-") : "-"}</p>
+                    <p>Sessão de uso: {carregando ? "Carregando..." : fornoLigado ? (sessaoAtual ? "Em andamento" : "Nenhuma sessão ativa") : "-"}</p>
                 </section>
 
                 <section id="graficos" aria-labelledby="titulo-graficos">
