@@ -15,9 +15,11 @@ function ModalCadastro({aberto, ModalLogin, ModalCadastro}) {
     const [erroPassword, setErroPassword] = useState("");
     const [mostrarPassword, setMostrarPassword] = useState(false); 
     const [carregando, setCarregando] = useState(false);
+    const [erroGeral, setErroGeral] = useState("");
 
 async function handleSubmitRegister(e){
     e.preventDefault();
+    setErroGeral("");
     let valido = true;
     let padraoEmail               = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     let padraoSenhaCaracteres     = /.{8,}/;
@@ -69,34 +71,32 @@ async function handleSubmitRegister(e){
         setErroPassword("A senha deve conter ao menos 1 letra maiuscula");
         valido = false;
     } else if (!padraoSenhaNumeros.test(Password)){
-        setErroPassword("A sennha deve conter ao menos 1 numero");
+        setErroPassword("A senha deve conter ao menos 1 numero");
         valido = false;
     } else {
         setErroPassword("");
     }
 
-    if (valido === true){
-
-        try{
+    if (valido === true) {
+        try {
             setCarregando(true);
-            const resposta = await fetch(`${API_URL}/usuario`, {method:"POST", headers:{"Content-Type": "application/json"}, body: JSON.stringify({nome: Nome,cpf: cpf, email: Email, nascimento: dataNascimento, senha: Password})});
-    
-            if (resposta.ok){
-                console.log("formulário está valido");
-                setCarregando(false);
+            const resposta = await fetch(`${API_URL}/usuario`, {method: "POST",headers: { "Content-Type": "application/json" }, body: JSON.stringify({ nome: Nome, cpf: cpf, email: Email, nascimento: dataNascimento, senha: Password })});
+
+            if (resposta.ok) {
                 ModalCadastro(false);
                 ModalLogin(true);
+            } else if (resposta.status === 409) {
+                setErroEmail("O e-mail já foi cadastrado");
             } else {
-                setCarregando(false);
-                setErroEmail("o email já foi cadastrado");
+                setErroGeral("Não foi possível criar a conta. Tente novamente.");
             }
-    
-        } catch (erro){
-            setCarregando(false);
-            console.log("Mensagem de erro: ", erro.message);
 
+        } catch (erro) {
+            setErroGeral("Erro de conexão. Tente novamente.");
+            console.log("Mensagem de erro: ", erro.message);
+        } finally {
+            setCarregando(false);
         }
-        
     }
 
 }   
@@ -189,6 +189,8 @@ function formatarCpf (cpf) {
                     ></i>
                     <span id="erro-cadastro-senha" role="alert">{erroPassword}</span>
                 </div>      
+
+                <span id="erro-cadastro-geral" role="alert">{erroGeral}</span>
 
                 <button type="submit" disabled={carregando}>{carregando ? "Carregando..." : "Criar Conta"}</button>
 

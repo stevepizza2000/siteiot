@@ -20,6 +20,7 @@ function PaginaRedefinirSenha(){
             let padraoSenhaCaracteres     = /.{8,}/;
             let padraoSenhaLetraMaiuscula = /[A-Z]/;
             let padraoSenhaNumeros        = /\d/;
+            const [erroGeral, setErroGeral] = useState("");
 
 
             if(novaSenha === ""){
@@ -32,7 +33,7 @@ function PaginaRedefinirSenha(){
                 setErroNovaSenha("A senha deve conter ao menos 1 letra maiuscula");
                 valido = false;
             } else if (!padraoSenhaNumeros.test(novaSenha)){
-                setErroNovaSenha("A sennha deve conter ao menos 1 numero");
+                setErroNovaSenha("A senha deve conter ao menos 1 numero");
                 valido = false;
             } else {
                 setErroNovaSenha("");
@@ -48,24 +49,27 @@ function PaginaRedefinirSenha(){
                 setErroConfirmarSenha("");
             }
 
-            if (valido === true){
+            if (valido === true) {
                 
-                try {
-                    setCarregando(true);
-                    const resposta = await fetch(`${API_URL}/auth/redefinir-senha`, {method:"POST", headers:{"Content-Type": "application/json"}, body: JSON.stringify({token: token, novaSenha: novaSenha})} )
+                setErroGeral("");
 
-                    if(resposta.ok) {
+                    try {
+                        setCarregando(true);
+                        const resposta = await fetch(`${API_URL}/auth/redefinir-senha`, {method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ token: token, novaSenha: novaSenha })});
+
+                        if (resposta.ok) {
+                            navigate("/");
+                        } else {
+                            setErroGeral("Não foi possível redefinir a senha. O link pode ter expirado. Peça um novo link.");
+                        }
+
+                    } catch (erro) {
+                        setErroGeral("Erro de conexão. Tente novamente.");
+                        console.log("Mensagem de erro: ", erro.message);
+                    } finally {
                         setCarregando(false);
-                        console.log("formulário valido")
-                        navigate("/");
                     }
-
-                } catch (erro) {
-                    setCarregando(false);
-                    console.log("Mensagem de erro: ", erro.message);
-                }
-
-            }
+}
 
     }
 
@@ -89,7 +93,9 @@ function PaginaRedefinirSenha(){
                     <span id="erro-redefinir-senha-segundo" role="alert">{erroConfirmarSenha}</span>
                 </div>
 
-                <button type="submit">{carregando ? "Mudando Senha..." : "Mudar a Senha"}</button>
+                <span id="erro-redefinir-senha-geral" role="alert">{erroGeral}</span>
+
+                <button type="submit" disabled={carregando}>{carregando ? "Mudando Senha..." : "Mudar a Senha"}</button>
 
                 <p>Lembrou a senha? <button type="button" id="voltar-login" onClick={() => navigate("/")}>Voltar</button></p>
 
