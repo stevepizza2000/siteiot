@@ -10,18 +10,20 @@ function PaginaRedefinirSenha(){
     const [erroConfirmarSenha, setErroConfirmarSenha] = useState("");
     const [searchParams] = useSearchParams();
     const token = searchParams.get("token");
-    console.log("Token:", token);
     const navigate = useNavigate();
     const [carregando, setCarregando] = useState(false);
+    const [erroGeral, setErroGeral] = useState("");
 
     async function handleSubmitResetPassword(e){
             e.preventDefault();
+            if (!token) {
+                setErroGeral("Link inválido ou sem token. Solicite um novo link.");
+            return;
+        }
             let valido = true;
             let padraoSenhaCaracteres     = /.{8,}/;
             let padraoSenhaLetraMaiuscula = /[A-Z]/;
             let padraoSenhaNumeros        = /\d/;
-            const [erroGeral, setErroGeral] = useState("");
-
 
             if(novaSenha === ""){
                 setErroNovaSenha("Digite algo no campo");

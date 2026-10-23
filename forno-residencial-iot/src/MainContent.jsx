@@ -17,97 +17,140 @@ function MainContent({
     setFornoSelecionado,
     admin
 }) {
-    const [quentura, setQuentura] = useState([]);
-    const [tempo, setTempo] = useState([]);
+    const [temperaturas, setTemperaturas] = useState([]);
+    const [temporizadores, setTemporizadores] = useState([]);
     const [sessoes, setSessoes] = useState([]);
     const [eventos, setEventos] = useState([]);
     const [dashboard, setDashboard] = useState(null);
     const [carregando, setCarregando] = useState(true);
+    const [erro, setErro] = useState("");
 
     useEffect(() => {
-        if (!fornoSelecionado) return;
+        if (!fornoSelecionado?.id) return undefined;
 
         const fornoId = fornoSelecionado.id;
         const controller = new AbortController();
         let timerId;
+        let desmontado = false;
 
-        setQuentura([]);
-        setTempo([]);
+        setTemperaturas([]);
+        setTemporizadores([]);
         setSessoes([]);
         setEventos([]);
         setDashboard(null);
         setCarregando(true);
+        setErro("");
+
+        const headers = () => ({
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`
+        });
+
+        const buscarJson = async (url) => {
+            const resposta = await fetch(url, {
+                method: "GET",
+                headers: headers(),
+                signal: controller.signal
+            });
+
+            if (resposta.status === 401) {
+                throw new Error("Não autorizado");
+            }
+            if (!resposta.ok) {
+                throw new Error(`Falha ao consultar ${url.replace(API_URL, "")}`);
+            }
+            return resposta.json();
+        };
 
         const buscarDados = async () => {
             try {
-                const token = localStorage.getItem("token");
-                const headers = {
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer " + token
-                };
-
-                const respostaDashboard = await fetch(
-                    `${API_URL}/telemetrias/forno/${fornoId}/dashboard`,
-                    { method: "GET", headers, signal: controller.signal }
+                // O dashboard é a fonte do estado e da temperatura atuais.
+                const dashboardData = await buscarJson(
+                    `${API_URL}/telemetrias/forno/${fornoId}/dashboard`
                 );
 
-                if (respostaDashboard.status === 401) throw new Error("Não autorizado");
-                if (!respostaDashboard.ok) throw new Error("Falha ao carregar o dashboard.");
-
-                const dashboardData = await respostaDashboard.json();
-
-                const [dadoTemporizador, dadoSessoes] = await Promise.all([
-                    fetch(`${API_URL}/temporizadores/fornos/${fornoId}`, { method: "GET", headers, signal: controller.signal }),
-                    fetch(`${API_URL}/sessoes/fornos/${fornoId}`, { method: "GET", headers, signal: controller.signal })
+                // Essas rotas retornam dados independentes; uma falha em uma delas
+                // não deve impedir a atualização do estado atual do forno.
+                const [temporizadorResult, sessoesResult, eventosResult] = await Promise.allSettled([
+                    buscarJson(`${API_URL}/temporizadores/fornos/${fornoId}`),
+                    buscarJson(`${API_URL}/sessoes/fornos/${fornoId}`),
+                    buscarJson(`${API_URL}/eventos/fornos/${fornoId}`)
                 ]);
 
-                if (dadoTemporizador.status === 401 || dadoSessoes.status === 401) throw new Error("Não autorizado");
-                if (!dadoTemporizador.ok || !dadoSessoes.ok) throw new Error("Uma ou mais rotas falharam.");
+                const temporizadoresData = temporizadorResult.status === "fulfilled"
+                    ? temporizadorResult.value
+                    : [];
+                const sessoesData = sessoesResult.status === "fulfilled"
+                    ? sessoesResult.value
+                    : [];
+                const eventosData = eventosResult.status === "fulfilled"
+                    ? eventosResult.value
+                    : [];
 
-                const temporizadorJson = await dadoTemporizador.json();
-                const sessoesJson = await dadoSessoes.json();
+                const sessoesOrdenadas = (Array.isArray(sessoesData) ? sessoesData : [])
+                    .slice()
+                    .sort((a, b) => new Date(b.inicioSessao) - new Date(a.inicioSessao));
 
-                // 1. Blindagem no Sort das Sessões (Garante que é um array e cria uma cópia)
-                const sessoesArray = Array.isArray(sessoesJson) ? sessoesJson : [];
-                const sessoesOrdenadas = [...sessoesArray].sort(
-                    (a, b) => new Date(b.inicioSessao) - new Date(a.inicioSessao)
-                );
+                // A rota de sessões retorna resumos: não contém temperaturas/eventos.
+                // Buscamos as temperaturas pela rota específica da sessão aberta.
+                const sessaoAtual = sessoesOrdenadas.find(
+                    (sessao) => sessao.fimSessao == null
+                ) ?? null;
 
-                // Encontra a sessão ativa
-                const sessaoAtual = sessoesOrdenadas.find((sessao) => sessao.fimSessao === null) ?? null;
+                let temperaturasData = [];
+                if (sessaoAtual?.id) {
+                    try {
+                        const dados = await buscarJson(
+                            `${API_URL}/temperaturas/sessoes/${sessaoAtual.id}/temperaturas`
+                        );
+                        temperaturasData = Array.isArray(dados) ? dados : [];
+                    } catch (temperaturaErro) {
+                        if (temperaturaErro.name === "AbortError") throw temperaturaErro;
+                        console.error("Erro ao carregar temperaturas da sessão:", temperaturaErro.message);
+                    }
+                }
 
-                // 2. Blindagem no Sort das Temperaturas e Eventos
-                const tempsArray = Array.isArray(sessaoAtual?.temperaturas) ? sessaoAtual.temperaturas : [];
-                const temperaturasSessaoAtual = [...tempsArray].sort(
-                    (a, b) => new Date(a.registradoEm) - new Date(b.registradoEm)
-                );
+                const temperaturasOrdenadas = temperaturasData
+                    .slice()
+                    .sort((a, b) => new Date(a.registradoEm) - new Date(b.registradoEm));
 
-                const eventosArray = Array.isArray(sessaoAtual?.eventos) ? sessaoAtual.eventos : [];
-                const eventosSessaoAtual = [...eventosArray].sort(
-                    (a, b) => new Date(a.registradoEm) - new Date(b.registradoEm)
-                );
+                const temporizadoresOrdenados = (Array.isArray(temporizadoresData) ? temporizadoresData : [])
+                    .slice()
+                    .sort((a, b) => new Date(b.horarioFim ?? b.horarioInicio) - new Date(a.horarioFim ?? a.horarioInicio));
 
+                const eventosOrdenados = (Array.isArray(eventosData) ? eventosData : [])
+                    .slice()
+                    .sort((a, b) => new Date(a.registradoEm) - new Date(b.registradoEm));
+
+                if (desmontado) return;
                 setDashboard(dashboardData);
-                setQuentura(temperaturasSessaoAtual);
-                setTempo(Array.isArray(temporizadorJson) ? temporizadorJson : []);
+                setTemperaturas(temperaturasOrdenadas);
+                setTemporizadores(temporizadoresOrdenados);
                 setSessoes(sessoesOrdenadas);
-                setEventos(eventosSessaoAtual);
+                setEventos(eventosOrdenados);
+                setErro("");
 
-            } catch (erro) {
-                if (erro.name !== "AbortError") {
-                    console.error("Erro ao carregar dashboard:", erro.message);
-                    if (erro.message === "Não autorizado") {
+                const falhas = [temporizadorResult, sessoesResult, eventosResult]
+                    .filter((resultado) => resultado.status === "rejected");
+                if (falhas.length > 0) {
+                    console.warn("Algumas informações auxiliares não puderam ser carregadas.");
+                }
+            } catch (e) {
+                if (e.name !== "AbortError") {
+                    console.error("Erro ao carregar dashboard:", e.message);
+                    if (e.message === "Não autorizado") {
                         localStorage.removeItem("id");
                         localStorage.removeItem("token");
                         setLogado(false);
                         setModalLoginAberto(true);
                         return;
                     }
+                    if (!desmontado) setErro("Não foi possível atualizar os dados. Tentando novamente...");
                 }
             } finally {
-                setCarregando(false);
-                if (!controller.signal.aborted) {
-                    timerId = setTimeout(buscarDados, 500);
+                if (!desmontado) {
+                    setCarregando(false);
+                    timerId = setTimeout(buscarDados, 3000);
                 }
             }
         };
@@ -115,42 +158,52 @@ function MainContent({
         buscarDados();
 
         return () => {
+            desmontado = true;
             clearTimeout(timerId);
             controller.abort();
         };
     }, [fornoSelecionado, setLogado, setModalLoginAberto]);
 
-    if (!Logado || fornoSelecionado === null || admin) {
-        return null;
-    }
+    if (!Logado || !fornoSelecionado || admin) return null;
 
-    // SUBSTITUIÇÃO DO .at(-1) PELA FORMA TRADICIONAL BLINDADA
-    const ultimaTemp = quentura.length > 0 ? quentura[quentura.length - 1]?.temperaturaAtual : undefined;
-    const ultimoTempo = tempo.length > 0 ? tempo[tempo.length - 1]?.horarioFim : undefined;
-    const ultimoEvento = eventos.length > 0 ? eventos[eventos.length - 1]?.tipo : undefined;
+    const estadoForno = dashboard?.estadoForno ?? "";
+    const estadoSistema = dashboard?.estadoSistema ?? "";
+    const fornoLigado = Boolean(estadoForno && estadoForno !== "FORNO_DESLIGADO");
+    const temperaturaAtual = dashboard?.temperaturaAtual;
+    const ultimoTemporizador = temporizadores[0] ?? null;
+    const ultimoEvento = eventos[eventos.length - 1] ?? null;
+    const sessaoAtual = sessoes.find((sessao) => sessao.fimSessao == null) ?? null;
 
-    // Sessão atual já está filtrada corretamente no state
-    const sessaoAtual = sessoes.find((sessao) => sessao.fimSessao === null) ?? null;
-    const ultimaSessao = sessaoAtual ?? sessoes[0] ?? null;
-
-    const estadoForno = String(ultimaSessao?.estadoFornoAtual ?? "").toUpperCase();
-    
-    // Forno só está ligado se houver sessão e o estado não contiver "DESLIG"
-    const fornoLigado = sessaoAtual !== null && !estadoForno.includes("DESLIG");
+    const formatarEstadoForno = (estado) => {
+        const estados = {
+            FORNO_DESLIGADO: "Forno desligado",
+            FORNO_AQUECENDO: "Forno aquecendo",
+            FORNO_ATIVO: "Forno ativo",
+            FORNO_ESFRIANDO: "Forno esfriando"
+        };
+        return estados[estado] ?? estado ?? "Status indisponível";
+    };
 
     const formatarAlerta = (tipo) => {
         if (!tipo) return "Sem alertas no momento";
         const alertas = {
             ALERTA_ENTRADA: "Alerta de entrada",
+            ALERTA_SAIDA: "Alerta de saída",
             ALERTA_TEMPERATURA: "Alerta de temperatura",
             ALERTA_SISTEMA: "Alerta do sistema"
         };
         return alertas[tipo] ?? tipo;
     };
 
-    const temperaturaFormatada = (fornoLigado && ultimaTemp !== undefined)
-        ? `${Math.round(Number(ultimaTemp))} °C`
-        : "Forno desligado";
+    const formatarData = (valor) => {
+        if (!valor) return "Sem dados atualmente";
+        const data = new Date(valor);
+        return Number.isNaN(data.getTime()) ? String(valor) : data.toLocaleString("pt-BR");
+    };
+
+    const temperaturaFormatada = temperaturaAtual !== null && temperaturaAtual !== undefined && Number.isFinite(Number(temperaturaAtual))
+        ? `${Number(temperaturaAtual).toFixed(1)} °C`
+        : "Sem leitura";
 
     return (
         <main>
@@ -158,18 +211,22 @@ function MainContent({
                 <i
                     className="bi bi-arrow-left-right"
                     id="trocar-forno"
+                    role="button"
+                    tabIndex={0}
+                    aria-label="Trocar forno"
                     onClick={() => setFornoSelecionado(null)}
-                ></i>
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") setFornoSelecionado(null);
+                    }}
+                />
 
                 <section id="dashboard" aria-labelledby="titulo-dashboard">
-                    <h2 id="titulo-dashboard">
-                        Dashboard - {fornoSelecionado.nome}
-                    </h2>
-                    <p>
-                        {carregando
-                            ? "Carregando status..."
-                            : dashboard?.status ?? "Status indisponível"}
-                    </p>
+                    <h2 id="titulo-dashboard">Dashboard - {fornoSelecionado.nome}</h2>
+                    <p>{carregando ? "Carregando status..." : formatarEstadoForno(estadoForno)}</p>
+                    {erro && <p role="status">{erro}</p>}
+                    {dashboard?.atualizadoEm && (
+                        <small>Atualizado em: {formatarData(dashboard.atualizadoEm)}</small>
+                    )}
                 </section>
 
                 <section id="temperatura" aria-labelledby="titulo-temperatura">
@@ -182,66 +239,54 @@ function MainContent({
                     <p>
                         {carregando
                             ? "Carregando..."
-                            : ultimoTempo ?? "Sem dados atualmente"}
+                            : ultimoTemporizador
+                                ? `${formatarData(ultimoTemporizador.horarioInicio)} — ${formatarData(ultimoTemporizador.horarioFim)}`
+                                : "Sem temporizador"}
                     </p>
                 </section>
 
                 <section id="alertas" aria-labelledby="titulo-alertas">
                     <h2 id="titulo-alertas">Alertas</h2>
-                    <p>
-                        {carregando
-                            ? "Carregando..."
-                            : formatarAlerta(ultimoEvento)}
-                    </p>
+                    <p>{carregando ? "Carregando..." : formatarAlerta(ultimoEvento?.tipo ?? dashboard?.ultimoEvento)}</p>
                 </section>
 
                 <section id="Registros" aria-labelledby="titulo-registros">
                     <h2 id="titulo-registros">Registros</h2>
-                    <p>
-                        {carregando
-                            ? "Carregando..."
-                            : ultimaSessao?.estadoSistemaAtual ??
-                              ultimaSessao?.estadoSistemaFinal ??
-                              "Sem dados atualmente"}
-                    </p>
+                    <p>{carregando ? "Carregando..." : estadoSistema || "Sem dados atualmente"}</p>
+                    <p>Sessão atual: {sessaoAtual ? "Em andamento" : "Nenhuma sessão aberta"}</p>
                 </section>
 
                 <section id="graficos" aria-labelledby="titulo-graficos">
                     <h2 id="titulo-graficos">Gráficos</h2>
-                    
                     {carregando ? (
                         <p>Carregando gráfico...</p>
-                    ) : !fornoLigado ? (
-                        <p>Forno desligado</p>
-                    ) : quentura.length > 0 ? (
+                    ) : temperaturas.length > 0 ? (
                         <ResponsiveContainer width="100%" height={300}>
-                            <LineChart data={quentura}>
+                            <LineChart data={temperaturas}>
                                 <XAxis
                                     dataKey="registradoEm"
-                                    tickFormatter={(valor) =>
-                                        valor
-                                            ? new Date(valor).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })
-                                            : ""
-                                    }
+                                    tickFormatter={(valor) => valor
+                                        ? new Date(valor).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })
+                                        : ""}
                                 />
                                 <YAxis />
                                 <Tooltip
-                                    formatter={(valor) => [
-                                        `${Math.round(Number(valor))} °C`,
-                                        "Temperatura"
-                                    ]}
-                                    labelFormatter={(label) => new Date(label).toLocaleTimeString("pt-BR")}
+                                    formatter={(valor) => [`${Number(valor).toFixed(1)} °C`, "Temperatura"]}
+                                    labelFormatter={(label) => formatarData(label)}
                                 />
                                 <Line
                                     type="monotone"
                                     dataKey="temperaturaAtual"
                                     stroke="var(--cor-destaque)"
                                     isAnimationActive={false}
+                                    dot={false}
                                 />
                             </LineChart>
                         </ResponsiveContainer>
                     ) : (
-                        <p>Aguardando dados de temperatura para esta sessão...</p>
+                        <p>{fornoLigado
+                            ? "Ainda não há leituras salvas para esta sessão."
+                            : "Não há dados de temperatura salvos para exibir."}</p>
                     )}
                 </section>
             </div>
