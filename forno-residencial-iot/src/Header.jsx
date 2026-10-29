@@ -2,37 +2,41 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import API_URL from "./api";
 
-function Header({Logado, setLogado, setModalLoginAberto, setAdmin, setFornoSelecionado, admin, setModalPerfil, fornoSelecionado}){
-
-    let[menuAberto, setMenuAberto] = useState(false);
-    const [nome, setNome] =  useState(null);
+function Header({ Logado, setModalLoginAberto, setFornoSelecionado, admin, setModalPerfil, fornoSelecionado, sair }) {
+    let [menuAberto, setMenuAberto] = useState(false);
+    const [nome, setNome] = useState(null);
     const navigate = useNavigate();
 
     useEffect(() => { 
-    async function fetchData() {
-        try {
-        const token = localStorage.getItem("token");
-        const dadoNome = await fetch(`${API_URL}/usuario/meu-perfil`, {method:"GET", headers:{"Content-Type": "application/json", "Authorization": "Bearer " + token} });
-        
-
-        if(dadoNome.ok){
-            setNome(await dadoNome.json());
+        if (!Logado) {
+            setNome(null);
+            return;
         }
-    }
-        catch(erro) {
-            console.log("Mensagem de erro: ", erro.message);
-            
+
+        async function fetchData() {
+            try {
+                const token = localStorage.getItem("token");
+                const dadoNome = await fetch(`${API_URL}/usuario/meu-perfil`, {
+                    method: "GET", 
+                    headers: {
+                        "Content-Type": "application/json", 
+                        "Authorization": `Bearer ${token}`
+                    } 
+                });
+
+                if (dadoNome.ok) {
+                    setNome(await dadoNome.json());
+                }
+            } catch (erro) {
+                console.log("Mensagem de erro: ", erro.message);
+            }
         }
-    }
-  fetchData();
-
-
+        fetchData();
     }, [Logado]);
     
     return (
         <>
         <header>
-
             {!admin && fornoSelecionado && (
             <>
                 <button id="menu-hamburguer" onClick={() => setMenuAberto(!menuAberto)}>
@@ -55,17 +59,21 @@ function Header({Logado, setLogado, setModalLoginAberto, setAdmin, setFornoSelec
 
             {Logado && (
             <div id="acoes-logado">
-                <button   id="nome-usuario" onClick={() => {setModalPerfil(true)}}>{nome && nome.nome}</button>
-                <button id="botao-sair" onClick={() => {setLogado(false); setModalPerfil(false); setAdmin(false); setFornoSelecionado(null); setModalLoginAberto(true); setNome(null); setMenuAberto(false); localStorage.removeItem("id"); localStorage.removeItem("token"); navigate("/")}}>Sair</button>
+                <button id="nome-usuario" onClick={() => { setModalPerfil(true) }}>{nome?.nome}</button>
+                
+                {/* Lógica de logout delegada para a prop sair() */}
+                <button id="botao-sair" onClick={() => {
+                    sair();
+                    setMenuAberto(false);
+                    navigate("/");
+                }}>Sair</button>
             </div>
             )}
-
     </header>
 
         <div id="overlay" 
         className={menuAberto ? "ativo" : ""}
         onClick={() => setMenuAberto(false)}></div>
-
     </>
     )
 }

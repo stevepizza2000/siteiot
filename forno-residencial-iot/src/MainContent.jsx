@@ -1,26 +1,43 @@
 import { useState, useEffect } from "react";
-import {
-    LineChart,
-    Line,
-    XAxis,
-    YAxis,
-    Tooltip,
-    ResponsiveContainer
-} from "recharts";
+import {LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer} from "recharts";
 import API_URL from "./api";
 
-function MainContent({
-    Logado,
-    setLogado,
-    setModalLoginAberto,
-    fornoSelecionado,
-    setFornoSelecionado,
-    admin
-}) {
+const ESTADOS_FORNO = {
+    FORNO_DESLIGADO: "Forno desligado",
+    FORNO_AQUECENDO: "Forno aquecendo",
+    FORNO_ATIVO: "Forno ativo",
+    FORNO_ESFRIANDO: "Forno esfriando"
+};
+
+const ALERTAS_SISTEMA = {
+    NENHUM: "Sem alertas no momento",
+    ALERTA_ENTRADA: "O sistema entrou em alerta",
+    ALERTA_SAIDA: "Sistema normalizado (Alerta)",
+    CRITICO_ENTRADA: "Alerta Crítico: Verifique a temperatura",
+    CRITICO_SAIDA: "Sistema normalizado (Crítico)",
+    ERRO_SENSOR_ENTRADA: "Erro no sensor de temperatura",
+    ERRO_SENSOR_SAIDA: "Sensor normalizado"
+};
+
+const formatarEstadoForno = (estado) => {
+    return ESTADOS_FORNO[estado] ?? estado ?? "Status indisponível";
+};
+
+const formatarAlerta = (tipo) => {
+    if (!tipo) return "Sem alertas no momento";
+    return ALERTAS_SISTEMA[tipo] ?? "Evento registrado";
+};
+
+const formatarData = (valor) => {
+    if (!valor) return "Sem dados atualmente";
+    const data = new Date(valor);
+    return Number.isNaN(data.getTime()) ? String(valor) : data.toLocaleString("pt-BR");
+};
+
+function MainContent({Logado, setLogado, setModalLoginAberto, fornoSelecionado, setFornoSelecionado, admin}) {
     const [temperaturas, setTemperaturas] = useState([]);
     const [temporizadores, setTemporizadores] = useState([]);
     const [sessoes, setSessoes] = useState([]);
-    const [eventos, setEventos] = useState([]);
     const [dashboard, setDashboard] = useState(null);
     const [carregando, setCarregando] = useState(true);
     const [erro, setErro] = useState("");
@@ -36,7 +53,6 @@ function MainContent({
         setTemperaturas([]);
         setTemporizadores([]);
         setSessoes([]);
-        setEventos([]);
         setDashboard(null);
         setCarregando(true);
         setErro("");
@@ -47,11 +63,7 @@ function MainContent({
         });
 
         const buscarJson = async (url) => {
-            const resposta = await fetch(url, {
-                method: "GET",
-                headers: headers(),
-                signal: controller.signal
-            });
+            const resposta = await fetch(url, {method: "GET", headers: headers(),signal: controller.signal});
 
             if (resposta.status === 401) {
                 throw new Error("Não autorizado");
@@ -64,17 +76,11 @@ function MainContent({
 
         const buscarDados = async () => {
             try {
-                // O dashboard é a fonte do estado e da temperatura atuais.
-                const dashboardData = await buscarJson(
-                    `${API_URL}/telemetrias/forno/${fornoId}/dashboard`
-                );
+                const dashboardData = await buscarJson(`${API_URL}/telemetrias/forno/${fornoId}/dashboard`);
 
-                // Essas rotas retornam dados independentes; uma falha em uma delas
-                // não deve impedir a atualização do estado atual do forno.
-                const [temporizadorResult, sessoesResult, eventosResult] = await Promise.allSettled([
+                const [temporizadorResult, sessoesResult] = await Promise.allSettled([
                     buscarJson(`${API_URL}/temporizadores/fornos/${fornoId}`),
-                    buscarJson(`${API_URL}/sessoes/fornos/${fornoId}`),
-                    buscarJson(`${API_URL}/eventos/fornos/${fornoId}`)
+                    buscarJson(`${API_URL}/sessoes/fornos/${fornoId}`)
                 ]);
 
                 const temporizadoresData = temporizadorResult.status === "fulfilled"
@@ -83,16 +89,11 @@ function MainContent({
                 const sessoesData = sessoesResult.status === "fulfilled"
                     ? sessoesResult.value
                     : [];
-                const eventosData = eventosResult.status === "fulfilled"
-                    ? eventosResult.value
-                    : [];
 
                 const sessoesOrdenadas = (Array.isArray(sessoesData) ? sessoesData : [])
                     .slice()
                     .sort((a, b) => new Date(b.inicioSessao) - new Date(a.inicioSessao));
 
-                // A rota de sessões retorna resumos: não contém temperaturas/eventos.
-                // Buscamos as temperaturas pela rota específica da sessão aberta.
                 const sessaoAtual = sessoesOrdenadas.find(
                     (sessao) => sessao.fimSessao == null
                 ) ?? null;
@@ -100,9 +101,7 @@ function MainContent({
                 let temperaturasData = [];
                 if (sessaoAtual?.id) {
                     try {
-                        const dados = await buscarJson(
-                            `${API_URL}/temperaturas/sessoes/${sessaoAtual.id}/temperaturas`
-                        );
+                        const dados = await buscarJson(`${API_URL}/temperaturas/sessoes/${sessaoAtual.id}/temperaturas`);
                         temperaturasData = Array.isArray(dados) ? dados : [];
                     } catch (temperaturaErro) {
                         if (temperaturaErro.name === "AbortError") throw temperaturaErro;
@@ -112,25 +111,20 @@ function MainContent({
 
                 const temperaturasOrdenadas = temperaturasData
                     .slice()
-                    .sort((a, b) => new Date(a.registradoEm) - new Date(b.registradoEm));
+                    .sort((a, b) => new Date(a.criadoEm) - new Date(b.criadoEm));
 
                 const temporizadoresOrdenados = (Array.isArray(temporizadoresData) ? temporizadoresData : [])
                     .slice()
                     .sort((a, b) => new Date(b.horarioFim ?? b.horarioInicio) - new Date(a.horarioFim ?? a.horarioInicio));
-
-                const eventosOrdenados = (Array.isArray(eventosData) ? eventosData : [])
-                    .slice()
-                    .sort((a, b) => new Date(a.registradoEm) - new Date(b.registradoEm));
 
                 if (desmontado) return;
                 setDashboard(dashboardData);
                 setTemperaturas(temperaturasOrdenadas);
                 setTemporizadores(temporizadoresOrdenados);
                 setSessoes(sessoesOrdenadas);
-                setEventos(eventosOrdenados);
                 setErro("");
 
-                const falhas = [temporizadorResult, sessoesResult, eventosResult]
+                const falhas = [temporizadorResult, sessoesResult]
                     .filter((resultado) => resultado.status === "rejected");
                 if (falhas.length > 0) {
                     console.warn("Algumas informações auxiliares não puderam ser carregadas.");
@@ -171,39 +165,13 @@ function MainContent({
     const fornoLigado = Boolean(estadoForno && estadoForno !== "FORNO_DESLIGADO");
     const temperaturaAtual = dashboard?.temperaturaAtual;
     const agora = Date.now();
+    
     const ultimoTemporizador = temporizadores.find((temporizador) => {
         const fim = temporizador.horarioFim ? new Date(temporizador.horarioFim).getTime() : NaN;
         return temporizador.executado !== true && Number.isFinite(fim) && fim > agora;
     }) ?? null;
-    const ultimoEvento = eventos[eventos.length - 1] ?? null;
+    
     const sessaoAtual = sessoes.find((sessao) => sessao.fimSessao == null) ?? null;
-
-    const formatarEstadoForno = (estado) => {
-        const estados = {
-            FORNO_DESLIGADO: "Forno desligado",
-            FORNO_AQUECENDO: "Forno aquecendo",
-            FORNO_ATIVO: "Forno ativo",
-            FORNO_ESFRIANDO: "Forno esfriando"
-        };
-        return estados[estado] ?? estado ?? "Status indisponível";
-    };
-
-    const formatarAlerta = (tipo) => {
-        if (!tipo) return "Sem alertas no momento";
-        const alertas = {
-            ALERTA_ENTRADA: "O forno foi ligado",
-            ALERTA_SAIDA: "O forno foi desligado",
-            ALERTA_TEMPERATURA: "A temperatura precisa de atenção",
-            ALERTA_SISTEMA: "O sistema registrou uma ocorrência"
-        };
-        return alertas[tipo] ?? "Evento registrado";
-    };
-
-    const formatarData = (valor) => {
-        if (!valor) return "Sem dados atualmente";
-        const data = new Date(valor);
-        return Number.isNaN(data.getTime()) ? String(valor) : data.toLocaleString("pt-BR");
-    };
 
     const temperaturaFormatada = fornoLigado && temperaturaAtual !== null && temperaturaAtual !== undefined && Number.isFinite(Number(temperaturaAtual))
         ? `${Number(temperaturaAtual).toFixed(1)} °C`
@@ -249,7 +217,8 @@ function MainContent({
 
                 <section id="alertas" aria-labelledby="titulo-alertas">
                     <h2 id="titulo-alertas">Alertas</h2>
-                    <p>{carregando ? "Carregando..." : fornoLigado ? formatarAlerta(ultimoEvento?.tipo ?? dashboard?.ultimoEvento) : "-"}</p>
+                    {/* 3. LENDO DIRETO DO DASHBOARD */}
+                    <p>{carregando ? "Carregando..." : fornoLigado ? formatarAlerta(dashboard?.ultimoEvento) : "-"}</p>
                 </section>
 
                 <section id="Registros" aria-labelledby="titulo-registros">
@@ -268,7 +237,7 @@ function MainContent({
                         <ResponsiveContainer width="100%" height={300}>
                             <LineChart data={temperaturas}>
                                 <XAxis
-                                    dataKey="registradoEm"
+                                    dataKey="criadoEm"
                                     tickFormatter={(valor) => valor
                                         ? new Date(valor).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })
                                         : ""}

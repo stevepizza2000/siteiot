@@ -10,9 +10,9 @@ import { useState, useEffect } from "react";
 import PainelAdmin from "./PainelAdmin";
 import ModalPerfil from "./ModalPerfil";
 import { jwtDecode } from "jwt-decode";
+import API_URL from "./api";
 
 function App() {
-
   const [ModalLoginAberto, setModalLoginAberto] = useState(true);
   const [ModalCadastroAberto, setModalCadastroAberto] = useState(false);
   const [ModalEsqueciSenhaAberto, setModalEsqueciSenha] = useState(false);
@@ -23,41 +23,63 @@ function App() {
   const [admin, setAdmin] = useState(false);
   let [verificandoAuth, setVerificandoAuth] = useState(true);
 
-  useEffect(() => {
+  const sair = async () => {
+    const refreshToken = localStorage.getItem("refreshToken");
+    if (refreshToken) {
+      try {
+        await fetch(`${API_URL}/auth/logout`, {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ refreshToken })
+        });
+      } catch (e) {
+        console.error("Erro ao revogar sessão:", e);
+      }
+    }
+    
+    setLogado(false);
+    setAdmin(false);
+    setFornoSelecionado(null);
+    setModalPerfil(false);
+    setModalLoginAberto(true);
+    
+    localStorage.removeItem("id");
+    localStorage.removeItem("token");
+    localStorage.removeItem("refreshToken");
+  };
 
+  useEffect(() => {
     const token = localStorage.getItem("token");
 
     if (token) {
-        setModalLoginAberto(false);
-        setLogado(true);
-
         try {
             const tokenDecodificado = jwtDecode(token);
-            if (tokenDecodificado.role === "ADMIN" || tokenDecodificado.role === "ROLE_ADMIN") {
-                setAdmin(true);
+            // Verifica se o token expirou (exp é em segundos, Date.now em ms)
+            if (tokenDecodificado.exp * 1000 < Date.now()) {
+                sair(); // Token vencido: limpa tudo
+            } else {
+                setModalLoginAberto(false);
+                setLogado(true);
+                if (tokenDecodificado.role === "ADMIN" || tokenDecodificado.role === "ROLE_ADMIN") {
+                    setAdmin(true);
+                }
             }
         } catch (erro) {
             console.log("Erro ao ler token no App.jsx: " + erro.message);
+            sair();
         }
     }
-
     setVerificandoAuth(false); 
+  }, []);
 
-}, []);
-
-    useEffect(() => {
-
-      if (mensagemSucesso !== "" ) {
-        
+  useEffect(() => {
+      if (mensagemSucesso !== "") {
         const timer = setTimeout(() => {
           setMensagemSucesso("");
         }, 45000);
-
         return () => clearTimeout(timer);
-
       }
-
-    }, [mensagemSucesso]);
+  }, [mensagemSucesso]);
 
   return (
     <BrowserRouter>
@@ -69,23 +91,20 @@ function App() {
         <Navigate to="/admin" replace />
     ) : (
             <>
-
               <Header
               Logado={Logado}
-              setLogado={setLogado}
-              setModalLoginAberto= {setModalLoginAberto}
-              setAdmin= {setAdmin}
-              setFornoSelecionado= {setFornoSelecionado}
-              setModalPerfil= {setModalPerfil}
-              admin= {admin}
-              fornoSelecionado= {fornoSelecionado}
-
+              setModalLoginAberto={setModalLoginAberto}
+              setFornoSelecionado={setFornoSelecionado}
+              setModalPerfil={setModalPerfil}
+              admin={admin}
+              fornoSelecionado={fornoSelecionado}
+              sair={sair}
               />
 
               <ModalPerfil
-              Logado= {Logado}
-              ModalPerfilAberto= {ModalPerfilAberto}
-              setModalPerfil= {setModalPerfil}
+              Logado={Logado}
+              ModalPerfilAberto={ModalPerfilAberto}
+              setModalPerfil={setModalPerfil}
               />
 
               <ModalLogin 
@@ -94,81 +113,75 @@ function App() {
               ModalCadastro={setModalCadastroAberto}
               ModalEsqueciSenha={setModalEsqueciSenha}
               setLogado={setLogado}
-              mensagemSucesso = {mensagemSucesso}
+              mensagemSucesso={mensagemSucesso}
               setAdmin={setAdmin}
               />
 
               <SelecionarForno
-              fornoSelecionado= {fornoSelecionado}
-              Logado= {Logado}
-              setFornoSelecionado= {setFornoSelecionado}
-              admin= {admin}
+              fornoSelecionado={fornoSelecionado}
+              Logado={Logado}
+              setFornoSelecionado={setFornoSelecionado}
+              admin={admin}
               />
 
               <ModalEsqueciSenha
               setModalLoginAberto={setModalLoginAberto}
               ModalEsqueciSenhaAberto={ModalEsqueciSenhaAberto}
               ModalEsqueciSenhaSet={setModalEsqueciSenha}
-              setMensagemSucesso= {setMensagemSucesso}
+              setMensagemSucesso={setMensagemSucesso}
               />
 
               <ModalCadastro 
               aberto={ModalCadastroAberto}
-              ModalLogin= {setModalLoginAberto}
+              ModalLogin={setModalLoginAberto}
               ModalCadastro={setModalCadastroAberto}
               />
 
               <MainContent
-              setFornoSelecionado= {setFornoSelecionado}
-              setModalLoginAberto= {setModalLoginAberto}
+              setFornoSelecionado={setFornoSelecionado}
+              setModalLoginAberto={setModalLoginAberto}
               Logado={Logado}
               setLogado={setLogado}
               fornoSelecionado={fornoSelecionado}
-              admin= {admin}
+              admin={admin}
+              sair={sair}
               />
-            
             </>
     )
           }/>
 
-          <Route path="/redefinir-senha" element=  {
-              <PaginaRedefinirSenha
-              
-              />
+          <Route path="/redefinir-senha" element={
+              <PaginaRedefinirSenha />
           }/>
 
-          <Route path="/admin" element= {
+          <Route path="/admin" element={
             verificandoAuth ? (
             <p>Carregando...</p>
               ) : admin && Logado ? (
                 <>
-
                   <Header
                   Logado={Logado}
-                  setLogado={setLogado}
-                  setModalLoginAberto= {setModalLoginAberto}
-                  setAdmin= {setAdmin}
-                  setFornoSelecionado= {setFornoSelecionado}
-                  admin= {admin}
+                  setModalLoginAberto={setModalLoginAberto}
+                  setFornoSelecionado={setFornoSelecionado}
+                  admin={admin}
                   setModalPerfil={setModalPerfil}
                   fornoSelecionado={fornoSelecionado}
+                  sair={sair}
                   />
 
                   <PainelAdmin 
                   admin={admin} 
-                  setAdmin={setAdmin} 
+                  setAdmin={setAdmin}
+                  sair={sair} 
                   />
-
                 </>
               ) : (
                   <Navigate to="/" replace />
               )
           }/>
-
         </Routes>
    </BrowserRouter>   
-)
-
+  )
 }
 
-export default App
+export default App;

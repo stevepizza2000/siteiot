@@ -3,8 +3,7 @@ import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
 import API_URL from "./api";
 
-function ModalLogin ({aberto, setModalLogin, ModalCadastro, setLogado, ModalEsqueciSenha, setAdmin, mensagemSucesso}) {
-
+function ModalLogin({ aberto, setModalLogin, ModalCadastro, setLogado, ModalEsqueciSenha, setAdmin, mensagemSucesso }) {
     const navigate = useNavigate();
     let [Email, setEmail] = useState("");
     let [Password, setPassword] = useState("");
@@ -13,82 +12,90 @@ function ModalLogin ({aberto, setModalLogin, ModalCadastro, setLogado, ModalEsqu
     let [mostrarPassword, setMostrarPassword] = useState(false);
     const [carregando, setCarregando] = useState(false);
 
-    async function handleSubmitLogin (e){
+    async function handleSubmitLogin(e) {
         e.preventDefault();
         let valido = true;
 
         if (Email === "") {
-            setErroEmail("E-mail ou senha incorretos");
+            setErroEmail("E-mail é obrigatório");
             valido = false;
         } else {
             setErroEmail("");
         }
 
         if (Password === "") {
-            setErroPassword("E-mail ou senha incorretos");
+            setErroPassword("Senha é obrigatória");
             valido = false;
         } else {
             setErroPassword("");
         }
 
-
-        if(valido === true){
-            
-            try{
-            setCarregando(true);    
-            const resposta = await fetch(`${API_URL}/auth/login`, {method:"POST", headers:{"Content-Type": "application/json"}, body: JSON.stringify({email: Email, senha: Password})});
+        if (valido === true) {
+            try {
+                setCarregando(true);    
+                const resposta = await fetch(`${API_URL}/auth/login`, {
+                    method: "POST", 
+                    headers: { "Content-Type": "application/json" }, 
+                    body: JSON.stringify({ email: Email, senha: Password })
+                });
 
                 if (resposta.ok) {
-                const dados = await resposta.json();
-                localStorage.setItem("token", dados.token);
-                localStorage.setItem("id", dados.id);
+                    const dados = await resposta.json();
+                    localStorage.setItem("token", dados.token);
+                    localStorage.setItem("refreshToken", dados.refreshtoken);
+                    localStorage.setItem("id", dados.id);
 
                     try {
                         const tokenDecodificado = jwtDecode(dados.token);
-                        
                         if (tokenDecodificado.role === "ADMIN" || tokenDecodificado.role === "ROLE_ADMIN"){
                             setAdmin(true);
                             navigate("/admin");
                         } else {
                             setAdmin(false);
                         }
-
                     } catch (erro) {
                         console.log("Erro ao decodificar o token");
                     }
 
-                setCarregando(false);
-                setLogado(true);
-                ModalCadastro(false);
-                setModalLogin(false);
+                    setEmail("");
+                    setPassword("");
+                    setMostrarPassword(false);
+                    setErroEmail("");
+                    setErroPassword("");
+
+                    setCarregando(false);
+                    setLogado(true);
+                    ModalCadastro(false);
+                    setModalLogin(false);
 
                 } else {
                     setCarregando(false);
-                    setErroEmail("E-mail não cadastrado");
-                    setErroPassword("E-mail não cadastrado");
+                    if (resposta.status === 401 || resposta.status === 403) {
+                        setErroEmail("E-mail ou senha incorretos");
+                        setErroPassword("E-mail ou senha incorretos");
+                    } else {
+                        setErroEmail("Erro no servidor. Tente novamente mais tarde.");
+                        setErroPassword("");
+                    }
                 }
             } catch (erro) {
                 setCarregando(false);
                 console.log("Mensagem de erro: ", erro.message);
+                setErroEmail("Falha de conexão. Verifique sua rede.");
             }
-
         }
     }
 
-
     if (!aberto) return null; 
-
 
     return (
         <div id="modal-login" role="dialog" aria-modal="true" aria-labelledby="titulo-login">
         <div>
-
             <h2 id="titulo-login">Entrar</h2>
 
             {mensagemSucesso !== "" ? <p className="mensagem-sucesso">{mensagemSucesso}</p> : null}
             
             <form id="form-login" onSubmit={handleSubmitLogin} noValidate>
-
                 <div>
                     <label htmlFor="login-email">E-mail</label>
                     <input
@@ -124,15 +131,15 @@ function ModalLogin ({aberto, setModalLogin, ModalCadastro, setLogado, ModalEsqu
                 <button type="submit" disabled={carregando}>{carregando ? "Carregando..." : "Entrar"}</button>
 
                 <p>Não possui uma conta?<button type="button" id="ir-para-cadastro"
-                onClick={() => {setErroEmail("");setErroPassword("");setModalLogin(false); ModalCadastro(true);}}
+                onClick={() => { setErroEmail(""); setErroPassword(""); setModalLogin(false); ModalCadastro(true); }}
                 >Criar Conta</button></p>
-                <p>Esqueceu sua senha?<button type="button" id="ir-para-esqueci-senha" onClick={() => {setModalLogin(false); ModalEsqueciSenha(true)}}>Esqueci Minha Senha</button></p>
-
+                
+                <p>Esqueceu sua senha?<button type="button" id="ir-para-esqueci-senha" 
+                onClick={() => { setModalLogin(false); ModalEsqueciSenha(true) }}>Esqueci Minha Senha</button></p>
             </form>
         </div>
     </div>
     )
-
 }
 
-export default ModalLogin
+export default ModalLogin;
