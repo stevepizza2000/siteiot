@@ -1,7 +1,7 @@
 import { useState } from "react";
 import API_URL from "./api";
 
-function ModalSenha({ModalSenhaAberto, setModalSenha}){
+function ModalSenha({ModalSenhaAberto, setModalSenha, sair, setMensagemSucesso}){
 
     const [senhaAtual, setSenhaAtual] = useState("");
     const [novaSenha, setNovaSenha] = useState("");
@@ -69,11 +69,8 @@ function ModalSenha({ModalSenhaAberto, setModalSenha}){
                 setSucesso(true);
                 
                 setTimeout(() => {
-                    setModalSenha(false);
-                    setSucesso(false);
-                    setSenhaAtual("");
-                    setNovaSenha("");
-                    setConfirmarSenha("");
+                    setMensagemSucesso("Senha alterada com sucesso. Faça login novamente.");
+                    sair();
                 }, 3000);
 
             } else {

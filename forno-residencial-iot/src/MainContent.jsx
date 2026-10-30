@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import {LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer} from "recharts";
-import API_URL from "./api";
+import API_URL, { fetchAutenticado } from "./api"
+
+const LIMITE_DADO_VELHO_MS = 60 * 1000;
 
 const ESTADOS_FORNO = {
     FORNO_DESLIGADO: "Forno desligado",
@@ -34,7 +36,7 @@ const formatarData = (valor) => {
     return Number.isNaN(data.getTime()) ? String(valor) : data.toLocaleString("pt-BR");
 };
 
-function MainContent({Logado, setLogado, setModalLoginAberto, fornoSelecionado, setFornoSelecionado, admin}) {
+function MainContent({Logado, setLogado, setModalLoginAberto, fornoSelecionado, setFornoSelecionado, admin, sair}) {
     const [temperaturas, setTemperaturas] = useState([]);
     const [temporizadores, setTemporizadores] = useState([]);
     const [sessoes, setSessoes] = useState([]);
@@ -57,19 +59,20 @@ function MainContent({Logado, setLogado, setModalLoginAberto, fornoSelecionado, 
         setCarregando(true);
         setErro("");
 
-        const headers = () => ({
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`
-        });
-
         const buscarJson = async (url) => {
-            const resposta = await fetch(url, {method: "GET", headers: headers(),signal: controller.signal});
+    
+            const resposta = await fetchAutenticado(url, {
+                method: "GET",
+                signal: controller.signal
+            }, sair);
 
             if (resposta.status === 401) {
                 throw new Error("Não autorizado");
             }
             if (!resposta.ok) {
-                throw new Error(`Falha ao consultar ${url.replace(API_URL, "")}`);
+                const erro = new Error(`Falha ao consultar ${url.replace(API_URL, "")}`);
+                erro.status = resposta.status;
+                throw erro;
             }
             return resposta.json();
         };
@@ -111,7 +114,7 @@ function MainContent({Logado, setLogado, setModalLoginAberto, fornoSelecionado, 
 
                 const temperaturasOrdenadas = temperaturasData
                     .slice()
-                    .sort((a, b) => new Date(a.criadoEm) - new Date(b.criadoEm));
+                    .sort((a, b) => new Date(a.registradoEm) - new Date(b.registradoEm));
 
                 const temporizadoresOrdenados = (Array.isArray(temporizadoresData) ? temporizadoresData : [])
                     .slice()
@@ -133,16 +136,14 @@ function MainContent({Logado, setLogado, setModalLoginAberto, fornoSelecionado, 
                 if (e.name !== "AbortError") {
                     console.error("Erro ao carregar dashboard:", e.message);
                     if (e.message === "Não autorizado") {
-                        localStorage.removeItem("id");
-                        localStorage.removeItem("token");
-                        setLogado(false);
-                        setModalLoginAberto(true);
+                        desmontado = true;
+                        sair(); 
                         return;
                     }
                     if (!desmontado) setErro("Não foi possível atualizar os dados. Tentando novamente...");
                 }
             } finally {
-                if (!desmontado) {
+                if (!desmontado) { 
                     setCarregando(false);
                     timerId = setTimeout(buscarDados, 3000);
                 }
@@ -160,11 +161,20 @@ function MainContent({Logado, setLogado, setModalLoginAberto, fornoSelecionado, 
 
     if (!Logado || !fornoSelecionado || admin) return null;
 
+    const agora = Date.now();
     const estadoForno = dashboard?.estadoForno ?? "";
     const estadoSistema = dashboard?.estadoSistema ?? "";
-    const fornoLigado = Boolean(estadoForno && estadoForno !== "FORNO_DESLIGADO");
     const temperaturaAtual = dashboard?.temperaturaAtual;
-    const agora = Date.now();
+    const estadoLigado = Boolean(estadoForno && estadoForno !== "FORNO_DESLIGADO");
+    const atualizadoEmMs = dashboard?.atualizadoEm
+        ? new Date(dashboard.atualizadoEm).getTime()
+        : NaN;
+    const dadoAtualizado =
+        Number.isFinite(atualizadoEmMs) &&
+        (agora - atualizadoEmMs) <= LIMITE_DADO_VELHO_MS;
+
+    const fornoLigado = estadoLigado && dadoAtualizado;
+    const semSinal = estadoLigado && !dadoAtualizado && !carregando;
     
     const ultimoTemporizador = temporizadores.find((temporizador) => {
         const fim = temporizador.horarioFim ? new Date(temporizador.horarioFim).getTime() : NaN;
@@ -200,9 +210,9 @@ function MainContent({Logado, setLogado, setModalLoginAberto, fornoSelecionado, 
 
                 <section id="dashboard" aria-labelledby="titulo-dashboard">
                     <h2 id="titulo-dashboard">Dashboard - {fornoSelecionado.nome}</h2>
-                    <p>{carregando ? "Carregando status..." : formatarEstadoForno(estadoForno)}</p>
+                    <p>{carregando ? "Carregando status..." : semSinal ? "Forno sem comunicação" : formatarEstadoForno(estadoForno)}</p>
                     {erro && <p role="status">{erro}</p>}
-                    <small>Atualizado em: {fornoLigado && dashboard?.atualizadoEm ? formatarData(dashboard.atualizadoEm) : "-"}</small>
+                    <small>Atualizado em: {(fornoLigado || semSinal) && dashboard?.atualizadoEm ? formatarData(dashboard.atualizadoEm) : "-"}</small>
                 </section>
 
                 <section id="temperatura" aria-labelledby="titulo-temperatura">
@@ -229,15 +239,11 @@ function MainContent({Logado, setLogado, setModalLoginAberto, fornoSelecionado, 
 
                 <section id="graficos" aria-labelledby="titulo-graficos">
                     <h2 id="titulo-graficos">Gráficos</h2>
-                    {carregando ? (
-                        <p>Carregando gráfico...</p>
-                    ) : !fornoLigado ? (
-                        <p>-</p>
-                    ) : temperaturas.length > 0 ? (
+                    {carregando ? (<p>Carregando gráfico...</p>) : !fornoLigado ? (<p>-</p>) : temperaturas.length > 0 ? (
                         <ResponsiveContainer width="100%" height={300}>
                             <LineChart data={temperaturas}>
                                 <XAxis
-                                    dataKey="criadoEm"
+                                    dataKey="registradoEm"
                                     tickFormatter={(valor) => valor
                                         ? new Date(valor).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })
                                         : ""}

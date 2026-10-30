@@ -10,6 +10,7 @@ import { useState, useEffect } from "react";
 import PainelAdmin from "./PainelAdmin";
 import ModalPerfil from "./ModalPerfil";
 import { jwtDecode } from "jwt-decode";
+import PaginaReverterEmail from "./PaginaReverterEmail";
 import API_URL from "./api";
 
 function App() {
@@ -105,6 +106,8 @@ function App() {
               Logado={Logado}
               ModalPerfilAberto={ModalPerfilAberto}
               setModalPerfil={setModalPerfil}
+              sair={sair}
+              setMensagemSucesso={setMensagemSucesso}
               />
 
               <ModalLogin 
@@ -152,6 +155,10 @@ function App() {
 
           <Route path="/redefinir-senha" element={
               <PaginaRedefinirSenha />
+          }/>
+
+          <Route path="/reverter-email" element={
+              <PaginaReverterEmail />
           }/>
 
           <Route path="/admin" element={

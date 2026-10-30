@@ -5,7 +5,7 @@ import ModalEmail from "./ModalEmail";
 import ModalSenha from "./ModalSenha";
 import ModalConfirmar from "./ModalConfirmar"
 
-function ModalPerfil({ModalPerfilAberto, Logado, setModalPerfil}) {
+function ModalPerfil({ModalPerfilAberto, Logado, setModalPerfil, sair, setMensagemSucesso}) {
 
     const [nome, setNome] = useState("");
     const [email, setEmail] = useState("");
@@ -67,12 +67,15 @@ function ModalPerfil({ModalPerfilAberto, Logado, setModalPerfil}) {
             <ModalConfirmar
             ModalConfirmarAberto= {ModalConfirmarAberto}
             setModalConfirmarAberto= {setModalConfirmarAberto}
-            buscar= {buscar}
+            sair= {sair}
+            setMensagemSucesso= {setMensagemSucesso}
             />
 
             <ModalSenha 
             ModalSenhaAberto= {ModalSenhaAberto} 
             setModalSenha= {setModalSenha} 
+            sair= {sair}
+            setMensagemSucesso= {setMensagemSucesso}
             />
 
         </div>

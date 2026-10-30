@@ -1,7 +1,7 @@
 import { useState } from "react";
 import API_URL from "./api";
 
-function ModalConfirmar({ModalConfirmarAberto, setModalConfirmarAberto, buscar}){
+function ModalConfirmar({ModalConfirmarAberto, setModalConfirmarAberto, sair, setMensagemSucesso}){
 
     const [codigo, setCodigo] = useState("");
     const [erroCodigo, setErroCodigo] = useState("");
@@ -30,13 +30,11 @@ function ModalConfirmar({ModalConfirmarAberto, setModalConfirmarAberto, buscar})
                 const resposta = await fetch(`${API_URL}/auth/verificar-codigo-redefinir-email`, {method:"POST", headers:{"Content-Type": "application/json", "Authorization": "Bearer " + token}, body: JSON.stringify({codigo: codigo})});
 
                 if (resposta.ok) {
-                    buscar();
                     setSucesso(true);
 
                     setTimeout(() => {
-                        setModalConfirmarAberto(false);
-                        setSucesso(false); // Reseta o estado para a próxima vez que abrir
-                        setCodigo(""); // Limpa o input
+                        setMensagemSucesso("E-mail alterado com sucesso. Faça login com o novo e-mail.");
+                        sair();
                     }, 3000);
 
                 } else {
