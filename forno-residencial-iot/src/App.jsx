@@ -55,9 +55,8 @@ function App() {
     if (token) {
         try {
             const tokenDecodificado = jwtDecode(token);
-            // Verifica se o token expirou (exp é em segundos, Date.now em ms)
             if (tokenDecodificado.exp * 1000 < Date.now()) {
-                sair(); // Token vencido: limpa tudo
+                sair();
             } else {
                 setModalLoginAberto(false);
                 setLogado(true);
@@ -125,6 +124,7 @@ function App() {
               Logado={Logado}
               setFornoSelecionado={setFornoSelecionado}
               admin={admin}
+              sair={sair}
               />
 
               <ModalEsqueciSenha

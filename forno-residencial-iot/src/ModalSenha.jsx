@@ -1,5 +1,5 @@
 import { useState } from "react";
-import API_URL from "./api";
+import API_URL, { fetchAutenticado } from "./api";
 
 function ModalSenha({ModalSenhaAberto, setModalSenha, sair, setMensagemSucesso}){
 
@@ -22,6 +22,7 @@ function ModalSenha({ModalSenhaAberto, setModalSenha, sair, setMensagemSucesso})
         let padraoSenhaCaracteres     = /.{8,}/;
         let padraoSenhaLetraMaiuscula = /[A-Z]/;
         let padraoSenhaNumeros        = /\d/;
+        let padraoSenhaLetraMinuscula = /[a-z]/;
 
         if (senhaAtual === "") {
             setErroSenhaAtual("A senha atual é obrigatória");
@@ -38,6 +39,9 @@ function ModalSenha({ModalSenhaAberto, setModalSenha, sair, setMensagemSucesso})
             valido = false;
         } else if (!padraoSenhaLetraMaiuscula.test(novaSenha)){
             setErroNovaSenha("A senha deve conter ao menos 1 letra maiuscula");
+            valido = false;
+        } else if(!padraoSenhaLetraMinuscula.test(novaSenha)){
+            setErroNovaSenha("A senha deve conter ao menos 1 letra minuscula");
             valido = false;
         } else if (!padraoSenhaNumeros.test(novaSenha)){
             setErroNovaSenha("A senha deve conter ao menos 1 número");
@@ -61,10 +65,12 @@ function ModalSenha({ModalSenhaAberto, setModalSenha, sair, setMensagemSucesso})
             
             try {
             setCarregando(true);
-            const token = localStorage.getItem("token");
             
-            const resposta = await fetch(`${API_URL}/usuario/alterar-minha-senha`, {method: "PUT", headers: {"Content-Type": "application/json", "Authorization": "Bearer " + token}, body: JSON.stringify({senhaAtualizada: novaSenha, senhaAtual: senhaAtual})});
-
+            const resposta = await fetchAutenticado(
+    `${API_URL}/usuario/alterar-minha-senha`,
+    { method: "PUT", body: JSON.stringify({ senhaAtualizada: novaSenha, senhaAtual: senhaAtual }) },
+    sair
+);
             if (resposta.ok) {
                 setSucesso(true);
                 
@@ -112,34 +118,22 @@ function ModalSenha({ModalSenhaAberto, setModalSenha, sair, setMensagemSucesso})
                 <div id="campo-senha-atual">
                     <label htmlFor="senha-atual">Senha Atual</label>
                     <input type={mostrarSenha ? "text" : "password"} value={senhaAtual} onChange={(e) => setSenhaAtual(e.target.value)} name="senha-atual" id="senha-atual" required/>
-                    <i
-                    className={mostrarSenha ? "bi bi-eye-slash" : "bi bi-eye"}
-                    id="olhoCadastro"
-                    onClick={() => setMostrarSenha(!mostrarSenha)}>
-                    </i>
-                    <span id="erro-trocar-senha" role="alert">{erroSenhaAtual}</span>
+                    <i className={mostrarSenha ? "bi bi-eye-slash" : "bi bi-eye"} class="olhoCadastro" onClick={() => setMostrarSenha(!mostrarSenha)}> </i>
+                    <span id="erro-senha-atual" role="alert">{erroSenhaAtual}</span>
                 </div>
 
                 <div id="campo-nova-senha">
                     <label htmlFor="nova-senha">Nova Senha</label>
                     <input type={mostrarSenha ? "text" : "password"} value={novaSenha} onChange={(e) => setNovaSenha(e.target.value)} name="nova-senha" id="nova-senha" required/>
-                    <i
-                    className={mostrarSenha ? "bi bi-eye-slash" : "bi bi-eye"}
-                    id="olhoCadastro"
-                    onClick={() => setMostrarSenha(!mostrarSenha)}>
-                    </i>
-                    <span id="erro-trocar-senha" role="alert">{erroNovaSenha}</span>
+                    <i className={mostrarSenha ? "bi bi-eye-slash" : "bi bi-eye"} class="olhoCadastro" onClick={() => setMostrarSenha(!mostrarSenha)}></i>
+                    <span id="erro-nova-senha" role="alert">{erroNovaSenha}</span>
                 </div>
 
                 <div id="campo-confirmar-senha">
                     <label htmlFor="confirmar-senha">Confirmar Nova Senha</label>
                     <input type={mostrarSenha ? "text" : "password"} value={confirmarSenha} onChange={(e) => setConfirmarSenha(e.target.value)} name="confirmar-senha" id="confirmar-senha" required/>
-                    <i
-                    className={mostrarSenha ? "bi bi-eye-slash" : "bi bi-eye"}
-                    id="olhoCadastro"
-                    onClick={() => setMostrarSenha(!mostrarSenha)}>
-                    </i>
-                    <span id="erro-trocar-senha" role="alert">{erroConfirmarSenha}</span>
+                    <i className={mostrarSenha ? "bi bi-eye-slash" : "bi bi-eye"} class="olhoCadastro" onClick={() => setMostrarSenha(!mostrarSenha)}></i>
+                    <span id="erro-confirmar-senha" role="alert">{erroConfirmarSenha}</span>
                 </div>   
 
                 <button type="submit" disabled={carregando}>{carregando ? "Carregando..." : "Trocar"}</button>

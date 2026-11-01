@@ -66,7 +66,7 @@ function ModalEsqueciSenha({setModalLoginAberto, ModalEsqueciSenhaAberto, ModalE
 
                     <div>
                         <label htmlFor="esqueci-senha-email">E-mail</label>
-                        <input onChange={(e) => setEmail(e.target.value)} type="email" id="esqueci-senha-email" name="email" placeholder="Digite seu E-mail" autoComplete="email" required/>
+                        <input value={email} onChange={(e) => setEmail(e.target.value)} type="email" id="esqueci-senha-email" name="email" placeholder="Digite seu E-mail" autoComplete="email" required/>
                         <span id="erro-esqueci-senha-email" role="alert">{erroEmail}</span>
                     </div>
 

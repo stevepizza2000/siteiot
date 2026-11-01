@@ -1,5 +1,5 @@
 import { useState } from "react";
-import API_URL from "./api";
+import API_URL, { lerErroApi } from "./api";
 
 function ModalCadastro({aberto, ModalLogin, ModalCadastro}) {
 
@@ -24,6 +24,7 @@ async function handleSubmitRegister(e){
     let padraoEmail               = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     let padraoSenhaCaracteres     = /.{8,}/;
     let padraoSenhaLetraMaiuscula = /[A-Z]/;
+    let padraoSenhaLetraMinuscula = /[a-z]/; 
     let padraoSenhaNumeros        = /\d/;
     let padraoCpf                 = /^\d{3}\.\d{3}\.\d{3}-\d{2}$/;
 
@@ -70,6 +71,9 @@ async function handleSubmitRegister(e){
     } else if (!padraoSenhaLetraMaiuscula.test(Password)){
         setErroPassword("A senha deve conter ao menos 1 letra maiuscula");
         valido = false;
+    } else if (!padraoSenhaLetraMinuscula.test(Password)){
+        setErroPassword("A senha deve conter ao menos 1 letra minuscula");
+        valido = false;
     } else if (!padraoSenhaNumeros.test(Password)){
         setErroPassword("A senha deve conter ao menos 1 numero");
         valido = false;
@@ -80,13 +84,24 @@ async function handleSubmitRegister(e){
     if (valido === true) {
         try {
             setCarregando(true);
-            const resposta = await fetch(`${API_URL}/usuario`, {method: "POST",headers: { "Content-Type": "application/json" }, body: JSON.stringify({ nome: Nome, cpf: cpf, email: Email, nascimento: dataNascimento, senha: Password })});
+            const resposta = await fetch(`${API_URL}/usuario`, {method: "POST",headers: { "Content-Type": "application/json" }, body: JSON.stringify({ nome: Nome, cpf: cpf.replace(/\D/g, ""), email: Email, nascimento: dataNascimento, senha: Password })});
 
             if (resposta.ok) {
                 ModalCadastro(false);
                 ModalLogin(true);
             } else if (resposta.status === 409) {
                 setErroEmail("O e-mail já foi cadastrado");
+            } else if (resposta.status === 400) {
+                const { campos } = await lerErroApi(resposta, "");
+                if (campos) {
+                    if (campos.nome) setErroNome(campos.nome);
+                    if (campos.email) setErroEmail(campos.email);
+                    if (campos.nascimento) setErroData(campos.nascimento);
+                    if (campos.cpf) setErroCpf(campos.cpf);
+                    if (campos.senha) setErroPassword(campos.senha);
+                } else {
+                    setErroGeral("Dados inválidos. Confira os campos.");
+                }
             } else {
                 setErroGeral("Não foi possível criar a conta. Tente novamente.");
             }
@@ -119,7 +134,7 @@ function formatarCpf (cpf) {
             <form id="form-cadastro" onSubmit={handleSubmitRegister} noValidate>
 
                 <div>
-                    <label htmlFor="nome">Nome Completo</label>
+                    <label htmlFor="cadastro-nome">Nome Completo</label>
                     <input 
                     value={Nome}
                     onChange={(e) => setNome(e.target.value)}
@@ -151,7 +166,7 @@ function formatarCpf (cpf) {
                     type="date" 
                     id="cadastro-data" 
                     name="data" 
-                    autoComplete="data" 
+                    autoComplete="bday" 
                     placeholder="Digite Sua Data De Nascimento" 
                     required/>
                     <span id="erro-cadastro-data" role="alert">{erroData}</span>
@@ -165,7 +180,7 @@ function formatarCpf (cpf) {
                     type="text" 
                     id="cadastro-cpf" 
                     name="cpf" 
-                    autoComplete="cpf" 
+                    autoComplete="off" 
                     placeholder="Digite Seu CPF" 
                     required/>
                     <span id="erro-cadastro-cpf" role="alert">{erroCpf}</span>

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import API_URL from "./api";
+import API_URL, { fetchAutenticado } from "./api";
 import DadosPerfil from "./DadosPerfil";
 import ModalEmail from "./ModalEmail";
 import ModalSenha from "./ModalSenha";
@@ -19,26 +19,42 @@ function ModalPerfil({ModalPerfilAberto, Logado, setModalPerfil, sair, setMensag
     const [DadosPerfilAberto, setDadosPerfil] = useState(true)
 
 
-    async function buscar(){
-        const token = localStorage.getItem("token");
-                const resposta = await fetch(`${API_URL}/usuario/meu-perfil`, {method:"GET", headers:{"Content-Type": "application/json", "Authorization": "Bearer " + token} });
-
-                if (!resposta.ok) return;
-
+    async function buscar() {
+        try {
+            const resposta = await fetchAutenticado(`${API_URL}/usuario/meu-perfil`, { method: "GET" }, sair);
+            if (resposta.ok) {
                 const dados = await resposta.json();
-
-                const dataFormatada = new Date(dados.nascimento).toLocaleDateString("pt-BR");
-
                 setEmail(dados.email);
                 setNome(dados.nome);
-                setNascimento(dataFormatada);
-    };
 
-    useEffect (() => {
+                if (dados.nascimento) {
+                    const [ano, mes, dia] = dados.nascimento.split("-");
+                    setNascimento(`${dia}/${mes}/${ano}`);
+                } else {
+                    setNascimento("");
+                }
+            }
+        } catch (erro) {
+            console.log("Erro ao buscar perfil: ", erro.message);
+        }
 
+        try {
+            const respostaFoto = await fetchAutenticado(`${API_URL}/usuario/foto-perfil/visualizar-img`, { method: "GET" }, sair);
+            if (respostaFoto.ok) {
+                const foto = await respostaFoto.json();
+                setFotoBase64(foto.fotoBase64 ?? "");
+            } else {
+                setFotoBase64("");
+            }
+        } catch (erro) {
+            console.log("Erro ao buscar foto: ", erro.message);
+        }
+    }
+
+    useEffect(() => {
+        if (!ModalPerfilAberto) return;
         buscar();
-        
-    }, [ModalPerfilAberto]);
+}, [ModalPerfilAberto]);
 
 
 
@@ -56,12 +72,14 @@ function ModalPerfil({ModalPerfilAberto, Logado, setModalPerfil, sair, setMensag
             email= {email}
             nascimento= {nascimento}
             cpf= {cpf}
+            fotoBase64= {fotoBase64}
             />
 
             <ModalEmail 
             ModalEmailAberto= {ModalEmailAberto} 
             setModalEmail= {setModalEmail} 
             setModalConfirmarAberto= {setModalConfirmarAberto}
+            sair= {sair}
             />
 
             <ModalConfirmar

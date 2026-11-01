@@ -1,8 +1,8 @@
 import { useState, useRef } from "react";
-import API_URL from "./api";
 import QRCode from "react-qr-code";
+import API_URL, { fetchAutenticado, lerErroApi } from "./api";
 
-function PainelAdmin() {
+function PainelAdmin({ sair }) {
 
     const [nomeForno, setNomeForno] = useState("");
     const [serialNumber, setSerialNumber] = useState("");
@@ -30,13 +30,14 @@ function PainelAdmin() {
         }
 
         setCarregando(true);
-        const token = localStorage.getItem("token");
-
         
         try {
             const nomeFinal = nomeValido ? nomeForno : null;
-            const resposta = await fetch(`${API_URL}/fornos/pre-registrar`, {method: "POST", headers: {"Content-Type": "application/json", "Authorization": "Bearer " + token }, body: JSON.stringify({nome: nomeFinal, serialNumber: serialNumber})});
-            
+            const resposta = await fetchAutenticado(
+    `${API_URL}/fornos/pre-registrar`,
+    { method: "POST", body: JSON.stringify({ nome: nomeFinal, serialNumber: serialNumber }) },
+    sair
+);
             if (resposta.ok) {
                 const dadosForno = await resposta.json();
                 const objetoQrCode = { 
@@ -54,15 +55,10 @@ function PainelAdmin() {
                 setNomeForno("");
                 setSerialNumber("");
                 
-            }else {
-                const erroBody = await resposta.json().catch(() => null);
-                
-                setMensagem({
-                    texto: erroBody?.mensagem || "Erro ao criar forno. Verifique os dados.",
-                    tipo: "erro",
-                });
-
-            } 
+            } else {
+                const { texto } = await lerErroApi(resposta, "Erro ao criar forno. Verifique os dados.");
+                setMensagem({ texto, tipo: "erro" });
+            }
 
         } catch (erro) {
                 setMensagem({
@@ -89,7 +85,7 @@ function PainelAdmin() {
 
         img.onload = () => {
             const canvas = document.createElement("canvas");
-            const escala = 4; // aumenta a resolução final pra não ficar borrado
+            const escala = 4;
             canvas.width = img.width * escala;
             canvas.height = img.height * escala;
             const ctx = canvas.getContext("2d");
