@@ -118,21 +118,21 @@ function ModalSenha({ModalSenhaAberto, setModalSenha, sair, setMensagemSucesso})
                 <div id="campo-senha-atual">
                     <label htmlFor="senha-atual">Senha Atual</label>
                     <input type={mostrarSenha ? "text" : "password"} value={senhaAtual} onChange={(e) => setSenhaAtual(e.target.value)} name="senha-atual" id="senha-atual" required/>
-                    <i className={mostrarSenha ? "bi bi-eye-slash" : "bi bi-eye"} class="olhoCadastro" onClick={() => setMostrarSenha(!mostrarSenha)}> </i>
+                    <i className={mostrarSenha ? "bi bi-eye-slash" : "bi bi-eye"} onClick={() => setMostrarSenha(!mostrarSenha)}> </i>
                     <span id="erro-senha-atual" role="alert">{erroSenhaAtual}</span>
                 </div>
 
                 <div id="campo-nova-senha">
                     <label htmlFor="nova-senha">Nova Senha</label>
                     <input type={mostrarSenha ? "text" : "password"} value={novaSenha} onChange={(e) => setNovaSenha(e.target.value)} name="nova-senha" id="nova-senha" required/>
-                    <i className={mostrarSenha ? "bi bi-eye-slash" : "bi bi-eye"} class="olhoCadastro" onClick={() => setMostrarSenha(!mostrarSenha)}></i>
+                    <i className={mostrarSenha ? "bi bi-eye-slash" : "bi bi-eye"} onClick={() => setMostrarSenha(!mostrarSenha)}></i>
                     <span id="erro-nova-senha" role="alert">{erroNovaSenha}</span>
                 </div>
 
                 <div id="campo-confirmar-senha">
                     <label htmlFor="confirmar-senha">Confirmar Nova Senha</label>
                     <input type={mostrarSenha ? "text" : "password"} value={confirmarSenha} onChange={(e) => setConfirmarSenha(e.target.value)} name="confirmar-senha" id="confirmar-senha" required/>
-                    <i className={mostrarSenha ? "bi bi-eye-slash" : "bi bi-eye"} class="olhoCadastro" onClick={() => setMostrarSenha(!mostrarSenha)}></i>
+                    <i className={mostrarSenha ? "bi bi-eye-slash" : "bi bi-eye"} onClick={() => setMostrarSenha(!mostrarSenha)}></i>
                     <span id="erro-confirmar-senha" role="alert">{erroConfirmarSenha}</span>
                 </div>   
 

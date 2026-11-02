@@ -4,13 +4,14 @@ import DadosPerfil from "./DadosPerfil";
 import ModalEmail from "./ModalEmail";
 import ModalSenha from "./ModalSenha";
 import ModalConfirmar from "./ModalConfirmar"
-
+//comentarios comentados
 function ModalPerfil({ModalPerfilAberto, Logado, setModalPerfil, sair, setMensagemSucesso}) {
 
     const [nome, setNome] = useState("");
     const [email, setEmail] = useState("");
     const [nascimento, setNascimento] = useState("");
     const [cpf, setCpf] = useState("");
+    const [fotoBase64, setFotoBase64] = useState("");
     const [carregandoPerfil, setCarregandoPerfil] = useState(true);
 
     const [ModalConfirmarAberto, setModalConfirmarAberto] = useState(false);
