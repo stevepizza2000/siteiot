@@ -42,7 +42,6 @@ function PainelAdmin({ sair }) {
                 const dadosForno = await resposta.json();
                 const objetoQrCode = { 
                     serialNumber: serialNumber,
-                    pinSeguranca: dadosForno.pinSeguranca,
                 };
 
                 setDados(objetoQrCode);
