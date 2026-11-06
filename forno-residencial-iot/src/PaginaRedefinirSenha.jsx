@@ -24,6 +24,7 @@ function PaginaRedefinirSenha(){
             let padraoSenhaCaracteres     = /.{8,}/;
             let padraoSenhaLetraMaiuscula = /[A-Z]/;
             let padraoSenhaNumeros        = /\d/;
+            let padraoSenhaLetraMinuscula = /[a-z]/;
 
             if(novaSenha === ""){
                 setErroNovaSenha("Digite algo no campo");
@@ -33,6 +34,9 @@ function PaginaRedefinirSenha(){
                 valido = false;
             } else if (!padraoSenhaLetraMaiuscula.test(novaSenha)) {
                 setErroNovaSenha("A senha deve conter ao menos 1 letra maiuscula");
+                valido = false;
+            }else if (!padraoSenhaLetraMinuscula.test(novaSenha)) {
+                setErroNovaSenha("A senha deve conter ao menos 1 letra minuscula");
                 valido = false;
             } else if (!padraoSenhaNumeros.test(novaSenha)){
                 setErroNovaSenha("A senha deve conter ao menos 1 numero");

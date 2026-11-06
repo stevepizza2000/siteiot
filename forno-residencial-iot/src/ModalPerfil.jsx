@@ -13,9 +13,9 @@ function ModalPerfil({ ModalPerfilAberto, Logado, setModalPerfil, sair, setMensa
     const [nome, setNome] = useState("");
     const [email, setEmail] = useState("");
     const [nascimento, setNascimento] = useState("");
-    const [fotoBase64, setFotoBase64] = useState("");
     const [carregandoFoto, setCarregandoFoto] = useState(false);
     const [erroFoto, setErroFoto] = useState("");
+    const [fotoBase64, setFotoBase64] = useState("");
 
     const [ModalConfirmarAberto, setModalConfirmarAberto] = useState(false);
     const [ModalEmailAberto, setModalEmail] = useState(false);
@@ -132,6 +132,7 @@ function ModalPerfil({ ModalPerfilAberto, Logado, setModalPerfil, sair, setMensa
 
     return (
         <div>
+
             <DadosPerfil
                 setModalEmailAberto={setModalEmail}
                 setModalSenhaAberto={setModalSenha}
@@ -151,6 +152,7 @@ function ModalPerfil({ ModalPerfilAberto, Logado, setModalPerfil, sair, setMensa
                 setModalEmail={setModalEmail}
                 setModalConfirmarAberto={setModalConfirmarAberto}
                 sair={sair}
+
             />
 
             <ModalConfirmar

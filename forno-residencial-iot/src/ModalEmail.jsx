@@ -1,7 +1,7 @@
 import { useState } from "react";
-import API_URL from "./api";
+import API_URL, { fetchAutenticado } from "./api";
 
-function ModalEmail({ModalEmailAberto, setModalEmail, setModalConfirmarAberto}){
+function ModalEmail({ModalEmailAberto, setModalEmail, setModalConfirmarAberto, sair}){
 
     const [carregando, setCarregando] = useState(false);
     const [novoEmail, setNovoEmail] = useState("");
@@ -14,7 +14,6 @@ function ModalEmail({ModalEmailAberto, setModalEmail, setModalConfirmarAberto}){
         e.preventDefault();
         let valido = true;
         let padraoNovoEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        const token = localStorage.getItem("token");
 
 
         if (novoEmail === ""){
@@ -38,7 +37,7 @@ function ModalEmail({ModalEmailAberto, setModalEmail, setModalConfirmarAberto}){
 
             try{
                 setCarregando(true);
-                const resposta = await fetch(`${API_URL}/auth/enviar-codigo-redefinir-email`, {method:"POST", headers:{"Content-Type": "application/json" ,"Authorization": "Bearer " + token}, body: JSON.stringify({novoEmail: novoEmail ,senhaAtual: password})});
+                const resposta = await fetchAutenticado(`${API_URL}/auth/enviar-codigo-redefinir-email`,{ method: "POST", body: JSON.stringify({ novoEmail: novoEmail, senhaAtual: password }) },sair);
             
                 if(resposta.ok) {
                     setModalEmail(false);

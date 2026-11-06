@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import API_URL from "./api";
+import API_URL, { fetchAutenticado } from "./api";
 
 function Header({ Logado, setModalLoginAberto, setFornoSelecionado, admin, setModalPerfil, fornoSelecionado, sair }) {
     let [menuAberto, setMenuAberto] = useState(false);
@@ -15,14 +15,7 @@ function Header({ Logado, setModalLoginAberto, setFornoSelecionado, admin, setMo
 
         async function fetchData() {
             try {
-                const token = localStorage.getItem("token");
-                const dadoNome = await fetch(`${API_URL}/usuario/meu-perfil`, {
-                    method: "GET", 
-                    headers: {
-                        "Content-Type": "application/json", 
-                        "Authorization": `Bearer ${token}`
-                    } 
-                });
+                const dadoNome = await fetchAutenticado(`${API_URL}/usuario/meu-perfil`, { method: "GET" }, sair);
 
                 if (dadoNome.ok) {
                     setNome(await dadoNome.json());

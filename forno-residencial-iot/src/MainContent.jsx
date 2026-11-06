@@ -1,8 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer} from "recharts";
 import API_URL, { fetchAutenticado } from "./api"
 
 const LIMITE_DADO_VELHO_MS = 60 * 1000;
+const INTERVALO_RAPIDO_MS = 3000;
+const INTERVALO_LENTO_MS = 30000;
 
 const ESTADOS_FORNO = {
     FORNO_DESLIGADO: "Forno desligado",
@@ -44,14 +46,17 @@ function MainContent({Logado, setLogado, setModalLoginAberto, fornoSelecionado, 
     const [carregando, setCarregando] = useState(true);
     const [erro, setErro] = useState("");
 
+
+    const sessaoAtualIdRef = useRef(null);
+
     useEffect(() => {
         if (!fornoSelecionado?.id) return undefined;
 
         const fornoId = fornoSelecionado.id;
         const controller = new AbortController();
-        let timerId;
         let desmontado = false;
 
+        sessaoAtualIdRef.current = null;
         setTemperaturas([]);
         setTemporizadores([]);
         setSessoes([]);
@@ -60,7 +65,6 @@ function MainContent({Logado, setLogado, setModalLoginAberto, fornoSelecionado, 
         setErro("");
 
         const buscarJson = async (url) => {
-    
             const resposta = await fetchAutenticado(url, {
                 method: "GET",
                 signal: controller.signal
@@ -77,34 +81,25 @@ function MainContent({Logado, setLogado, setModalLoginAberto, fornoSelecionado, 
             return resposta.json();
         };
 
-        const buscarDados = async () => {
+        const agendar = (fn, intervalo) => {
+            let timer;
+            const ciclo = async () => {
+                if (!document.hidden) await fn();
+                if (!desmontado) timer = setTimeout(ciclo, intervalo);
+            };
+            ciclo();
+            return () => clearTimeout(timer);
+        };
+
+        const buscarRapidos = async () => {
             try {
                 const dashboardData = await buscarJson(`${API_URL}/telemetrias/forno/${fornoId}/dashboard`);
 
-                const [temporizadorResult, sessoesResult] = await Promise.allSettled([
-                    buscarJson(`${API_URL}/temporizadores/fornos/${fornoId}`),
-                    buscarJson(`${API_URL}/sessoes/fornos/${fornoId}`)
-                ]);
-
-                const temporizadoresData = temporizadorResult.status === "fulfilled"
-                    ? temporizadorResult.value
-                    : [];
-                const sessoesData = sessoesResult.status === "fulfilled"
-                    ? sessoesResult.value
-                    : [];
-
-                const sessoesOrdenadas = (Array.isArray(sessoesData) ? sessoesData : [])
-                    .slice()
-                    .sort((a, b) => new Date(b.inicioSessao) - new Date(a.inicioSessao));
-
-                const sessaoAtual = sessoesOrdenadas.find(
-                    (sessao) => sessao.fimSessao == null
-                ) ?? null;
-
                 let temperaturasData = [];
-                if (sessaoAtual?.id) {
+                const sessaoId = sessaoAtualIdRef.current;
+                if (sessaoId) {
                     try {
-                        const dados = await buscarJson(`${API_URL}/temperaturas/sessoes/${sessaoAtual.id}/temperaturas`);
+                        const dados = await buscarJson(`${API_URL}/temperaturas/sessoes/${sessaoId}/temperaturas`);
                         temperaturasData = Array.isArray(dados) ? dados : [];
                     } catch (temperaturaErro) {
                         if (temperaturaErro.name === "AbortError") throw temperaturaErro;
@@ -116,32 +111,19 @@ function MainContent({Logado, setLogado, setModalLoginAberto, fornoSelecionado, 
                     .slice()
                     .sort((a, b) => new Date(a.registradoEm) - new Date(b.registradoEm));
 
-                const temporizadoresOrdenados = (Array.isArray(temporizadoresData) ? temporizadoresData : [])
-                    .slice()
-                    .sort((a, b) => new Date(b.horarioFim ?? b.horarioInicio) - new Date(a.horarioFim ?? a.horarioInicio));
-
                 if (desmontado) return;
                 setDashboard(dashboardData);
                 setTemperaturas(temperaturasOrdenadas);
-                setTemporizadores(temporizadoresOrdenados);
-                setSessoes(sessoesOrdenadas);
                 setErro("");
-
-                const falhas = [temporizadorResult, sessoesResult]
-                    .filter((resultado) => resultado.status === "rejected");
-                if (falhas.length > 0) {
-                    console.warn("Algumas informações auxiliares não puderam ser carregadas.");
-                }
             } catch (e) {
-                if (e.name !== "AbortError") {
-                    console.error("Erro ao carregar dashboard:", e.message);
-                    if (e.message === "Não autorizado") {
-                        desmontado = true;
-                        sair(); 
-                        return;
-                    }
-                    if (!desmontado) setErro("Não foi possível atualizar os dados. Tentando novamente...");
+                if (e.name === "AbortError") return;
+                console.error("Erro ao carregar dashboard:", e.message);
+                if (e.message === "Não autorizado") {
+                    desmontado = true;
+                    sair();
+                    return;
                 }
+                if (!desmontado) setErro("Não foi possível atualizar os dados. Tentando novamente...");
             } finally {
                 if (!desmontado) { 
                     setCarregando(false);
@@ -150,14 +132,43 @@ function MainContent({Logado, setLogado, setModalLoginAberto, fornoSelecionado, 
             }
         };
 
-        buscarDados();
+        const buscarLentos = async () => {
+            const [temporizadorResult, sessoesResult] = await Promise.allSettled([
+                buscarJson(`${API_URL}/temporizadores/fornos/${fornoId}`),
+                buscarJson(`${API_URL}/sessoes/fornos/${fornoId}`)
+            ]);
+
+            if (desmontado) return;
+
+            if (temporizadorResult.status === "fulfilled") {
+                const lista = Array.isArray(temporizadorResult.value) ? temporizadorResult.value : [];
+                setTemporizadores(
+                    lista.slice().sort((a, b) =>
+                        new Date(b.horarioFim ?? b.horarioInicio) - new Date(a.horarioFim ?? a.horarioInicio))
+                );
+            }
+
+            if (sessoesResult.status === "fulfilled") {
+                const lista = Array.isArray(sessoesResult.value) ? sessoesResult.value : [];
+                const ordenadas = lista
+                    .slice()
+                    .sort((a, b) => new Date(b.inicioSessao) - new Date(a.inicioSessao));
+
+                sessaoAtualIdRef.current = ordenadas.find((s) => s.fimSessao == null)?.id ?? null;
+                setSessoes(ordenadas);
+            }
+        };
+
+        const pararLento = agendar(buscarLentos, INTERVALO_LENTO_MS);
+        const pararRapido = agendar(buscarRapidos, INTERVALO_RAPIDO_MS);
 
         return () => {
             desmontado = true;
-            clearTimeout(timerId);
+            pararRapido();
+            pararLento();
             controller.abort();
         };
-    }, [fornoSelecionado, setLogado, setModalLoginAberto]);
+    }, [fornoSelecionado]);
 
     if (!Logado || !fornoSelecionado || admin) return null;
 
@@ -175,12 +186,12 @@ function MainContent({Logado, setLogado, setModalLoginAberto, fornoSelecionado, 
 
     const fornoLigado = estadoLigado && dadoAtualizado;
     const semSinal = estadoLigado && !dadoAtualizado && !carregando;
-    
+
     const ultimoTemporizador = temporizadores.find((temporizador) => {
         const fim = temporizador.horarioFim ? new Date(temporizador.horarioFim).getTime() : NaN;
         return temporizador.executado !== true && Number.isFinite(fim) && fim > agora;
     }) ?? null;
-    
+
     const sessaoAtual = sessoes.find((sessao) => sessao.fimSessao == null) ?? null;
 
     const temperaturaFormatada = fornoLigado && temperaturaAtual !== null && temperaturaAtual !== undefined && Number.isFinite(Number(temperaturaAtual))
@@ -227,7 +238,6 @@ function MainContent({Logado, setLogado, setModalLoginAberto, fornoSelecionado, 
 
                 <section id="alertas" aria-labelledby="titulo-alertas">
                     <h2 id="titulo-alertas">Alertas</h2>
-                    {/* 3. LENDO DIRETO DO DASHBOARD */}
                     <p>{carregando ? "Carregando..." : fornoLigado ? formatarAlerta(dashboard?.ultimoEvento) : "-"}</p>
                 </section>
 

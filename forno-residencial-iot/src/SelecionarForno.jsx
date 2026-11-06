@@ -1,27 +1,41 @@
 import { useEffect, useState } from "react";
-import API_URL from "./api";
+import API_URL, { fetchAutenticado } from "./api";
 
-function SelecionarForno({setFornoSelecionado, fornoSelecionado, Logado, admin}){
+function SelecionarForno({setFornoSelecionado, fornoSelecionado, Logado, admin, sair}){
 
     const [fornos, setFornos] = useState([]);
 
-    useEffect (() => {
+    useEffect(() => {
+        if (!Logado) {
+            setFornos([]);
+            return;
+        }
+
+        const controller = new AbortController();
 
         const buscar = async () => {
+            try {
+                const resposta = await fetchAutenticado(
+                    `${API_URL}/fornos/meus`,
+                    { method: "GET", signal: controller.signal },
+                    sair
+                );
 
-        const token = localStorage.getItem("token");
-        const resposta = await fetch(`${API_URL}/fornos/meus`, {method:"GET", headers:{"Content-Type": "application/json", "Authorization": "Bearer " + token}});
+                if (!resposta.ok) {
+                    setFornos([]);
+                    return;
+                }
 
-        if (!resposta.ok) return;
-
-        const dados = await resposta.json();
-        setFornos(dados);
-
+                setFornos(await resposta.json());
+            } catch (erro) {
+                if (erro.name !== "AbortError") setFornos([]);
+            }
         };
 
         buscar();
 
-    }, [Logado]);
+        return () => controller.abort();
+}, [Logado]);
 
     if (!Logado || fornoSelecionado !== null || admin) return null;
 
