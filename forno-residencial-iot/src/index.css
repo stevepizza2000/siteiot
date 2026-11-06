@@ -1052,6 +1052,29 @@ main {
     font-weight: 500;
 }
 
+/* Foto de perfil: mensagem de erro e botão de remover */
+.erro-foto {
+    color: var(--cor-erro);
+    font-size: 0.8rem;
+    text-align: center;
+}
+
+.erro-foto:empty {
+    display: none;
+}
+
+.perfil-coluna-esquerda .botao-remover-foto {
+    background: transparent;
+    color: var(--cor-erro);
+    border: 1px solid var(--cor-erro);
+    padding: 0.4rem 1rem;
+    font-size: 0.85rem;
+}
+
+.perfil-coluna-esquerda .botao-remover-foto:hover {
+    background-color: rgba(239, 68, 68, 0.15);
+}
+
 /* --- Responsividade: empilha as colunas em telas pequenas --- */
 @media screen and (max-width: 700px) {
     #modal-perfil > div {

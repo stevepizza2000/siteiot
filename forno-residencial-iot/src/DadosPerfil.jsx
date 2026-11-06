@@ -1,7 +1,20 @@
-function DadosPerfil({setModalEmailAberto, setModalSenhaAberto, setModalPerfilAberto, nome, email, nascimento, cpf, fotoBase64}){
+import { useRef } from "react";
 
-    return(
+function DadosPerfil({setModalEmailAberto, setModalSenhaAberto, setModalPerfilAberto, nome, email, nascimento, fotoBase64, carregandoFoto, erroFoto, onSelecionarFoto, onRemoverFoto}) {
 
+    const inputArquivoRef = useRef(null);
+
+    function abrirSeletor() {
+        if (!carregandoFoto) inputArquivoRef.current.click();
+    }
+
+    function handleArquivoEscolhido(e) {
+        const arquivo = e.target.files[0];
+        e.target.value = "";
+        if (arquivo) onSelecionarFoto(arquivo);
+    }
+
+    return (
         <div id="modal-perfil" role="dialog" aria-modal="true">
             <div>
 
@@ -11,13 +24,44 @@ function DadosPerfil({setModalEmailAberto, setModalSenhaAberto, setModalPerfilAb
 
                 <div className="perfil-coluna-esquerda">
 
-                    <div className="perfil-foto-container">
+                    <input
+                        type="file"
+                        accept="image/*"
+                        hidden
+                        ref={inputArquivoRef}
+                        onChange={handleArquivoEscolhido}
+                    />
+
+                    <div
+                        className="perfil-foto-container"
+                        role="button"
+                        tabIndex={0}
+                        aria-label="Trocar foto de perfil"
+                        onClick={abrirSeletor}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter" || e.key === " ") abrirSeletor();
+                        }}
+                    >
                         {fotoBase64 ? (
                             <img src={`data:image/jpeg;base64,${fotoBase64}`} alt="Foto de perfil" />
                         ) : (
                             <i className="bi bi-person-fill"></i>
                         )}
                     </div>
+
+                    {carregandoFoto && <p>Enviando foto...</p>}
+                    <span className="erro-foto" role="alert">{erroFoto}</span>
+
+                    {fotoBase64 && (
+                        <button
+                            type="button"
+                            className="botao-remover-foto"
+                            onClick={onRemoverFoto}
+                            disabled={carregandoFoto}
+                        >
+                            Remover foto
+                        </button>
+                    )}
 
                     <div className="perfil-info-card">
                         <div className="perfil-info-item">
@@ -50,7 +94,6 @@ function DadosPerfil({setModalEmailAberto, setModalSenhaAberto, setModalPerfilAb
             </div>
         </div>
     );
-
 }
 
 export default DadosPerfil

@@ -16,6 +16,8 @@ function ModalCadastro({aberto, ModalLogin, ModalCadastro}) {
     const [mostrarPassword, setMostrarPassword] = useState(false); 
     const [carregando, setCarregando] = useState(false);
     const [erroGeral, setErroGeral] = useState("");
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
 
 async function handleSubmitRegister(e){
     e.preventDefault();
@@ -45,10 +47,21 @@ async function handleSubmitRegister(e){
     }
 
     if (dataNascimento === "") {
-        setErroData("Digite algo no campo");
-        valido = false;
+    setErroData("Digite algo no campo");
+    valido = false;
     } else {
-        setErroData("");
+        const [ano, mes, dia] = dataNascimento.split("-").map(Number);
+        const dataEscolhida = new Date(ano, mes - 1, dia);
+
+        if (ano < 1900) {
+            setErroData("Digite uma data de nascimento válida");
+            valido = false;
+        } else if (dataEscolhida >= hoje) {
+            setErroData("A data de nascimento deve estar no passado");
+            valido = false;
+        } else {
+            setErroData("");
+        }
     }
 
     if (cpf === "") {
@@ -149,6 +162,7 @@ function formatarCpf (cpf) {
                     value={dataNascimento}
                     onChange={(e) => setDataNascimento(e.target.value)}
                     type="date" 
+                    max={new Date(Date.now() - 86400000).toLocaleDateString("en-CA")}
                     id="cadastro-data" 
                     name="data" 
                     autoComplete="data" 
