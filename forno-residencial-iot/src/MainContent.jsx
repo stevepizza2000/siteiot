@@ -145,7 +145,7 @@ function MainContent({Logado, setLogado, setModalLoginAberto, fornoSelecionado, 
             } finally {
                 if (!desmontado) { 
                     setCarregando(false);
-                    timerId = setTimeout(buscarDados, 3000);
+                    timerId = setTimeout(buscarDados, 2000);
                 }
             }
         };
